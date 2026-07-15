@@ -1,0 +1,12 @@
+# secrets
+.env
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# agent output (reports are generated; keep the repo clean)
+reports/*.md
+!reports/.gitkeep
