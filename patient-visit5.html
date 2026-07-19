@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARKABLE - ביקור חמישי</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--pk:#D1409C;--navy:#1a1a2e;--green:#34C759;--blue:#007AFF;--bg:#f2f2f7;--card:#fff;--font:'Heebo','Inter',system-ui,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#1a1a2e;font-family:var(--font)}
+.phone-container{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e 0%,#2d1b3d 50%,#1a1a2e 100%)}
+.phone{width:390px;height:844px;max-height:calc(100vh - 20px);max-width:calc(100vw - 20px);background:#000;border-radius:50px;position:relative;box-shadow:0 0 0 3px #333,0 0 0 6px #1a1a1a,0 20px 80px rgba(0,0,0,.6);overflow:hidden;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:126px;height:36px;background:#000;border-radius:20px;z-index:100}
+.phone-screen{flex:1;background:var(--bg);border-radius:46px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+.status-bar{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 32px 6px;font-size:12px;font-weight:600;color:#000;background:#fff;flex-shrink:0;z-index:50}
+.status-time{font-size:15px;font-weight:700}
+.demo-badge-outer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:200;background:#D1409C;color:#fff;font-size:9px;font-weight:700;padding:3px 14px;border-radius:10px;letter-spacing:1px;white-space:nowrap;box-shadow:0 2px 8px rgba(209,64,156,.3)}
+.powered-footer{background:#f8f8f8;padding:4px 16px;text-align:center;font-size:8px;color:#aaa;border-top:1px solid #eee;flex-shrink:0;direction:ltr}
+.phone-content{flex:1;overflow:hidden;position:relative}
+.scr{position:absolute;inset:0;background:#fff;display:none;flex-direction:column;padding:20px 18px;overflow-y:auto}
+.scr.active{display:flex}
+.btn{width:100%;padding:14px;border-radius:14px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:var(--font)}
+.btn-pk{background:var(--pk);color:#fff}
+.btn-pk:hover{background:#b82384}
+
+.trend-card{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;margin-bottom:10px}
+.trend-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.trend-title{font-size:14px;font-weight:700;color:var(--navy)}
+.trend-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px}
+.trend-badge.improved{background:#e6f9f0;color:#0a7c42}
+.trend-badge.stable{background:#f0f4ff;color:#3b82f6}
+.trend-badge.watch{background:#fff4e0;color:#b37400}
+.trend-bar{height:6px;background:#f0f0f0;border-radius:3px;margin-bottom:4px;overflow:hidden;position:relative}
+.trend-fill{height:100%;border-radius:3px;transition:width 0.8s ease}
+.trend-compare{font-size:11px;color:#888;display:flex;justify-content:space-between}
+.sparkline{display:flex;align-items:end;gap:3px;height:32px;margin-top:6px}
+.spark-bar{width:14px;border-radius:3px 3px 0 0;background:rgba(209,64,156,0.15)}
+.spark-bar.current{background:var(--pk)}
+
+@media(max-width:420px){.phone{width:100%;height:100%;max-height:100vh;max-width:100vw;border-radius:0;box-shadow:none}.phone-screen{border-radius:0}.dynamic-island{display:none}.demo-badge-outer{display:none}}
+</style>
+</head>
+<body>
+<div class="phone-container">
+<div class="phone">
+<div class="demo-badge-outer">DEMO - ביקור 5</div>
+<div class="dynamic-island"></div>
+<div class="phone-screen">
+<div class="status-bar">
+  <div class="status-time">9:41</div>
+  <div style="font-size:11px;color:#888">ביקור חמישי</div>
+</div>
+<div class="phone-content">
+
+<!-- SCREEN 0: WELCOME BACK -->
+<div class="scr active" id="s0" dir="rtl" style="align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg,#fff,#fdf5fa)">
+  <div style="width:64px;height:64px;border-radius:50%;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </div>
+  <div style="font-size:20px;font-weight:800;color:#1a1a2e;margin-bottom:6px">היי מיכל, טוב לראות אותך</div>
+  <div style="font-size:14px;color:#666;line-height:1.6;max-width:300px;margin-bottom:8px">הביקור החמישי שלך עם ד"ר כהן בעוד 3 ימים. הגיע הזמן לעדכון.</div>
+  <div style="background:#f8f8f8;border-radius:12px;padding:12px 16px;margin-bottom:20px;max-width:280px;width:100%">
+    <div style="font-size:12px;color:#888;margin-bottom:6px">המיפוי האחרון שלך:</div>
+    <div style="font-size:14px;font-weight:700;color:var(--navy)">לפני 14 יום</div>
+  </div>
+  <button class="btn btn-pk" onclick="go(1)" style="max-width:280px">התחילי מיפוי דו שבועי &#8592;</button>
+  <div style="font-size:11px;color:#aaa;margin-top:12px">כ-7 דקות, כמו תמיד</div>
+</div>
+
+<!-- SCREEN 1: QUICK SCAN (simulated) -->
+<div class="scr" id="s1" dir="rtl" style="align-items:center;justify-content:center;text-align:center;background:#fff">
+  <div style="font-size:11px;color:var(--pk);font-weight:700;letter-spacing:1px;margin-bottom:12px">מיפוי דו שבועי</div>
+  <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:16px">התהליך שלך כולל:</div>
+  <div style="text-align:right;max-width:280px;width:100%;margin-bottom:24px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-direction:row-reverse">
+      <div style="width:32px;height:32px;border-radius:10px;background:var(--pk);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0">1</div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--navy)">סריקת פנים</div><div style="font-size:11px;color:#888">30 שניות</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-direction:row-reverse">
+      <div style="width:32px;height:32px;border-radius:10px;background:var(--pk);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0">2</div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--navy)">עדכון תסמינים</div><div style="font-size:11px;color:#888">2 דקות</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-direction:row-reverse">
+      <div style="width:32px;height:32px;border-radius:10px;background:var(--pk);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0">3</div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--navy)">THINK + SENSE</div><div style="font-size:11px;color:#888">4 דקות</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-direction:row-reverse">
+      <div style="width:32px;height:32px;border-radius:10px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0">&#10003;</div>
+      <div><div style="font-size:14px;font-weight:600;color:var(--navy)">השוואה לביקורים קודמים</div><div style="font-size:11px;color:#888">מיידי</div></div>
+    </div>
+  </div>
+  <button class="btn btn-pk" onclick="go(2)" style="max-width:280px">בואי נתחיל &#8592;</button>
+</div>
+
+<!-- SCREEN 2: SCANNING (animation) -->
+<div class="scr" id="s2" style="align-items:center;justify-content:center;text-align:center;background:#000;padding:0">
+  <div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+    <div style="width:200px;height:200px;border-radius:50%;border:3px solid rgba(209,64,156,0.3);display:flex;align-items:center;justify-content:center;animation:pulse 2s infinite">
+      <div style="width:160px;height:160px;border-radius:50%;border:2px solid rgba(209,64,156,0.6);display:flex;align-items:center;justify-content:center">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+    <div style="margin-top:24px;font-size:16px;font-weight:600;color:#fff">סורקת...</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:8px">ביקור 5 מתוך 5</div>
+    <button class="btn btn-pk" onclick="go(3)" style="position:absolute;bottom:60px;left:50%;transform:translateX(-50%);max-width:200px;font-size:13px;padding:10px 16px;opacity:0.9">דלגי להמשך (דמו) &#8592;</button>
+  </div>
+  <style>@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.8}}</style>
+</div>
+
+<!-- SCREEN 3: RESULTS WITH COMPARISON -->
+<div class="scr" id="s3" dir="rtl" style="background:#fff;padding:16px">
+  <div style="text-align:center;margin-bottom:14px">
+    <div style="font-size:11px;color:var(--pk);font-weight:700;letter-spacing:1px;margin-bottom:4px">ביקור 5 · השוואה</div>
+    <div style="font-size:18px;font-weight:800;color:var(--navy);margin-bottom:4px">הנה מה שהשתנה</div>
+    <div style="font-size:12px;color:#888">בהשוואה לביקור הקודם (לפני שבועיים)</div>
+  </div>
+
+  <!-- Hormonal Imprint trend -->
+  <div class="trend-card" style="border:1.5px solid rgba(209,64,156,0.15);background:linear-gradient(135deg,rgba(209,64,156,0.02),#fff)">
+    <div class="trend-header">
+      <span class="trend-title" style="color:var(--pk)">החותם ההורמונלי</span>
+      <span class="trend-badge improved">שיפור</span>
+    </div>
+    <div style="font-size:12px;color:#666;margin-bottom:8px">הפרופיל שלך משתפר בהתמדה מאז תחילת הטיפול</div>
+    <div class="sparkline">
+      <div class="spark-bar" style="height:45%"></div>
+      <div class="spark-bar" style="height:55%"></div>
+      <div class="spark-bar" style="height:50%"></div>
+      <div class="spark-bar" style="height:65%"></div>
+      <div class="spark-bar current" style="height:78%"></div>
+    </div>
+    <div class="trend-compare"><span>ביקור 1</span><span>ביקור 5 (עכשיו)</span></div>
+  </div>
+
+  <!-- Skin signals -->
+  <div class="trend-card">
+    <div class="trend-header">
+      <span class="trend-title">סימני עור</span>
+      <span class="trend-badge improved">שיפור</span>
+    </div>
+    <div style="font-size:12px;color:#666;margin-bottom:6px">גוון, מרקם ולחות עור: שיפור ניכר מאז התחלת ה-HRT</div>
+    <div class="trend-bar"><div class="trend-fill" style="width:72%;background:var(--pk)"></div></div>
+    <div class="trend-compare"><span>ביקור 1: בינוני-נמוך</span><span>עכשיו: טוב</span></div>
+  </div>
+
+  <!-- Cognition -->
+  <div class="trend-card">
+    <div class="trend-header">
+      <span class="trend-title">קוגניציה (THINK)</span>
+      <span class="trend-badge improved">שיפור</span>
+    </div>
+    <div style="font-size:12px;color:#666;margin-bottom:6px">מהירות עיבוד ושליפה חזרו לקרוב לרמת הבסיס</div>
+    <div class="trend-bar"><div class="trend-fill" style="width:80%;background:#007AFF"></div></div>
+    <div class="trend-compare"><span>ביקור 1: מתחת לבסיס</span><span>עכשיו: קרוב לבסיס</span></div>
+  </div>
+
+  <!-- Symptoms -->
+  <div class="trend-card">
+    <div class="trend-header">
+      <span class="trend-title">נטל תסמינים</span>
+      <span class="trend-badge improved">ירידה</span>
+    </div>
+    <div style="font-size:12px;color:#666;margin-bottom:6px">גלי חום ויקיצות לילה ירדו משמעותית. מיגרנות: יציבות</div>
+    <div class="sparkline">
+      <div class="spark-bar" style="height:90%;background:rgba(220,38,38,0.2)"></div>
+      <div class="spark-bar" style="height:75%;background:rgba(220,38,38,0.2)"></div>
+      <div class="spark-bar" style="height:60%;background:rgba(220,38,38,0.15)"></div>
+      <div class="spark-bar" style="height:45%;background:rgba(52,199,89,0.15)"></div>
+      <div class="spark-bar current" style="height:30%;background:#34C759"></div>
+    </div>
+    <div class="trend-compare"><span>ביקור 1: חמור</span><span>עכשיו: קל</span></div>
+  </div>
+
+  <!-- SENSE -->
+  <div class="trend-card">
+    <div class="trend-header">
+      <span class="trend-title">חושים (SENSE)</span>
+      <span class="trend-badge stable">יציב</span>
+    </div>
+    <div style="font-size:12px;color:#666;margin-bottom:6px">שמיעה, ראייה ושיווי משקל: יציבים ובטווח תקין</div>
+    <div class="trend-bar"><div class="trend-fill" style="width:85%;background:#34C759"></div></div>
+    <div class="trend-compare"><span>ללא שינוי מהותי</span><span>תקין</span></div>
+  </div>
+
+  <button class="btn btn-pk" onclick="go(4)" style="margin-top:6px">מה הרופאה שלי רואה? &#8592;</button>
+</div>
+
+<!-- SCREEN 4: WHAT DOCTOR SEES -->
+<div class="scr" id="s4" dir="rtl" style="background:#fff;padding:20px 18px;align-items:center;text-align:center">
+  <div style="width:56px;height:56px;border-radius:16px;background:rgba(0,59,123,0.06);display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#003B7B" stroke-width="1.75"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+  </div>
+  <div style="font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px">מה ד"ר כהן רואה עכשיו</div>
+  <div style="font-size:13px;color:#666;line-height:1.6;max-width:300px;margin-bottom:20px">הדשבורד של הרופאה מראה את כל 5 הביקורים שלך, המגמות, והדגלים לתשומת לב.</div>
+
+  <div style="background:#f8fafc;border-radius:14px;padding:16px;width:100%;text-align:right;margin-bottom:14px;border:1px solid #eee">
+    <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px">סיכום לתיק (מוכן להעתקה):</div>
+    <div style="font-size:12px;color:#555;line-height:1.7;background:#fff;border-radius:8px;padding:10px;border:1px solid #eee">
+      מטופלת בת 47, ביקור מעקב חמישי. מקבלת אסטרוגל 0.06% + אוטרוגסטן 100mg.<br><br>
+      שיפור ניכר בנטל תסמינים: גלי חום ירדו מ-8/10 ל-2/10, יקיצות לילה ירדו מ-7/10 ל-2/10. מיגרנות יציבות (3/10).<br><br>
+      פרופיל הורמונלי: מגמת שיפור מתמדת. קוגניציה חזרה לקרוב לבסיס. חושים יציבים.<br><br>
+      ללא דגלים אדומים. ממליצה על המשך מעקב.
+    </div>
+  </div>
+
+  <div style="background:rgba(52,199,89,0.04);border-radius:12px;padding:14px;border:1px solid rgba(52,199,89,0.15);width:100%;text-align:right;margin-bottom:16px">
+    <div style="font-size:13px;font-weight:700;color:#059669;margin-bottom:4px">הטיפול עובד</div>
+    <div style="font-size:12px;color:#555;line-height:1.6">5 ביקורים, מגמה ברורה של שיפור. הנתונים תומכים בהמשך הפרוטוקול הנוכחי.</div>
+  </div>
+
+  <button class="btn btn-pk" onclick="go(5)" style="max-width:300px">סיום &#8592;</button>
+</div>
+
+<!-- SCREEN 5: END -->
+<div class="scr" id="s5" dir="rtl" style="align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg,#fff,#fdf5fa)">
+  <div style="width:72px;height:72px;border-radius:50%;background:rgba(52,199,89,0.08);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </div>
+  <div style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:8px">המיפוי הושלם</div>
+  <div style="font-size:14px;color:#666;line-height:1.7;max-width:300px;margin-bottom:20px">ד"ר כהן תראה את כל העדכונים שלך לפני הפגישה ב-3 ימים.</div>
+  <div style="font-size:12px;color:#888">נתראה בעוד שבועיים למיפוי הבא.</div>
+  <div style="margin-top:24px">
+    <a href="index-demo.html" style="font-size:13px;color:var(--pk);font-weight:600;text-decoration:none">&#8594; חזרה לבחירת מסלול</a>
+  </div>
+</div>
+
+</div>
+</div>
+<div class="powered-footer">Powered by MARKABLE &copy; All rights reserved</div>
+</div>
+</div>
+</div>
+
+<script>
+var cur=0;
+function go(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  document.getElementById('s'+n).classList.add('active');
+  cur=n;
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft'||e.key===' ')go(Math.min(cur+1,5));
+  if(e.key==='ArrowRight')go(Math.max(cur-1,0));
+});
+</script>
+</body>
+</html>

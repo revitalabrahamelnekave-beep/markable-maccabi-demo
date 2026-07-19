@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARKABLE Maccabi Provider Dashboard v4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.45;background:#f4f5f7;color:#1a1a2e;direction:rtl}
+.page{max-width:1080px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:8px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card-title{font-size:14px;font-weight:700;margin-bottom:8px;color:#1a1a2e}
+.row{display:flex;gap:12px}
+.col-half{flex:1;min-width:0}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-green{background:#e6f9f0;color:#0a7c42}
+.badge-amber{background:#fff4e0;color:#b37400}
+.badge-red{background:#fde8e8;color:#c0392b}
+.badge-gray{background:#eef0f2;color:#555}
+.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;margin-right:4px}
+.tag-high{background:#c0392b;color:#fff}
+.tag-mod{background:#e67e22;color:#fff}
+
+/* Header */
+.header{background:#fff;border-radius:8px;padding:16px 20px 12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);position:relative}
+.header-brand{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.brand-maccabi{font-size:18px;font-weight:700;color:#003B7B}
+.brand-sep{color:#999;font-size:18px;font-weight:300}
+.brand-markable{font-size:18px;font-weight:700;color:#D1409C}
+.header-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:2px}
+.header-sub{font-size:11px;color:#777;margin-bottom:8px}
+.patient-line{font-size:13px;color:#333;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.patient-line span{white-space:nowrap}
+.patient-line .val{font-weight:600}
+.header-actions{position:absolute;left:20px;top:16px;display:flex;gap:8px}
+.btn{padding:6px 14px;border-radius:6px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-primary{background:#D1409C;color:#fff}
+.btn-outline{background:#fff;color:#003B7B;border:1.5px solid #003B7B}
+.btn:hover{opacity:.85}
+
+/* Navy card */
+.navy-card{background:#0a1a3a;color:#e8ecf1;border-radius:8px;padding:14px;margin-bottom:12px}
+.navy-card .card-title{color:#fff;font-size:13px}
+.ehr-text{background:#0d2248;border:1px solid #1a3a6a;border-radius:6px;padding:10px;font-size:12px;line-height:1.6;color:#c8d6e5;white-space:pre-wrap;margin-bottom:8px;direction:rtl;min-height:80px}
+.ehr-text[contenteditable]:focus{outline:2px solid #D1409C;background:#0f2850}
+.copy-btn{background:#D1409C;color:#fff;border:none;border-radius:5px;padding:5px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.copy-btn:hover{background:#b8357f}
+
+/* Regimen */
+.regimen-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0}
+.regimen-item:last-child{border-bottom:none}
+.reg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.reg-name{font-weight:600;font-size:12px}
+.reg-detail{font-size:11px;color:#666}
+.adherence-ring{width:80px;height:80px;margin:0 auto 6px}
+.adherence-label{text-align:center;font-size:12px;color:#555}
+
+/* Unified timeline */
+.timeline-card{padding:0;overflow:hidden}
+.timeline-inner{display:flex;direction:rtl}
+.cluster-panel{width:180px;flex-shrink:0;background:#f8f9fb;border-left:1px solid #e8eaed;padding:12px 10px}
+.chart-area{flex:1;padding:14px 16px 10px 10px;min-width:0;direction:ltr}
+.cluster-item{margin-bottom:14px}
+.cluster-name{font-size:12px;font-weight:700;color:#333;margin-bottom:4px}
+.cluster-metric{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.sev-bar-bg{width:60px;height:6px;background:#e8eaed;border-radius:3px;overflow:hidden}
+.sev-bar-fill{height:100%;border-radius:3px}
+.cluster-change{font-size:11px;font-weight:600}
+.cluster-sparkline{margin-top:2px}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:8px 0 4px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer;user-select:none;opacity:1;transition:opacity .2s}
+.legend-item.hidden{opacity:.35}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:2px solid transparent}
+.legend-dot.dashed{border:2px dashed;background:transparent !important}
+
+/* Cross reference */
+.xref-row{display:flex;gap:10px;align-items:stretch}
+.xref-box{flex:1;border-radius:8px;padding:12px;font-size:12px;line-height:1.5}
+.xref-red{background:#fef2f2;border:1.5px solid #E74C3C}
+.xref-blue{background:#eff6ff;border:1.5px solid #3b82f6}
+.xref-connector{display:flex;align-items:center;padding:0 6px;font-size:12px;font-weight:700;color:#555;white-space:nowrap}
+
+/* Response pattern */
+.response-col{border-radius:8px;padding:12px}
+.response-green{background:#f0fdf4;border:1px solid #86efac}
+.response-amber{background:#fffbeb;border:1px solid #fcd34d}
+.response-item{padding:4px 0;font-size:12px;display:flex;align-items:center;gap:6px}
+.response-item .sym{font-weight:600}
+
+/* Population bars */
+.pop-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pop-label{width:90px;text-align:left;font-size:11px;font-weight:600;flex-shrink:0}
+.pop-track{flex:1;height:18px;background:#f0f1f3;border-radius:9px;position:relative}
+.pop-avg{position:absolute;top:-2px;width:2px;height:22px;background:#1a1a2e;border-radius:1px}
+.pop-dot{position:absolute;top:3px;width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.pop-scale{display:flex;justify-content:space-between;font-size:9px;color:#999;margin-top:1px}
+
+/* Cognitive */
+.cog-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0}
+.cog-row:last-child{border-bottom:none}
+.cog-label{width:100px;font-size:12px;font-weight:600;flex-shrink:0}
+.cog-bar-bg{flex:1;height:14px;background:#f0f1f3;border-radius:7px;position:relative;overflow:visible}
+.cog-bar-fill{height:100%;border-radius:7px}
+.cog-avg-mark{position:absolute;top:-3px;width:2px;height:20px;background:#1a1a2e;border-radius:1px}
+.cog-score{font-size:11px;font-weight:600;width:30px;text-align:center;flex-shrink:0}
+.cog-trend{font-size:11px;width:40px;text-align:center;flex-shrink:0;color:#666}
+.cog2-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.cog2-row:last-child{border-bottom:none}
+.cog2-name{font-size:13px;font-weight:600;color:#333}
+.cog2-tag{font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:7px}
+.cog2-tag::before{content:'';width:8px;height:8px;border-radius:50%;background:currentColor}
+
+/* Flags */
+.flag-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.flag-item:last-child{border-bottom:none}
+.flag-icon{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#fff;font-weight:700}
+.flag-text{font-size:12px;line-height:1.5}
+.flag-label{font-weight:700}
+
+/* Footer */
+.footer{font-size:10px;color:#888;line-height:1.5;padding:8px 14px}
+.footer p{margin-bottom:6px}
+
+@media print{
+  body{background:#fff;font-size:11px}
+  .page{padding:0;max-width:100%}
+  .card{box-shadow:none;break-inside:avoid;border:1px solid #ddd}
+  .header-actions{display:none}
+  .btn{display:none}
+  .navy-card{background:#1a1a2e !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .legend-item{cursor:default}
+}
+.patient-list-overlay{position:fixed;inset:0;background:#f4f5f7;z-index:1000;overflow-y:auto;direction:rtl;font-family:"Segoe UI",Arial,sans-serif}
+.pl-wrap{max-width:700px;margin:0 auto;padding:32px 20px}
+.pl-brand{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.pl-title{font-size:22px;font-weight:700;color:#003B7B;margin-bottom:4px}
+.pl-sub{font-size:13px;color:#888;margin-bottom:16px}
+.pl-search{width:100%;padding:12px 16px;border-radius:10px;border:1.5px solid #ddd;font-size:14px;font-family:inherit;direction:rtl;margin-bottom:16px;outline:none}
+.pl-search:focus{border-color:#D1409C}
+.pl-section-title{font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.pl-card{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;flex-direction:row-reverse}
+.pl-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1);transform:translateY(-1px)}
+.pl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.pl-info{flex:1;text-align:right}
+.pl-name{font-size:14px;font-weight:700;color:#1a1a2e}
+.pl-meta{font-size:11px;color:#888;margin-top:2px}
+.pl-status{font-size:11px;font-weight:600;text-align:left;white-space:nowrap}
+.pl-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600}
+.pl-back{position:fixed;top:16px;right:16px;z-index:1001;background:#fff;border:1.5px solid #ddd;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:#003B7B;box-shadow:0 1px 4px rgba(0,0,0,.08);display:none}
+.pl-back:hover{border-color:#D1409C;color:#D1409C}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="patient-list-overlay" id="loginScreen">
+  <div class="pl-wrap" style="max-width:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px">
+        <span style="font-size:20px;font-weight:700;color:#003B7B">מכבי</span>
+        <span style="color:#ccc;font-size:20px">|</span>
+        <span style="font-size:20px;font-weight:700;color:#D1409C">MARKABLE</span>
+      </div>
+      <div style="font-size:14px;color:#555;margin-bottom:4px">דשבורד מעקב הורמונלי</div>
+      <div style="font-size:11px;color:#999">כניסה למערכת</div>
+    </div>
+    <div style="width:100%;background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px">שם משתמש / מספר רופא</label>
+        <input type="text" value="dr.cohen" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit;direction:ltr">
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px">סיסמה</label>
+        <input type="password" value="********" style="width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit">
+      </div>
+      <button onclick="showTwoFactor()" style="width:100%;padding:12px;border-radius:10px;background:#003B7B;color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">כניסה</button>
+    </div>
+    <div style="font-size:9px;color:#bbb;margin-top:16px;text-align:center">חיבור מאובטח | אימות דו-שלבי נדרש</div>
+  </div>
+</div>
+
+<!-- 2FA SCREEN -->
+<div class="patient-list-overlay" id="twoFactorScreen" style="display:none">
+  <div class="pl-wrap" style="max-width:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:56px;height:56px;border-radius:14px;background:rgba(0,59,123,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#003B7B" stroke-width="1.75"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      </div>
+      <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px">אימות דו-שלבי</div>
+      <div style="font-size:12px;color:#888">קוד אימות נשלח ל-054-***-**89</div>
+    </div>
+    <div style="width:100%;background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;direction:ltr">
+        <input type="text" maxlength="1" value="4" style="width:44px;height:48px;text-align:center;font-size:22px;font-weight:700;border-radius:8px;border:1.5px solid #ddd;font-family:inherit">
+        <input type="text" maxlength="1" value="7" style="width:44px;height:48px;text-align:center;font-size:22px;font-weight:700;border-radius:8px;border:1.5px solid #ddd;font-family:inherit">
+        <input type="text" maxlength="1" value="2" style="width:44px;height:48px;text-align:center;font-size:22px;font-weight:700;border-radius:8px;border:1.5px solid #ddd;font-family:inherit">
+        <input type="text" maxlength="1" value="9" style="width:44px;height:48px;text-align:center;font-size:22px;font-weight:700;border-radius:8px;border:1.5px solid #ddd;font-family:inherit">
+      </div>
+      <button onclick="completeLogin()" style="width:100%;padding:12px;border-radius:10px;background:#003B7B;color:#fff;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">אימות וכניסה</button>
+      <div style="text-align:center;margin-top:8px">
+        <span style="font-size:11px;color:#D1409C;cursor:pointer" onclick="completeLogin()">לא קיבלתי קוד / דלגי (דמו)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PATIENT LIST -->
+<div class="patient-list-overlay" id="patientList" style="display:none">
+  <div class="pl-wrap">
+    <!-- Header bar -->
+    <div class="pl-brand">
+      <span style="font-size:16px;font-weight:700;color:#003B7B">מכבי</span>
+      <span style="color:#ccc">|</span>
+      <span style="font-size:16px;font-weight:700;color:#D1409C">MARKABLE</span>
+      <span style="margin-right:auto;font-size:11px;color:#999">ד"ר רונית כהן | שירות גיל המעבר</span>
+      <a href="https://wa.me/972501234567" target="_blank" style="font-size:10px;color:#25D366;text-decoration:none;font-weight:600">WhatsApp תמיכה</a>
+    </div>
+
+    <!-- Stats bar -->
+    <div style="display:flex;gap:12px;margin-bottom:16px">
+      <div style="flex:1;background:#fff;border-radius:8px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.05);text-align:center">
+        <div style="font-size:20px;font-weight:800;color:#003B7B">15</div>
+        <div style="font-size:9px;color:#888">מטופלות בפיילוט</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:8px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.05);text-align:center">
+        <div style="font-size:20px;font-weight:800;color:#0a7c42">3</div>
+        <div style="font-size:9px;color:#888">עודכנו השבוע</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:8px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.05);text-align:center">
+        <div style="font-size:20px;font-weight:800;color:#b37400">2</div>
+        <div style="font-size:9px;color:#888">ממתינות לנתונים</div>
+      </div>
+    </div>
+
+    <!-- Patient self-updates (closed-loop side-effect reports) -->
+    <div class="pl-section-title">עדכונים ממטופלות (1)</div>
+    <div class="pl-card" style="border:1.5px solid #f1d3a1;background:#fffdf8">
+      <div class="pl-dot" style="background:#b37400"></div>
+      <div class="pl-info"><div class="pl-name">מיכל כהן <span style="font-size:11px;font-weight:500;color:#888">· עדכון עצמי</span></div><div class="pl-meta">רגישות בשדיים · קלה · השבוע · שבוע 4 לטיפול</div></div>
+      <div class="pl-status" id="upStatus">
+        <div style="display:flex;gap:6px;justify-content:flex-end">
+          <span class="pl-badge" style="background:#003B7B;color:#fff;cursor:pointer;padding:5px 11px" onclick="reviewUpdate()">סמן כנצפה</span>
+          <a href="https://wa.me/972501234567" target="_blank" class="pl-badge" style="background:#e6f9f0;color:#0a7c42;padding:5px 11px;text-decoration:none">התקשר</a>
+        </div>
+        <div style="font-size:9px;color:#b37400;margin-top:3px;text-align:left">צפוי בשלב זה, לרוב חולף</div>
+      </div>
+    </div>
+
+    <div class="pl-title" style="margin-top:16px">המטופלות שלי</div>
+
+    <!-- Search + filters + add patient -->
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input class="pl-search" style="margin-bottom:0;flex:1" type="text" placeholder="חיפוש לפי שם או ת.ז..." oninput="filterPatients(this.value)">
+      <button onclick="showAddPatient()" style="background:#D1409C;color:#fff;border:none;border-radius:10px;padding:0 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">+ הוספת מטופלת</button>
+    </div>
+
+    <!-- Filter tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <span class="pl-badge" style="background:#003B7B;color:#fff;cursor:pointer;padding:4px 10px" onclick="filterByStatus('all')">הכל (15)</span>
+      <span class="pl-badge" style="background:#e6f9f0;color:#0a7c42;cursor:pointer;padding:4px 10px" onclick="filterByStatus('updated')">עודכנו</span>
+      <span class="pl-badge" style="background:#fff4e0;color:#b37400;cursor:pointer;padding:4px 10px" onclick="filterByStatus('stale')">ללא עדכון 7+ ימים</span>
+      <span class="pl-badge" style="background:#eef0f2;color:#555;cursor:pointer;padding:4px 10px" onclick="filterByStatus('pending')">ממתינות</span>
+    </div>
+
+    <!-- Add patient form (hidden by default) -->
+    <div id="addPatientForm" style="display:none;background:#fff;border-radius:10px;padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1.5px solid #D1409C">
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:10px">הוספת מטופלת חדשה</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input type="text" placeholder="ת.ז." style="flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit;direction:ltr">
+        <input type="text" placeholder="שם פרטי" style="flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input type="tel" placeholder="טלפון נייד" style="flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid #ddd;font-size:13px;font-family:inherit;direction:ltr">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="addPatientSMS()" style="background:#D1409C;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">שליחת SMS להצטרפות</button>
+        <button onclick="hideAddPatient()" style="background:#f0f0f0;color:#666;border:none;border-radius:8px;padding:8px 16px;font-size:12px;cursor:pointer;font-family:inherit">ביטול</button>
+      </div>
+      <div style="font-size:10px;color:#999;margin-top:6px">המטופלת תקבל SMS עם קישור להורדת האפליקציה ולהשלמת הבדיקה הראשונה.</div>
+    </div>
+
+    <!-- SMS sent confirmation (hidden) -->
+    <div id="smsSentMsg" style="display:none;background:#e6f9f0;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#0a7c42;font-weight:600">
+      SMS נשלח בהצלחה. המטופלת תופיע ברשימה לאחר השלמת הבדיקה הראשונה.
+    </div>
+
+    <!-- Today's appointments -->
+    <div class="pl-section-title">תורים היום (3)</div>
+    <div class="pl-card" onclick="openPatient()" data-name="מיכל כהן" data-id="4521" data-status="updated">
+      <div class="pl-dot" style="background:#0a7c42"></div>
+      <div class="pl-info"><div class="pl-name">מיכל כהן</div><div class="pl-meta">ת.ז. ****4521 | גיל 47 | מעקב #5 | שבוע 15 HRT</div></div>
+      <div class="pl-status">
+        <div class="pl-badge" style="background:#e6f9f0;color:#0a7c42">VMS משתפר</div>
+        <div style="font-size:10px;color:#aaa;margin-top:2px">עודכן היום</div>
+      </div>
+    </div>
+    <div class="pl-card" onclick="openPatient()" data-name="אורית שגב" data-id="7310" data-status="updated">
+      <div class="pl-dot" style="background:#b37400"></div>
+      <div class="pl-info"><div class="pl-name">אורית שגב</div><div class="pl-meta">ת.ז. ****7310 | גיל 46 | מעקב #3 | שבוע 8 HRT</div></div>
+      <div class="pl-status">
+        <div class="pl-badge" style="background:#fff4e0;color:#b37400">שינה ללא שינוי</div>
+        <div style="font-size:10px;color:#aaa;margin-top:2px">עודכן אתמול</div>
+      </div>
+    </div>
+    <div class="pl-card" onclick="openPatient()" data-name="דנה לוי" data-id="9012" data-status="updated">
+      <div class="pl-dot" style="background:#2563eb"></div>
+      <div class="pl-info"><div class="pl-name">דנה לוי</div><div class="pl-meta">ת.ז. ****9012 | גיל 51 | ביקור ראשון</div></div>
+      <div class="pl-status">
+        <div class="pl-badge" style="background:#eff6ff;color:#2563eb">בסיס נקבע</div>
+        <div style="font-size:10px;color:#aaa;margin-top:2px">מוכנה לביקור</div>
+      </div>
+    </div>
+
+    <!-- Rest of patients -->
+    <div class="pl-section-title" style="margin-top:16px">מטופלות נוספות</div>
+    <div class="pl-card" onclick="openPatient()" data-name="שירה אברהם" data-id="3344" data-status="updated">
+      <div class="pl-dot" style="background:#0a7c42"></div>
+      <div class="pl-info"><div class="pl-name">שירה אברהם</div><div class="pl-meta">ת.ז. ****3344 | גיל 49 | מעקב #7 | שבוע 24 HRT</div></div>
+      <div class="pl-status"><div class="pl-badge" style="background:#e6f9f0;color:#0a7c42">יציב</div></div>
+    </div>
+    <div class="pl-card" onclick="openPatient()" data-name="יעל פרידמן" data-id="7788" data-status="updated">
+      <div class="pl-dot" style="background:#b37400"></div>
+      <div class="pl-info"><div class="pl-name">יעל פרידמן</div><div class="pl-meta">ת.ז. ****7788 | גיל 44 | מעקב #2 | שבוע 4 HRT</div></div>
+      <div class="pl-status"><div class="pl-badge" style="background:#fff4e0;color:#b37400">תקופת התאמה</div></div>
+    </div>
+    <div class="pl-card" onclick="openPatient()" data-name="נועה שמש" data-id="6655" data-status="stale">
+      <div class="pl-dot" style="background:#ccc"></div>
+      <div class="pl-info"><div class="pl-name">נועה שמש</div><div class="pl-meta">ת.ז. ****6655 | גיל 48 | מעקב #4 | שבוע 12 HRT</div></div>
+      <div class="pl-status">
+        <div class="pl-badge" style="background:#eef0f2;color:#888">לא עודכן 12 יום</div>
+        <div style="font-size:10px;color:#D1409C;margin-top:2px;cursor:pointer" onclick="event.stopPropagation();sendReminder()">שלחי תזכורת SMS</div>
+      </div>
+    </div>
+    <div class="pl-card" onclick="openPatient()" data-name="אורלי בן דוד" data-id="2211" data-status="pending">
+      <div class="pl-dot" style="background:#ddd"></div>
+      <div class="pl-info"><div class="pl-name">אורלי בן דוד</div><div class="pl-meta">ת.ז. ****2211 | גיל 46 | הוזמנה 02.06</div></div>
+      <div class="pl-status">
+        <div class="pl-badge" style="background:#fff4e0;color:#b37400">ממתינה לנתונים</div>
+        <div style="font-size:10px;color:#D1409C;margin-top:2px;cursor:pointer" onclick="event.stopPropagation();sendReminder()">שלחי תזכורת SMS</div>
+      </div>
+    </div>
+
+    <!-- Pilot feedback -->
+    <div style="background:#fff;border-radius:10px;padding:12px 14px;margin-top:16px;box-shadow:0 1px 2px rgba(0,0,0,.04);border:1px dashed #D1409C">
+      <div style="font-size:11px;font-weight:700;color:#D1409C;margin-bottom:6px">משוב לצוות הפיילוט</div>
+      <textarea id="feedbackText" placeholder="משהו לא עובד? רעיון לשיפור? כתבי כאן..." style="width:100%;border:1px solid #eee;border-radius:6px;padding:8px;font-size:12px;font-family:inherit;resize:none;height:50px;direction:rtl"></textarea>
+      <div style="display:flex;gap:6px;margin-top:6px;align-items:center">
+        <button onclick="sendFeedback()" style="background:#D1409C;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">שליחת טקסט</button>
+        <button id="recBtn" onclick="toggleRecording()" style="background:#fff;color:#D1409C;border:1.5px solid #D1409C;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px">
+          <span id="recDot" style="width:8px;height:8px;border-radius:50%;background:#D1409C;display:inline-block"></span>
+          הקלטת משוב קולי
+        </button>
+        <span id="recStatus" style="font-size:10px;color:#999"></span>
+      </div>
+      <div id="recDone" style="display:none;margin-top:6px;background:#e6f9f0;border-radius:6px;padding:8px 10px;font-size:11px;color:#0a7c42">
+        <div style="font-weight:600;margin-bottom:3px">ההקלטה נשמרה ותומללה</div>
+        <div id="recTranscript" style="font-size:10px;color:#555;font-style:italic"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:16px;font-size:11px;color:#bbb">
+      Powered by MARKABLE&trade; | כלי מעקב ורווחה. אינו מהווה כלי אבחוני
+      <br>פיילוט מכבי-MARKABLE | גרסה 1.0
+    </div>
+  </div>
+</div>
+<button class="pl-back" id="backBtn" onclick="backToList()">&#8594; חזרה לרשימה</button>
+
+<div class="page">
+
+<!-- 1. HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <span class="brand-maccabi">מכבי בריאות זה הכול</span>
+    <span class="brand-sep">|</span>
+    <span class="brand-markable">MARKABLE</span>
+  </div>
+  <div class="header-title">דוח מעקב הורמונלי - סקירת מטפל</div>
+  <div class="header-sub">דוח wellness מבוסס דיווח עצמי, ניתוח תמונת פנים, דגימת תפקודים קוגניטיביים ודגימת תפקודי חושים. אינו מהווה כלי אבחוני או המלצה טיפולית. לשימוש הרופא/ה המטפל/ת בלבד.</div>
+  <div class="patient-line">
+    <span><span class="val">מיכל כהן</span></span>
+    <span>ת.ז. ****4521</span>
+    <span>גיל <span class="val">47</span></span>
+    <span>BMI <span class="val">24.3</span></span>
+    <span>LMP <span class="val">12.12.2025</span></span>
+    <span><span class="badge badge-amber">פרימנופאוזה</span></span>
+    <span id="visitInfo">מעקב <span class="val">#5</span> | 15.04.2026</span>
+    <span id="hrtInfo">שבוע 15 מתחילת HRT</span>
+  </div>
+  <div class="trend-only" style="display:flex;align-items:center;gap:10px;margin-top:9px;max-width:400px">
+    <span style="font-size:11px;font-weight:700;color:#555;white-space:nowrap">היענות לטיפול (דיווח עצמי)</span>
+    <div style="flex:1;background:#e8eaed;height:10px;border-radius:5px;overflow:hidden"><div style="width:100%;height:100%;background:#0a7c42;border-radius:5px"></div></div>
+    <span style="font-size:14px;font-weight:800;color:#0a7c42">100%</span>
+  </div>
+  <div style="display:flex;gap:6px;margin-top:10px">
+    <button class="btn" id="modeTrend" onclick="setMode('trend')" style="background:#D1409C;color:#fff;padding:5px 14px;font-size:11px">מגמה (ביקור 5)</button>
+    <button class="btn" id="modeBaseline" onclick="setMode('baseline')" style="background:#fff;color:#003B7B;border:1.5px solid #003B7B;padding:5px 14px;font-size:11px">בסיס (ביקור ראשון)</button>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-primary" onclick="window.print()">הדפסה</button>
+    <button class="btn btn-outline" onclick="copyEHR()">העתק לתיק</button>
+  </div>
+</div>
+
+<!-- DELTA STRIP: what changed since last visit -->
+<div class="card" id="deltaStrip" style="border-right:4px solid #D1409C;padding:10px 14px;margin-bottom:12px">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-size:12px;font-weight:700;color:#1a1a2e">מאז הביקור הקודם:</span>
+    <span id="deltaContent" style="font-size:12px;color:#333">VMS יציב-נמוך · שינה עדיין 4/10 ללא שינוי · מצב רוח משתפר · אין דגלים בטיחותיים חדשים</span>
+  </div>
+</div>
+
+<!-- BASELINE BANNER (baseline mode only) -->
+<div class="card baseline-only" id="baselineBanner" style="display:none;background:#eff6ff;border:1px solid #bcd7f5;margin-bottom:12px">
+  <div style="font-size:13px;font-weight:700;color:#003B7B;margin-bottom:4px">בסיס נקבע · ביקור ראשון · טרם החל טיפול</div>
+  <div style="font-size:12px;color:#555;line-height:1.5">זהו קו הבסיס של מיכל לפני תחילת הטיפול. אין עדיין מגמה. מהביקור הבא ואילך הדוח יראה את התגובה לטיפול לאורך זמן, והנתונים כאן ממקדים את הפגישה הראשונה.</div>
+</div>
+
+<!-- 2. COPY TO CHART -->
+<div class="navy-card">
+  <div class="card-title">סיכום למערכת רפואית</div>
+  <div class="ehr-text" id="ehrText" contenteditable="true">[מקור: Markable wellness, דיווח עצמי בלבד, אינו מכשיר רפואי | מעקב 5 | 15.04.2026]
+טיפול הורמונלי: Evorel 50mcg (מ-W0) + אוטרוגסטן 100mg HS (מ-W6) + Mirena. היענות 100%.
+תרופות נוספות: אלטרוקסין 75mcg, ויטמין D 1000IU, אומגה 3.
+VMS: ירידה ~75% (גלי חום 8→2, הזעות 7→2), בטווח התגובה הצפוי ל-HRT. שינה: 4/10 ללא שינוי. אנרגיה/מוטיבציה: 2/10 ללא שינוי.
+מצב רוח: 3→5 שיפור קל. כאבי מפרקים: 5→4. ערפול מוחי: נמשך, עקבי עם הדגימה הקוגניטיבית.
+ת"ל: רגישות בשדיים W2-W6 (חלפה), כאבי ראש W10-W12 (חלפו). נוכחי: אין.
+דגשים: שינה+אנרגיה ללא שיפור 3+ מעקבים, ערפול מוחי עקבי.</div>
+  <div style="text-align:left;margin-top:6px">
+    <button class="copy-btn" onclick="copyEHR()">העתק טקסט</button>
+  </div>
+</div>
+
+<!-- 3. REGIMEN MAP (hormonal right, other left) -->
+<div class="card trend-only">
+  <div class="card-title">טיפול תרופתי מדווח</div>
+  <div style="display:flex;gap:18px">
+    <div style="flex:1">
+      <div style="font-size:11px;color:#888;margin-bottom:8px;font-weight:600">טיפול הורמונלי</div>
+      <div class="regimen-item"><div class="reg-dot" style="background:#0a7c42"></div><div><div class="reg-name">Evorel 50mcg</div><div class="reg-detail">אסטרוגן טרנסדרמלי (סיסטמי) | מ-01.01.2026</div></div><span class="badge badge-green" style="margin-right:auto">פעיל</span></div>
+      <div class="regimen-item"><div class="reg-dot" style="background:#0a7c42"></div><div><div class="reg-name">אוטרוגסטן 100 מ"ג HS</div><div class="reg-detail">פרוגסטרון מיקרוניזד (סיסטמי) | מ-12.02.2026</div></div><span class="badge badge-green" style="margin-right:auto">פעיל (שבוע 6)</span></div>
+      <div class="regimen-item"><div class="reg-dot" style="background:#b37400"></div><div><div class="reg-name">Mirena</div><div class="reg-detail">לבונורגסטרל מקומי (IUD) | הגנה רחמית</div></div><span class="badge badge-amber" style="margin-right:auto">מקומי בלבד</span></div>
+      <div class="regimen-item"><div class="reg-dot" style="background:#ccc"></div><div><div class="reg-name">טסטוסטרון</div><div class="reg-detail">לא דווח</div></div><span class="badge badge-gray" style="margin-right:auto">---</span></div>
+    </div>
+    <div style="flex:1;border-inline-start:1px solid #f0f0f0;padding-inline-start:18px">
+      <div style="font-size:11px;color:#888;margin-bottom:8px;font-weight:600">תרופות ותוספים אחרים (דיווח עצמי)</div>
+      <div class="regimen-item"><div class="reg-dot" style="background:#555"></div><div><div class="reg-name">אלטרוקסין 75 מק"ג</div><div class="reg-detail">לבותירוקסין | בוקר, על קיבה ריקה</div></div></div>
+      <div class="regimen-item"><div class="reg-dot" style="background:#555"></div><div><div class="reg-name">ויטמין D 1000 IU</div><div class="reg-detail">כולקלציפרול | יומי</div></div></div>
+      <div class="regimen-item"><div class="reg-dot" style="background:#555"></div><div><div class="reg-name">אומגה 3</div><div class="reg-detail">תוסף תזונה | יומי</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. UNIFIED TIMELINE -->
+<div class="card timeline-card trend-only">
+  <div style="padding:12px 14px 0">
+    <div class="card-title">ציר זמן מאוחד: תסמינים, תופעות לוואי ואירועי טיפול</div>
+    <div style="font-size:11px;color:#0a7c42;font-weight:600;margin-top:3px">&#8595; ככל שהקו יורד, התסמין משתפר. ירידה = הטיפול עוזר.</div>
+  </div>
+  <div class="timeline-inner">
+    <!-- Cluster Panel (RIGHT in RTL = visually on right) -->
+    <div class="cluster-panel">
+      <div style="font-size:11px;font-weight:700;color:#777;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">אשכולות</div>
+
+      <!-- VMS -->
+      <div class="cluster-item">
+        <div class="cluster-name" style="color:#E74C3C">VMS</div>
+        <div class="cluster-metric">
+          <div class="sev-bar-bg"><div class="sev-bar-fill" style="width:20%;background:#E74C3C"></div></div>
+          <span class="cluster-change" style="color:#0a7c42">&#8595; 75%</span>
+        </div>
+        <div class="cluster-sparkline">
+          <svg width="70" height="20" viewBox="0 0 70 20">
+            <polyline points="0,2 10,5 20,11 30,14 40,16 50,17 60,17 70,17" fill="none" stroke="#E74C3C" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sleep -->
+      <div class="cluster-item">
+        <div class="cluster-name" style="color:#2C3E50">שינה</div>
+        <div class="cluster-metric">
+          <div class="sev-bar-bg"><div class="sev-bar-fill" style="width:40%;background:#2C3E50"></div></div>
+          <span class="cluster-change" style="color:#888">&#8594; 0%</span>
+        </div>
+        <div class="cluster-sparkline">
+          <svg width="70" height="20" viewBox="0 0 70 20">
+            <polyline points="0,10 10,10 20,10 30,10 40,10 50,10 60,10 70,10" fill="none" stroke="#2C3E50" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Physical -->
+      <div class="cluster-item">
+        <div class="cluster-name" style="color:#c48a2c">פיזי</div>
+        <div class="cluster-metric">
+          <div class="sev-bar-bg"><div class="sev-bar-fill" style="width:27%;background:#c48a2c"></div></div>
+          <span class="cluster-change" style="color:#888">&#8594; קל</span>
+        </div>
+        <div class="cluster-sparkline">
+          <svg width="70" height="20" viewBox="0 0 70 20">
+            <polyline points="0,12 10,12 20,12 30,13 40,13 50,13 60,13 70,13" fill="none" stroke="#c48a2c" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Cognitive -->
+      <div class="cluster-item">
+        <div class="cluster-name" style="color:#6b7280">קוגניטיבי</div>
+        <div class="cluster-metric">
+          <span style="font-size:11px;color:#6b7280;font-weight:600">ערפול נמשך</span>
+        </div>
+        <div class="cluster-sparkline">
+          <svg width="70" height="20" viewBox="0 0 70 20">
+            <line x1="0" y1="10" x2="70" y2="10" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,3"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Mood -->
+      <div class="cluster-item">
+        <div class="cluster-name" style="color:#0d9488">מצב רוח</div>
+        <div class="cluster-metric">
+          <div class="sev-bar-bg"><div class="sev-bar-fill" style="width:50%;background:#0d9488"></div></div>
+          <span class="cluster-change" style="color:#0a7c42">&#8599; +67%</span>
+        </div>
+        <div class="cluster-sparkline">
+          <svg width="70" height="20" viewBox="0 0 70 20">
+            <polyline points="0,15 10,15 20,15 30,12 40,12 50,9 60,9 70,9" fill="none" stroke="#0d9488" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Area -->
+    <div class="chart-area">
+      <svg id="mainChart" viewBox="0 0 700 320" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block">
+        <defs>
+          <clipPath id="chartClip"><rect x="40" y="10" width="640" height="260"/></clipPath>
+        </defs>
+
+        <!-- Grid -->
+        <g stroke="#eee" stroke-width="0.5">
+          <line x1="40" y1="10" x2="40" y2="270"/>
+          <line x1="40" y1="270" x2="680" y2="270"/>
+          <!-- Y gridlines -->
+          <line x1="40" y1="244" x2="680" y2="244" stroke-dasharray="2,4"/>
+          <line x1="40" y1="218" x2="680" y2="218" stroke-dasharray="2,4"/>
+          <line x1="40" y1="192" x2="680" y2="192" stroke-dasharray="2,4"/>
+          <line x1="40" y1="166" x2="680" y2="166" stroke-dasharray="2,4"/>
+          <line x1="40" y1="140" x2="680" y2="140" stroke-dasharray="2,4"/>
+          <line x1="40" y1="114" x2="680" y2="114" stroke-dasharray="2,4"/>
+          <line x1="40" y1="88" x2="680" y2="88" stroke-dasharray="2,4"/>
+          <line x1="40" y1="62" x2="680" y2="62" stroke-dasharray="2,4"/>
+          <line x1="40" y1="36" x2="680" y2="36" stroke-dasharray="2,4"/>
+        </g>
+
+        <!-- Y axis labels -->
+        <g font-size="10" fill="#999" text-anchor="end">
+          <text x="36" y="274">0</text>
+          <text x="36" y="248">1</text>
+          <text x="36" y="222">2</text>
+          <text x="36" y="196">3</text>
+          <text x="36" y="170">4</text>
+          <text x="36" y="144">5</text>
+          <text x="36" y="118">6</text>
+          <text x="36" y="92">7</text>
+          <text x="36" y="66">8</text>
+          <text x="36" y="40">9</text>
+          <text x="36" y="14">10</text>
+        </g>
+
+        <!-- X axis labels: weeks 0,2,4,6,8,10,12,15 at positions -->
+        <!-- X mapping: W0=40, W15=680, step = 640/15 = 42.67 per week -->
+        <g font-size="10" fill="#999" text-anchor="middle">
+          <text x="40" y="288">0</text>
+          <text x="125.3" y="288">2</text>
+          <text x="210.7" y="288">4</text>
+          <text x="296" y="288">6</text>
+          <text x="381.3" y="288">8</text>
+          <text x="466.7" y="288">10</text>
+          <text x="552" y="288">12</text>
+          <text x="680" y="288">15</text>
+        </g>
+        <text x="360" y="305" font-size="10" fill="#999" text-anchor="middle">שבועות מתחילת טיפול</text>
+
+        <!-- HRT start line - Evorel -->
+        <rect x="37" y="8" width="3" height="264" fill="#D1409C" rx="1.5" opacity=".7"/>
+        <rect x="30" y="4" width="115" height="16" fill="#D1409C" rx="3" opacity=".9"/>
+        <text x="87" y="15" font-size="9" fill="#fff" font-weight="700" text-anchor="middle">Evorel 50mcg - W0</text>
+
+        <!-- Progesterone start line at W6 (x=296) -->
+        <rect x="293" y="8" width="3" height="264" fill="#003B7B" rx="1.5" opacity=".6"/>
+        <rect x="265" y="4" width="125" height="16" fill="#003B7B" rx="3" opacity=".85"/>
+        <text x="327" y="15" font-size="9" fill="#fff" font-weight="700" text-anchor="middle">+ אוטרוגסטן 100mg - W6</text>
+
+        <!-- Data lines group (clipped) -->
+        <g clip-path="url(#chartClip)">
+          <!--
+            X positions for weeks: W0=40, W2=125.3, W4=210.7, W6=296, W8=381.3, W10=466.7, W12=552, W15=680
+            Y mapping: score S -> y = 270 - S*26
+          -->
+
+          <!-- גלי חום: 8,7,5,4,3,2,2,2 - #E74C3C solid -->
+          <polyline class="symptom-line" data-id="hotflash"
+            points="40,62 125.3,88 210.7,140 296,166 381.3,192 466.7,218 552,218 680,218"
+            fill="none" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g class="symptom-dots" data-id="hotflash">
+            <circle cx="40" cy="62" r="3.5" fill="#E74C3C"/>
+            <circle cx="125.3" cy="88" r="3.5" fill="#E74C3C"/>
+            <circle cx="210.7" cy="140" r="3.5" fill="#E74C3C"/>
+            <circle cx="296" cy="166" r="3.5" fill="#E74C3C"/>
+            <circle cx="381.3" cy="192" r="3.5" fill="#E74C3C"/>
+            <circle cx="466.7" cy="218" r="3.5" fill="#E74C3C"/>
+            <circle cx="552" cy="218" r="3.5" fill="#E74C3C"/>
+            <circle cx="680" cy="218" r="3.5" fill="#E74C3C"/>
+          </g>
+
+          <!-- הזעות לילה: 7,6,4,3,2,2,2,2 - #E67E22 solid -->
+          <polyline class="symptom-line" data-id="nightsweat"
+            points="40,88 125.3,114 210.7,166 296,192 381.3,218 466.7,218 552,218 680,218"
+            fill="none" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g class="symptom-dots" data-id="nightsweat">
+            <circle cx="40" cy="88" r="3.5" fill="#E67E22"/>
+            <circle cx="125.3" cy="114" r="3.5" fill="#E67E22"/>
+            <circle cx="210.7" cy="166" r="3.5" fill="#E67E22"/>
+            <circle cx="296" cy="192" r="3.5" fill="#E67E22"/>
+            <circle cx="381.3" cy="218" r="3.5" fill="#E67E22"/>
+            <circle cx="466.7" cy="218" r="3.5" fill="#E67E22"/>
+            <circle cx="552" cy="218" r="3.5" fill="#E67E22"/>
+            <circle cx="680" cy="218" r="3.5" fill="#E67E22"/>
+          </g>
+
+          <!-- שינה: 4,4,4,4,4,4,4,4 - #2C3E50 solid -->
+          <polyline class="symptom-line" data-id="sleep"
+            points="40,166 125.3,166 210.7,166 296,166 381.3,166 466.7,166 552,166 680,166"
+            fill="none" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g class="symptom-dots" data-id="sleep">
+            <circle cx="40" cy="166" r="3.5" fill="#2C3E50"/>
+            <circle cx="680" cy="166" r="3.5" fill="#2C3E50"/>
+          </g>
+
+          <!-- אנרגיה: 2,2,2,2,2,2,2,2 - #c48a2c solid -->
+          <polyline class="symptom-line" data-id="energy"
+            points="40,218 125.3,218 210.7,218 296,218 381.3,218 466.7,218 552,218 680,218"
+            fill="none" stroke="#c48a2c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g class="symptom-dots" data-id="energy">
+            <circle cx="40" cy="218" r="3.5" fill="#c48a2c"/>
+            <circle cx="680" cy="218" r="3.5" fill="#c48a2c"/>
+          </g>
+
+          <!-- מוטיבציה: 2,2,2,2,2,2,2,2 - #7c3aed dashed thin -->
+          <polyline class="symptom-line" data-id="motivation"
+            points="40,218 125.3,218 210.7,218 296,218 381.3,218 466.7,218 552,218 680,218"
+            fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4,3" stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- מצב רוח: 3,3,3,4,4,5,5,5 - #0d9488 solid -->
+          <polyline class="symptom-line" data-id="mood"
+            points="40,192 125.3,192 210.7,192 296,166 381.3,166 466.7,140 552,140 680,140"
+            fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g class="symptom-dots" data-id="mood">
+            <circle cx="40" cy="192" r="3.5" fill="#0d9488"/>
+            <circle cx="296" cy="166" r="3.5" fill="#0d9488"/>
+            <circle cx="466.7" cy="140" r="3.5" fill="#0d9488"/>
+            <circle cx="680" cy="140" r="3.5" fill="#0d9488"/>
+          </g>
+
+          <!-- כאבי מפרקים: 5,5,5,4,4,4,4,4 - #795548 solid -->
+          <polyline class="symptom-line" data-id="joints"
+            points="40,140 125.3,140 210.7,140 296,166 381.3,166 466.7,166 552,166 680,166"
+            fill="none" stroke="#795548" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g class="symptom-dots" data-id="joints">
+            <circle cx="40" cy="140" r="3.5" fill="#795548"/>
+            <circle cx="296" cy="166" r="3.5" fill="#795548"/>
+            <circle cx="680" cy="166" r="3.5" fill="#795548"/>
+          </g>
+
+          <!-- SIDE EFFECTS as semi-transparent BARS (visually distinct from symptom lines) -->
+          <!-- רגישות בשדיים: W2=3, W4=3, W6=1, then 0 -->
+          <g class="symptom-line" data-id="breast">
+            <rect x="113" y="192" width="24" height="78" rx="3" fill="#7A9CAE" opacity=".35"/><!-- W2, score 3 -->
+            <rect x="199" y="192" width="24" height="78" rx="3" fill="#7A9CAE" opacity=".35"/><!-- W4, score 3 -->
+            <rect x="284" y="244" width="24" height="26" rx="3" fill="#7A9CAE" opacity=".25"/><!-- W6, score 1 -->
+            <text x="137" y="188" font-size="8" fill="#7A9CAE" text-anchor="middle" font-weight="600">3</text>
+            <text x="223" y="188" font-size="8" fill="#7A9CAE" text-anchor="middle" font-weight="600">3</text>
+            <text x="308" y="240" font-size="8" fill="#7A9CAE" text-anchor="middle" font-weight="600">1</text>
+          </g>
+
+          <!-- כאבי ראש: W10=2, W12=2, then 0 -->
+          <g class="symptom-line" data-id="headache">
+            <rect x="455" y="218" width="24" height="52" rx="3" fill="#9C7AAE" opacity=".35"/><!-- W10, score 2 -->
+            <rect x="540" y="218" width="24" height="52" rx="3" fill="#9C7AAE" opacity=".35"/><!-- W12, score 2 -->
+            <text x="479" y="214" font-size="8" fill="#9C7AAE" text-anchor="middle" font-weight="600">2</text>
+            <text x="564" y="214" font-size="8" fill="#9C7AAE" text-anchor="middle" font-weight="600">2</text>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Legend with toggles -->
+      <div class="legend" id="chartLegend">
+        <div class="legend-item" data-id="hotflash" onclick="toggleLine(this)">
+          <div class="legend-dot" style="background:#E74C3C"></div>
+          <span>גלי חום</span>
+        </div>
+        <div class="legend-item hidden" data-id="nightsweat" onclick="toggleLine(this)">
+          <div class="legend-dot" style="background:#E67E22"></div>
+          <span>הזעות לילה</span>
+        </div>
+        <div class="legend-item" data-id="sleep" onclick="toggleLine(this)">
+          <div class="legend-dot" style="background:#2C3E50"></div>
+          <span>שינה</span>
+        </div>
+        <div class="legend-item" data-id="energy" onclick="toggleLine(this)">
+          <div class="legend-dot" style="background:#c48a2c"></div>
+          <span>אנרגיה</span>
+        </div>
+        <div class="legend-item hidden" data-id="motivation" onclick="toggleLine(this)">
+          <div class="legend-dot" style="background:#7c3aed;border:2px dashed #7c3aed;background:transparent"></div>
+          <span>מוטיבציה</span>
+        </div>
+        <div class="legend-item" data-id="mood" onclick="toggleLine(this)">
+          <div class="legend-dot" style="background:#0d9488"></div>
+          <span>מצב רוח</span>
+        </div>
+        <div class="legend-item hidden" data-id="joints" onclick="toggleLine(this)">
+          <div class="legend-dot" style="background:#795548"></div>
+          <span>כאבי מפרקים</span>
+        </div>
+        <div class="legend-item" data-id="breast" onclick="toggleLine(this)">
+          <div class="legend-dot dashed" style="border-color:#7A9CAE"></div>
+          <span>רגישות בשדיים</span>
+        </div>
+        <div class="legend-item hidden" data-id="headache" onclick="toggleLine(this)">
+          <div class="legend-dot dashed" style="border-color:#9C7AAE"></div>
+          <span>כאבי ראש</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE INTERPRETATION -->
+<div class="card trend-only" style="border-right:4px solid #0a7c42">
+  <div class="card-title" style="color:#0a7c42">מה רואים בגרף</div>
+  <div style="font-size:12.5px;color:#333;line-height:1.6">גלי החום וההזעות ירדו בכ-75% מתחילת הטיפול. <b>ירידה זו היא סימן חיובי, ומעידה שהטיפול ההורמונלי עובד</b>, בטווח התגובה הצפוי בספרות (ירידה של ~75% ב-VMS על טיפול הורמונלי, <span dir="ltr">Cochrane 2004</span>). לעומת זאת השינה, האנרגיה והערפול המוחי לא השתנו לאורך 3 מעקבים למרות היענות מלאה, ושווה לשקול התאמה.</div>
+</div>
+
+<!-- 5. RESPONSE PATTERN (moved up - right after timeline) -->
+<div class="row trend-only">
+  <div class="col-half">
+    <div class="card response-green">
+      <div class="card-title" style="color:#0a7c42">ממצאים חיוביים</div>
+      <div class="response-item">
+        <span class="sym" style="color:#E74C3C">גלי חום</span>
+        <span>8 &#8594; 2</span>
+        <span class="badge badge-green">&#8595;75%</span>
+      </div>
+      <div class="response-item">
+        <span class="sym" style="color:#E67E22">הזעות לילה</span>
+        <span>7 &#8594; 2</span>
+        <span class="badge badge-green">&#8595;71%</span>
+      </div>
+      <div class="response-item">
+        <span class="sym" style="color:#795548">כאבי מפרקים</span>
+        <span>5 &#8594; 4</span>
+        <span class="badge badge-green">&#8595;20%</span>
+      </div>
+      <div class="response-item" style="border:none;color:#0a7c42;font-size:11px;padding-top:6px">
+        &#10003; ת"ל חלפו (רגישות בשדיים, כאבי ראש) | היענות 100%
+      </div>
+    </div>
+  </div>
+  <div class="col-half">
+    <div class="card response-amber">
+      <div class="card-title" style="color:#b37400">לתשומת לב (ללא שינוי 3+ מעקבים)</div>
+      <div class="response-item">
+        <span class="sym" style="color:#2C3E50">שינה</span>
+        <span>4/10 &#8594; 4/10</span>
+        <span class="tag tag-mod">בינוני</span>
+      </div>
+      <div class="response-item">
+        <span class="sym" style="color:#c48a2c">אנרגיה</span>
+        <span>2/10 &#8594; 2/10</span>
+        <span class="tag tag-high">חמור</span>
+      </div>
+      <div class="response-item">
+        <span class="sym" style="color:#7c3aed">מוטיבציה</span>
+        <span>2/10 &#8594; 2/10</span>
+        <span class="tag tag-high">חמור</span>
+      </div>
+      <div class="response-item">
+        <span class="sym" style="color:#6b7280">ערפול מוחי</span>
+        <span>נמשך מאז מעקב 1</span>
+        <span class="tag tag-high">חמור</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. CROSS-REFERENCE -->
+<div class="card trend-only">
+  <div class="card-title">הצלבת נתונים: דיווח עצמי מול תצפית דיגיטלית</div>
+  <div class="xref-row">
+    <div class="xref-box xref-red">
+      <div style="font-weight:700;margin-bottom:4px;color:#c0392b">דיווח עצמי</div>
+      ערפול מוחי נמשך מאז מעקב 1. המטופלת מדווחת על קושי מתמשך בריכוז ובזיכרון לאורך כל תקופת המעקב.
+    </div>
+    <div class="xref-connector">עקבי עם</div>
+    <div class="xref-box xref-blue">
+      <div style="font-weight:700;margin-bottom:4px;color:#2563eb">תצפית דיגיטלית</div>
+      הדגימה הקוגניטיבית מראה שהריכוז והזיכרון לא השתפרו לאורך המעקבים, עקבי עם הדיווח העצמי.
+    </div>
+  </div>
+</div>
+
+
+<!-- population comparison removed: no peer-reviewed external benchmark for per-symptom population norms -->
+
+
+<!-- 8. COGNITIVE (trend vs previous mapping, no external norm) -->
+<div class="card">
+  <div class="card-title">קוגניציה (THINK) - שינוי מאז הביקור הקודם</div>
+  <div style="font-size:10px;color:#999;margin-bottom:10px">דגימה מבוססת-משחק, לא הערכה נוירופסיכולוגית. מוצג כשינוי של המטופלת מול הפעם הקודמת, ללא נורמה חיצונית.</div>
+  <div class="cog2-row"><span class="cog2-name">מהירות עיבוד</span><span class="cog2-tag" style="color:#b37400">לא השתנה</span></div>
+  <div class="cog2-row"><span class="cog2-name">שליפת מילים</span><span class="cog2-tag" style="color:#2E6BE6">יציב</span></div>
+  <div class="cog2-row"><span class="cog2-name">זיכרון עבודה</span><span class="cog2-tag" style="color:#2E6BE6">יציב</span></div>
+  <div class="cog2-row"><span class="cog2-name">שחזור מושהה</span><span class="cog2-tag" style="color:#b37400">לא השתנה</span></div>
+</div>
+
+<!-- 9. OBSERVATIONS -->
+<div class="row trend-only">
+  <div class="col-half">
+    <div class="card" style="border-color:#bce5ca">
+      <div class="card-title" style="color:#0a7c42">&#10003; ממצאים חיוביים</div>
+      <div class="flag-item" style="background:#e6f9f0;border-color:#bce5ca">
+        <div class="flag-icon" style="background:#0a7c42">&#10003;</div>
+        <div class="flag-text">VMS ירדו 71-75% תוך 8 שבועות ומתייצבים</div>
+      </div>
+      <div class="flag-item" style="background:#e6f9f0;border-color:#bce5ca">
+        <div class="flag-icon" style="background:#0a7c42">&#10003;</div>
+        <div class="flag-text">היענות 100% לאורך 15 שבועות</div>
+      </div>
+      <div class="flag-item" style="background:#e6f9f0;border-color:#bce5ca">
+        <div class="flag-icon" style="background:#0a7c42">&#10003;</div>
+        <div class="flag-text">ת"ל חלפו: רגישות בשדיים (W2-W6), כאבי ראש (W10-W12)</div>
+      </div>
+      <div class="flag-item" style="background:#e6f9f0;border-color:#bce5ca">
+        <div class="flag-icon" style="background:#0a7c42">&#10003;</div>
+        <div class="flag-text">מצב רוח: שיפור קל (3&#8594;5)</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-half">
+    <div class="card" style="border-color:#f1d3a1">
+      <div class="card-title" style="color:#b37400">&#9888; לתשומת לב</div>
+      <div class="flag-item" style="background:#eff6ff;border-color:#bcd7f5">
+        <div class="flag-icon" style="background:#2563eb">&#10003;</div>
+        <div class="flag-text">ניטור בטיחות: לא זוהו דגלים אדומים (דימום לא מתוכנן, כאב חד). המערכת מסמנת אותם אוטומטית אם יופיעו ומתריעה לרופאה.</div>
+      </div>
+      <div class="flag-item" style="background:#fff4e0;border-color:#f1d3a1">
+        <div class="flag-icon" style="background:#c0392b">!</div>
+        <div class="flag-text">4 סימפטומים ללא שינוי 3+ מעקבים (שינה, אנרגיה, מוטיבציה, ערפול) עם היענות מלאה</div>
+      </div>
+      <div class="flag-item" style="background:#fff4e0;border-color:#f1d3a1">
+        <div class="flag-icon" style="background:#e67e22">!</div>
+        <div class="flag-text">אנרגיה ומוטיבציה נמוכות (2/10 בדיווח עצמי), לא סומנו כמטרת ביקור</div>
+      </div>
+      <div class="flag-item" style="background:#fff4e0;border-color:#f1d3a1">
+        <div class="flag-icon" style="background:#e67e22">i</div>
+        <div class="flag-text">ערפול מוחי: דיווח עצמי נמשך, עקבי עם הדגימה הקוגניטיבית</div>
+      </div>
+      <div class="flag-item" style="background:#fff4e0;border-color:#f1d3a1">
+        <div class="flag-icon" style="background:#555">&#9679;</div>
+        <div class="flag-text">מפת טיפול: אסטרוגן סיסטמי + פרוגסטרון סיסטמי (מ-W6) + Mirena מקומי. טסטוסטרון: לא דווח</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. FOOTER -->
+<div class="footer">
+  <p>
+    דוח זה מבוסס על דיווח עצמי של המטופלת באמצעות מערכת Markable. הנתונים משקפים חוויה סובייקטיבית ואינם תחליף לבדיקה קלינית, אבחון רפואי או המלצת טיפול.
+    ציוני wellness קוגניטיביים מבוססי משחק ואינם מהווים הערכה נוירופסיכולוגית. השוואות לטווח התגובה הצפוי מבוססות על ספרות מחקרית שעברה שיפוט עמיתים.
+  </p>
+  <p>
+    Markable wellness tracking | v4.0 | 15.04.2026 | לשימוש הרופא/ה המטפל/ת בלבד.
+    Markable Ltd. &copy; 2026. Patent Pending.
+  </p>
+</div>
+
+</div><!-- /page -->
+
+<script>
+/*
+ * DATA CONTRACT
+ * This is the data structure the dashboard expects from the API.
+ * The HTML below currently renders hardcoded values matching this structure.
+ * Michael: build your API to return objects shaped like these.
+ * Field sources are documented in MARKABLE_Dashboard_Data_Spec_v2.md
+ */
+
+const PATIENT_DATA = {
+  patient: {
+    name: "מיכל כהן",
+    idLast4: "4521",
+    age: 47,
+    bmi: 24.3,
+    lmp: "12.12.2025",
+    menoStatus: "פרימנופאוזה",          // enum: פרימנופאוזה | פרימנופאוזה מאוחרת | פוסטמנופאוזה
+  },
+
+  visit: {
+    number: 5,
+    date: "15.04.2026",
+    hrtWeeksSinceStart: 15,              // weeks since first HRT prescription
+  },
+
+  // Regimen - all self-reported (source: דע)
+  regimen: {
+    hrt: [
+      { name: "Evorel 50mcg",          type: "אסטרוגן טרנסדרמלי (סיסטמי)", startDate: "01.01.2026", status: "active" },
+      { name: "אוטרוגסטן 100 מ\"ג HS", type: "פרוגסטרון מיקרוניזד (סיסטמי)", startDate: "12.02.2026", status: "active", note: "שבוע 6" },
+      { name: "Mirena",                 type: "לבונורגסטרל מקומי (IUD)",      startDate: null,         status: "local", note: "הגנה רחמית" },
+      { name: "טסטוסטרון",              type: null,                            startDate: null,         status: "none" },
+    ],
+    other: [
+      { name: "אלטרוקסין 75 מק\"ג", detail: "לבותירוקסין | בוקר, על קיבה ריקה" },
+      { name: "ויטמין D 1000 IU",    detail: "כולקלציפרול | יומי" },
+      { name: "אומגה 3",             detail: "תוסף תזונה | יומי" },
+    ],
+    adherence: { percent: 100, weeks: 15, source: "self-report" },
+  },
+
+  // Timeline: symptom scores per visit (source: דע = self-report, 0-10 scale)
+  timeline: {
+    weeks: [0, 2, 4, 6, 8, 10, 12, 15],
+    hrtEvents: [
+      { week: 0, label: "Evorel 50mcg",        color: "#D1409C" },
+      { week: 6, label: "+ אוטרוגסטן 100mg",   color: "#003B7B" },
+    ],
+    symptoms: {
+      hotFlash:   { label: "גלי חום",       color: "#E74C3C", scores: [8,7,5,4,3,2,2,2] },
+      nightSweat: { label: "הזעות לילה",    color: "#E67E22", scores: [7,6,4,3,2,2,2,2] },
+      sleep:      { label: "שינה",          color: "#2C3E50", scores: [4,4,4,4,4,4,4,4] },
+      energy:     { label: "אנרגיה",        color: "#c48a2c", scores: [2,2,2,2,2,2,2,2] },
+      motivation: { label: "מוטיבציה",      color: "#7c3aed", scores: [2,2,2,2,2,2,2,2], style: "dashed" },
+      mood:       { label: "מצב רוח",       color: "#0d9488", scores: [3,3,3,4,4,5,5,5] },
+      joints:     { label: "כאבי מפרקים",   color: "#795548", scores: [5,5,5,4,4,4,4,4] },
+    },
+    sideEffects: {
+      breast:   { label: "רגישות בשדיים", color: "#7A9CAE", scores: [0,3,3,1,0,0,0,0] },
+      headache: { label: "כאבי ראש",      color: "#9C7AAE", scores: [0,0,0,0,0,2,2,0] },
+    },
+  },
+
+  // Cluster summaries (source: חש = computed from symptoms above)
+  clusters: {
+    vms:       { label: "VMS",       color: "#E74C3C", changePercent: -75 },
+    sleep:     { label: "שינה",      color: "#2C3E50", changePercent: 0 },
+    physical:  { label: "פיזי",      color: "#c48a2c", changeNote: "קל" },
+    cognitive: { label: "קוגניטיבי", color: "#6b7280", changeNote: "ערפול נמשך" },
+    mood:      { label: "מצב רוח",   color: "#0d9488", changePercent: 67 },
+  },
+
+  // Response pattern (source: חש = computed)
+  response: {
+    improving: [
+      { symptom: "גלי חום",       from: 8, to: 2, changePercent: -75 },
+      { symptom: "הזעות לילה",    from: 7, to: 2, changePercent: -71 },
+      { symptom: "כאבי מפרקים",   from: 5, to: 4, changePercent: -20 },
+    ],
+    stagnant: [
+      { symptom: "שינה",       from: 4, to: 4, severity: "moderate" },
+      { symptom: "אנרגיה",     from: 2, to: 2, severity: "high" },
+      { symptom: "מוטיבציה",   from: 2, to: 2, severity: "high" },
+      { symptom: "ערפול מוחי", note: "נמשך מאז מעקב 1", severity: "high" },
+    ],
+    resolvedSideEffects: ["רגישות בשדיים (W2-W6)", "כאבי ראש (W10-W12)"],
+  },
+
+  // Cross-reference: self-report vs digital observation (source: דע + מד)
+  crossReference: {
+    selfReport: "ערפול מוחי נמשך מאז מעקב 1. המטופלת מדווחת על קושי מתמשך בריכוז ובזיכרון לאורך כל תקופת המעקב.",
+    digitalObservation: "ציוני wellness קוגניטיביים מתחת לממוצע בנות גיל (Markable, N=214) בכל 4 המשימות: זיכרון ספרות, זיכרון מילולי, זמן תגובה וקשב.",
+    alignment: "consistent",   // enum: consistent | inconsistent | partial
+  },
+
+  // Population comparison (source: חש, reference N=214)
+  populationContext: {
+    referenceGroup: { description: "נשים 40-50", n: 214, source: "self-report" },
+    comparisons: [
+      { symptom: "גלי חום",       patientScore: 2, populationAvg: 4 },
+      { symptom: "הזעות לילה",    patientScore: 2, populationAvg: 3.5 },
+      { symptom: "שינה",          patientScore: 4, populationAvg: 4.5 },
+      { symptom: "אנרגיה",        patientScore: 2, populationAvg: 4 },
+      { symptom: "מצב רוח",       patientScore: 5, populationAvg: 3.5 },
+      { symptom: "כאבי מפרקים",   patientScore: 4, populationAvg: 3 },
+    ],
+  },
+
+  // Cognitive wellness (source: מד = digital measurement via THINK games)
+  cognitive: {
+    referenceGroup: { description: "נשים 40-50", n: 214 },
+    domains: [
+      { name: "זיכרון ספרות",  score: 72, populationAvg: 78, trend: "stable" },
+      { name: "זיכרון מילולי", score: 65, populationAvg: 71, trend: "stable" },
+      { name: "זמן תגובה",    score: 58, populationAvg: 63, trend: "stable" },
+      { name: "קשב",          score: 70, populationAvg: 74, trend: "stable" },
+    ],
+  },
+
+  // EHR summary - pre-generated text for copy-to-chart (source: חש = auto-generated)
+  ehrSummary: "[מקור: Markable wellness, דיווח עצמי בלבד, אינו מכשיר רפואי | מעקב 5 | 15.04.2026]\n" +
+    "טיפול הורמונלי: Evorel 50mcg (מ-W0) + אוטרוגסטן 100mg HS (מ-W6) + Mirena. היענות 100%.\n" +
+    "תרופות נוספות: אלטרוקסין 75mcg, ויטמין D 1000IU, אומגה 3.\n" +
+    "VMS: משתפר (גלי חום 8→2, הזעות 7→2). שינה: 4/10 ללא שינוי. אנרגיה/מוטיבציה: 2/10 ללא שינוי.\n" +
+    "מצב רוח: 3→5 שיפור קל. כאבי מפרקים: 5→4. ערפול מוחי: נמשך, עקבי עם ציוני wellness נמוכים.\n" +
+    "ת\"ל: רגישות בשדיים W2-W6 (חלפה), כאבי ראש W10-W12 (חלפו). נוכחי: אין.\n" +
+    "דגשים: שינה+אנרגיה ללא שיפור 3+ מעקבים, ערפול מוחי עקבי.",
+
+  // Flags / observations (source: חש = computed from all above)
+  observations: {
+    positive: [
+      "VMS ירדו 71-75% תוך 8 שבועות ומתייצבים",
+      "היענות 100% לאורך 15 שבועות",
+      "ת\"ל חלפו: רגישות בשדיים (W2-W6), כאבי ראש (W10-W12)",
+      "מצב רוח: שיפור קל (3→5)",
+    ],
+    attention: [
+      { severity: "high", text: "4 סימפטומים ללא שינוי 3+ מעקבים (שינה, אנרגיה, מוטיבציה, ערפול) עם היענות מלאה" },
+      { severity: "moderate", text: "אנרגיה 2/10 ומוטיבציה 2/10: חומרה גבוהה, לא סומנו כמטרת ביקור" },
+      { severity: "info", text: "ערפול מוחי: דיווח עצמי נמשך, עקבי עם ציוני wellness מתחת לממוצע" },
+      { severity: "info", text: "מפת טיפול: אסטרוגן סיסטמי + פרוגסטרון סיסטמי (מ-W6) + Mirena מקומי. טסטוסטרון: לא דווח" },
+    ],
+  },
+};
+
+const PATIENTS_LIST = {
+  doctor: { name: "ד\"ר רונית כהן", service: "שירות גיל המעבר" },
+  stats: { total: 15, updatedThisWeek: 3, pendingData: 2 },
+  todayAppointments: [
+    { name: "מיכל כהן",   idLast4: "4521", age: 47, visitNum: 5,    hrtWeek: 15, status: "updated", badge: "VMS משתפר",       lastUpdate: "היום" },
+    { name: "אורית שגב",  idLast4: "7310", age: 46, visitNum: 3,    hrtWeek: 8,  status: "updated", badge: "שינה ללא שינוי",  lastUpdate: "אתמול" },
+    { name: "דנה לוי",    idLast4: "9012", age: 51, visitNum: 1,     hrtWeek: 0,  status: "updated", badge: "בסיס נקבע",       note: "ביקור ראשון" },
+  ],
+  otherPatients: [
+    { name: "שירה אברהם",   idLast4: "3344", age: 49, visitNum: 7, hrtWeek: 24, status: "updated", badge: "יציב" },
+    { name: "יעל פרידמן",   idLast4: "7788", age: 44, visitNum: 2, hrtWeek: 4,  status: "updated", badge: "תקופת התאמה" },
+    { name: "נועה שמש",     idLast4: "6655", age: 48, visitNum: 4, hrtWeek: 12, status: "stale",   badge: "לא עודכן 12 יום" },
+    { name: "אורלי בן דוד", idLast4: "2211", age: 46, visitNum: 0, hrtWeek: 0,  status: "pending", badge: "ממתינה לנתונים", invitedDate: "02.06" },
+  ],
+};
+
+/* END DATA CONTRACT -- HTML below renders these values (currently hardcoded for demo) */
+
+// Baseline / Trend mode toggle (care-journey: first-visit vs longitudinal view)
+var EHR_TREND = (document.getElementById('ehrText') ? document.getElementById('ehrText').innerText : '');
+var EHR_BASELINE = "[מקור: Markable wellness, דיווח עצמי בלבד, אינו מכשיר רפואי | ביקור ראשון | 12.01.2026]\n" +
+  "בסיס טרם התחלת טיפול הורמונלי.\n" +
+  "תסמינים מובילים: גלי חום 8/10, הזעות לילה 7/10, שינה 4/10, אנרגיה 2/10, ערפול מוחי מדווח.\n" +
+  "דגימה קוגניטיבית ראשונית (זיכרון, זמן תגובה).\n" +
+  "תרופות נוכחיות: אלטרוקסין 75mcg, ויטמין D 1000IU, אומגה 3.\n" +
+  "מטרת ביקור שסומנה: ניהול גלי חום, שיפור שינה.";
+
+function setMode(mode){
+  var isBaseline = mode === 'baseline';
+  document.querySelectorAll('.trend-only').forEach(function(el){ el.style.display = isBaseline ? 'none' : ''; });
+  document.querySelectorAll('.baseline-only').forEach(function(el){ el.style.display = isBaseline ? 'block' : 'none'; });
+  var t=document.getElementById('modeTrend'), b=document.getElementById('modeBaseline');
+  if(t&&b){
+    t.style.background=isBaseline?'#fff':'#D1409C'; t.style.color=isBaseline?'#003B7B':'#fff'; t.style.border=isBaseline?'1.5px solid #003B7B':'none';
+    b.style.background=isBaseline?'#D1409C':'#fff'; b.style.color=isBaseline?'#fff':'#003B7B'; b.style.border=isBaseline?'none':'1.5px solid #003B7B';
+  }
+  var vi=document.getElementById('visitInfo'), hi=document.getElementById('hrtInfo');
+  if(vi) vi.innerHTML = isBaseline ? 'ביקור ראשון | 12.01.2026' : 'מעקב <span class="val">#5</span> | 15.04.2026';
+  if(hi) hi.textContent = isBaseline ? 'טרם החל טיפול' : 'שבוע 15 מתחילת HRT';
+  var dc=document.getElementById('deltaContent');
+  if(dc) dc.textContent = isBaseline ? 'ביקור ראשון · בסיס נקבע · אין עדיין מגמה. הנתונים מהביקור הבא יראו את התגובה לטיפול.' : 'VMS יציב-נמוך · שינה עדיין 4/10 ללא שינוי · מצב רוח משתפר · אין דגלים בטיחותיים חדשים';
+  var ehr=document.getElementById('ehrText');
+  if(ehr) ehr.innerText = isBaseline ? EHR_BASELINE : EHR_TREND;
+  var ht=document.querySelector('.header-title');
+  if(ht) ht.textContent = isBaseline ? 'דוח בסיס - סקירת מטפל' : 'דוח מעקב הורמונלי - סקירת מטפל';
+}
+
+function copyEHR(){
+  var t=document.getElementById('ehrText').innerText;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){
+      var b=document.querySelector('.copy-btn');
+      b.textContent='הועתק!';
+      setTimeout(function(){b.textContent='העתק טקסט'},1500);
+    });
+  }else{
+    var a=document.createElement('textarea');
+    a.value=t;document.body.appendChild(a);
+    a.select();document.execCommand('copy');
+    document.body.removeChild(a);
+    var b=document.querySelector('.copy-btn');
+    b.textContent='הועתק!';
+    setTimeout(function(){b.textContent='העתק טקסט'},1500);
+  }
+}
+
+function toggleLine(el){
+  var id=el.getAttribute('data-id');
+  el.classList.toggle('hidden');
+  var isHidden=el.classList.contains('hidden');
+  var lines=document.querySelectorAll('.symptom-line[data-id="'+id+'"]');
+  var dots=document.querySelectorAll('.symptom-dots[data-id="'+id+'"]');
+  lines.forEach(function(l){l.style.opacity=isHidden?'0':'1'});
+  dots.forEach(function(d){d.style.opacity=isHidden?'0':'1'});
+}
+
+// Initialize: hide lines that are hidden by default + handle auth bypass
+document.addEventListener('DOMContentLoaded',function(){
+  var items=document.querySelectorAll('.legend-item.hidden');
+  items.forEach(function(el){
+    var id=el.getAttribute('data-id');
+    var lines=document.querySelectorAll('.symptom-line[data-id="'+id+'"]');
+    var dots=document.querySelectorAll('.symptom-dots[data-id="'+id+'"]');
+    lines.forEach(function(l){l.style.opacity='0'});
+    dots.forEach(function(d){d.style.opacity='0'});
+  });
+  if(new URLSearchParams(window.location.search).get('auth')==='1'){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('twoFactorScreen').style.display='none';
+    document.getElementById('patientList').style.display='block';
+  }
+  if(new URLSearchParams(window.location.search).get('report')==='1'){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('twoFactorScreen').style.display='none';
+    document.getElementById('patientList').style.display='none';
+  }
+});
+
+function openPatient(){document.getElementById('patientList').style.display='none';document.getElementById('backBtn').style.display='block'}
+function backToList(){document.getElementById('patientList').style.display='block';document.getElementById('backBtn').style.display='none'}
+function filterPatients(q){q=q.trim().toLowerCase();document.querySelectorAll('.pl-card').forEach(function(c){var n=(c.getAttribute('data-name')||'').toLowerCase(),d=c.getAttribute('data-id')||'';c.style.display=(!q||n.includes(q)||d.includes(q))?'flex':'none'})}
+function filterByStatus(s){document.querySelectorAll('.pl-card').forEach(function(c){if(s==='all')c.style.display='flex';else c.style.display=c.getAttribute('data-status')===s?'flex':'none'})}
+function showAddPatient(){document.getElementById('addPatientForm').style.display='block'}
+function hideAddPatient(){document.getElementById('addPatientForm').style.display='none'}
+function addPatientSMS(){document.getElementById('addPatientForm').style.display='none';document.getElementById('smsSentMsg').style.display='block';setTimeout(function(){document.getElementById('smsSentMsg').style.display='none'},4000)}
+function sendReminder(){alert('תזכורת SMS נשלחה למטופלת')}
+function reviewUpdate(){document.getElementById('upStatus').innerHTML='<div class="pl-badge" style="background:#e6f9f0;color:#0a7c42;padding:5px 11px">נצפה · המטופלת עודכנה</div>';}
+function showTwoFactor(){document.getElementById('loginScreen').style.display='none';document.getElementById('twoFactorScreen').style.display='block'}
+function completeLogin(){document.getElementById('twoFactorScreen').style.display='none';document.getElementById('patientList').style.display='block'}
+function sendFeedback(){var t=document.getElementById('feedbackText');if(t.value.trim()){alert('תודה! המשוב נשלח לצוות.');t.value=''}}
+
+// Voice recording for feedback
+var _recording=false,_mediaRec=null,_recTimer=null,_recSec=0;
+function toggleRecording(){
+  if(!_recording) startRec(); else stopRec();
+}
+function startRec(){
+  if(!navigator.mediaDevices){alert('הדפדפן לא תומך בהקלטה');return}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    _recording=true;_recSec=0;
+    var btn=document.getElementById('recBtn');
+    btn.style.background='#D1409C';btn.style.color='#fff';
+    document.getElementById('recDot').style.background='#fff';
+    document.getElementById('recDot').style.animation='pulse 1s infinite';
+    btn.querySelector('span:last-child')||true;
+    document.getElementById('recStatus').textContent='מקליטה... 0:00';
+    document.getElementById('recDone').style.display='none';
+    _recTimer=setInterval(function(){
+      _recSec++;
+      var m=Math.floor(_recSec/60),s=_recSec%60;
+      document.getElementById('recStatus').textContent='מקליטה... '+m+':'+(s<10?'0':'')+s;
+    },1000);
+    // In production: MediaRecorder -> blob -> send to Gemini Flash API for transcription
+    // For demo: simulate
+    _mediaRec=stream;
+  }).catch(function(){alert('לא ניתן לגשת למיקרופון')});
+}
+function stopRec(){
+  _recording=false;
+  clearInterval(_recTimer);
+  if(_mediaRec&&_mediaRec.getTracks)_mediaRec.getTracks().forEach(function(t){t.stop()});
+  var btn=document.getElementById('recBtn');
+  btn.style.background='#fff';btn.style.color='#D1409C';
+  document.getElementById('recDot').style.background='#D1409C';
+  document.getElementById('recDot').style.animation='';
+  document.getElementById('recStatus').textContent='מעבדת תמלול...';
+  // Simulate Gemini Flash transcription (in production: send blob to API)
+  setTimeout(function(){
+    document.getElementById('recStatus').textContent='';
+    document.getElementById('recDone').style.display='block';
+    document.getElementById('recTranscript').textContent='"הכפתור של העתק לתיק לא מעתיק את הפורמט הנכון, חסרה שורה של התרופות החדשות"';
+  },2000);
+}
+</script>
+</body>
+</html>
