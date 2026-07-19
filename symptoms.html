@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מיפוי תסמינים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Heebo',system-ui,sans-serif;background:#fff;color:#1a1a2e;direction:rtl;padding:16px}
+.si{background:linear-gradient(135deg,rgba(209,64,156,.04),rgba(209,64,156,.01));border:1px solid rgba(209,64,156,.1);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.si-label{font-size:9px;font-weight:700;color:#D1409C;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.si-title{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:3px}
+.si-desc{font-size:11px;color:#666;line-height:1.5}
+.header{text-align:center;margin-bottom:10px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f3f3f3;flex-direction:row-reverse}
+.name{font-size:12px;color:#333;font-weight:500}
+.score{width:30px;height:30px;border-radius:8px;background:#f2f2f7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#ccc;cursor:pointer;flex-shrink:0}
+.score.low{background:rgba(52,199,89,.08);color:#34C759}
+.score.mid{background:rgba(255,159,10,.08);color:#FF9F0A}
+.score.high{background:rgba(255,59,48,.08);color:#FF3B30}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Heebo',sans-serif;width:100%;background:#D1409C;color:#fff;margin-top:10px}
+.btn-o{background:transparent;border:2px solid #D1409C;color:#D1409C}
+.popup{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.popup.show{display:flex}
+.sheet{background:#fff;border-radius:16px 16px 0 0;padding:14px 16px;width:100%;max-width:420px}
+.sheet-title{font-size:13px;font-weight:700;color:#1a1a2e;text-align:center;margin-bottom:6px}
+.sheet-label{font-size:9px;color:#999;text-align:center;margin-bottom:6px;min-height:20px;line-height:1.3}
+.opts{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:6px}
+.opt{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;border:2px solid #eee;color:#666;background:#fff}
+.opt.sel{border-color:#D1409C;background:#D1409C;color:#fff}
+.sum-card{background:#f2f2f7;border-radius:10px;padding:12px;text-align:center;margin:10px 0}
+.sum-stat{display:inline-block;margin:0 8px}
+.sum-num{font-size:20px;font-weight:800}
+.sum-lbl{font-size:8px;color:#888;font-weight:600}
+</style>
+</head>
+<body>
+
+<div id="container"></div>
+
+<div class="popup" id="popup">
+  <div class="sheet">
+    <div class="sheet-title" id="sheetTitle"></div>
+    <div class="sheet-label" id="sheetLabel">בחרי דירוג</div>
+    <div class="opts" id="sheetOpts"></div>
+    <button class="btn" onclick="confirmScore()">אישור</button>
+  </div>
+</div>
+
+<script>
+var PAGES = [
+  {title:'גלי חום ושינה',en:'Hot Flashes & Sleep',num:'1/6',items:['גלי חום','הזעות לילה','אי-סבילות לחום','צמרמורות','נדודי שינה - הירדמות','נדודי שינה - יקיצות']},
+  {title:'מצב רוח וריכוז',en:'Mood & Focus',num:'2/6',items:['מצב רוח ירוד','חרדה','עצבנות','שינויי מצב רוח','רגישות ללחץ','ירידה במוטיבציה','ערפל מוחי','זיכרון איטי','שכחנות','קושי בריכוז']},
+  {title:'אינטימיות ושתן',en:'Intimate & Urinary',num:'3/6',items:['אי נוחות וגינלית','כאב ביחסי מין','ירידה בחשק','דחיפות במתן שתן','תדירות גבוהה','דליפת שתן','דלקות חוזרות','כובד אגני','גירוד/גירוי']},
+  {title:'כאב וגוף',en:'Pain & Body',num:'4/6',items:['כאבי גב','מתח צוואר/כתפיים','אי נוחות בידיים','אי נוחות ברגליים','התכווצויות','נימול/עקצוצים','תחושות חשמליות']},
+  {title:'עור, שיער, עיניים',en:'Skin, Hair, Eyes',num:'5/6',items:['עור יבש','עור רגיש/מגרד','אקנה בוגר','דילול שיער','ציפורניים שבירות','עיניים יבשות','שינויי ראייה']},
+  {title:'אנרגיה ולב',en:'Energy & Cardiovascular',num:'6/6',items:['שלשול/גזים','צרבת/רפלוקס','חשק לסוכר','ירידות אנרגיה','דפיקות לב','סחרחורת','רגישות לקור']}
+];
+var LABELS = ['ללא תסמין','קלה מאוד','קלה','קל, לפעמים','קל עד בינוני','בינוני','בינוני עד חזק','חזק','חזק מאוד','חמור','הגרוע ביותר'];
+var scores = {}, pageIdx = 0, selScore = -1, curName = '';
+
+function render() {
+  var pg = PAGES[pageIdx];
+  var h = '';
+  if (pageIdx === 0) {
+    h += '<div class="si"><div class="si-label">מיפוי תסמינים</div><div class="si-title">דרגי כל תסמין שחווית</div><div class="si-desc">לחצי על כל תסמין ודרגי 0-10. חשוב לדרג גם תסמינים קלים.</div></div>';
+  }
+  h += '<div class="header"><div style="font-size:9px;color:#999;font-weight:600">'+pg.num+'</div>';
+  h += '<div style="font-size:14px;font-weight:700;color:#1a1a2e">'+pg.title+'</div>';
+  h += '<div style="font-size:10px;color:#aaa">'+pg.en+'</div></div>';
+  pg.items.forEach(function(item) {
+    var sc = scores[item], cls = 'score', val = '-';
+    if (sc !== undefined) { val = sc; cls += sc <= 3 ? ' low' : sc <= 6 ? ' mid' : ' high'; }
+    h += '<div class="row"><div class="name">'+item+'</div><div class="'+cls+'" onclick="openPopup(\''+item.replace(/'/g,"\\'")+'\')">'+val+'</div></div>';
+  });
+  h += '<div style="display:flex;gap:6px;margin-top:10px">';
+  if (pageIdx > 0) h += '<button class="btn btn-o" style="flex:1" onclick="pageIdx--;render()">הקודם</button>';
+  if (pageIdx < PAGES.length - 1) h += '<button class="btn" style="flex:1" onclick="pageIdx++;render()">הבא &#8592;</button>';
+  else h += '<button class="btn" style="flex:1" onclick="showSummary()">סיכום &#8592;</button>';
+  h += '</div>';
+  document.getElementById('container').innerHTML = h;
+  window.scrollTo(0,0);
+}
+
+function showSummary() {
+  // Skip summary screen - go directly to parent (snap-symptoms replaces it)
+  done();
+}
+
+function done() {
+  if (window.parent !== window) window.parent.postMessage('symptoms-done', '*');
+}
+
+function openPopup(name) {
+  curName = name; selScore = -1;
+  document.getElementById('sheetTitle').textContent = name;
+  document.getElementById('sheetLabel').textContent = 'בחרי דירוג';
+  var h = '';
+  for (var i = 0; i <= 10; i++) h += '<div class="opt" onclick="pickScore(this,'+i+')">'+i+'</div>';
+  document.getElementById('sheetOpts').innerHTML = h;
+  document.getElementById('popup').classList.add('show');
+}
+
+function pickScore(el, val) {
+  selScore = val;
+  document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel')});
+  el.classList.add('sel');
+  document.getElementById('sheetLabel').textContent = val + ' - ' + LABELS[val];
+  // Auto-confirm after selection (no need to click confirm button)
+  setTimeout(function() {
+    scores[curName] = selScore;
+    document.getElementById('popup').classList.remove('show');
+    render();
+  }, 400);
+}
+
+function confirmScore() {
+  if (selScore < 0) return;
+  scores[curName] = selScore;
+  document.getElementById('popup').classList.remove('show');
+  render();
+}
+
+document.addEventListener('click', function(e) {
+  if (e.target === document.getElementById('popup')) e.target.classList.remove('show');
+});
+
+// Start empty
+scores = {};
+render();
+</script>
+</body>
+</html>

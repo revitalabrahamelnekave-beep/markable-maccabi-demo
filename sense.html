@@ -1,0 +1,2453 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+<title>SENSE - דגימת חושים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#D1409C;--accent-dark:#b8357f;--accent-light:#f5e0ee;--accent-bg:#fdf5fa;
+  --navy:#1a1a2e;--navy-light:#2a2a4e;
+  --text:#1a1a1a;--text-secondary:#555;--text-muted:#888;
+  --bg:#ffffff;--bg-off:#f8f8fa;--border:#e4e4e8;--border-light:#eeeeef;
+  --cyan:#3a9e95;--amber:#c48a2c;--coral:#c45a4a;
+  --gradient:linear-gradient(135deg,#D1409C 0%,#9b2e8e 55%,#7b26a2 100%);
+  --radius:14px;--radius-sm:10px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.03),0 2px 8px rgba(0,0,0,.04);
+  --shadow-md:0 2px 8px rgba(0,0,0,.04),0 8px 28px rgba(0,0,0,.06);
+  --font:'Heebo','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:var(--font);background:#f2f2f7;color:var(--text);
+  min-height:100vh;min-height:100dvh;overflow-x:hidden;line-height:1.6;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  display:flex;justify-content:center;align-items:stretch;
+}
+#app{
+  width:390px;max-width:100%;min-height:100vh;min-height:100dvh;
+  margin:0 auto;background:var(--bg);
+  display:flex;flex-direction:column;position:relative;
+  box-shadow:0 0 40px rgba(0,0,0,.08);
+}
+
+/* Nav */
+.nav{
+  position:sticky;top:0;z-index:100;flex-shrink:0;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  padding:0 16px;height:44px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border-light);
+}
+.nav-logo{display:none}
+.nav-logo svg{height:20px;width:auto}
+.nav-step{font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+
+/* Screen */
+.screen{
+  flex:1;display:flex;flex-direction:column;padding:14px 16px 18px;
+  animation:fadeIn .35s cubic-bezier(.25,.46,.45,.94);
+  overflow-y:auto;overflow-x:hidden;min-height:0;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.screen::-webkit-scrollbar{display:none}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+/* Cards */
+.card{
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow-sm);
+}
+.card-accent{border-color:var(--accent-light);background:var(--accent-bg);box-shadow:0 1px 4px rgba(209,64,156,.04),0 4px 16px rgba(209,64,156,.03)}
+.card-cyan{border-color:#b8e8e3;background:#f0faf9}
+
+/* Typography */
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:3.5px;color:var(--accent);margin-bottom:16px}
+h1{font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.4px;color:var(--navy);margin-bottom:8px}
+h2{font-size:20px;font-weight:700;line-height:1.25;color:var(--navy);margin-bottom:8px}
+h3{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.subtitle{font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:14px}
+.label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.2px;color:var(--text-muted);margin-bottom:8px}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:none;border-radius:var(--radius-sm);font-family:var(--font);
+  font-size:15px;font-weight:600;cursor:pointer;transition:all .2s ease;
+  min-height:46px;padding:12px 24px;width:100%;
+  -webkit-user-select:none;user-select:none;
+}
+.btn-primary{
+  background:var(--gradient);color:#fff;
+  box-shadow:0 2px 8px rgba(209,64,156,.18),0 6px 20px rgba(209,64,156,.12);
+  position:relative;overflow:hidden;
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(209,64,156,.22),0 10px 28px rgba(209,64,156,.18)}
+.btn-primary:active{transform:translateY(0) scale(.98);box-shadow:0 2px 6px rgba(209,64,156,.15);transition-duration:.1s}
+.btn-secondary{background:var(--bg-off);color:var(--text);border:1.5px solid var(--border);box-shadow:var(--shadow-sm)}
+.btn-secondary:hover{border-color:#d0d0d4;background:#f4f4f6}
+.btn-secondary:active{transform:scale(.98)}
+.btn-ghost{background:transparent;color:var(--text-muted);min-height:40px;padding:8px 16px;font-size:13px}
+.btn-ghost:hover{color:var(--text-secondary);background:rgba(0,0,0,.02)}
+.btn:disabled{opacity:.35;pointer-events:none}
+
+/* Chips */
+.chip{
+  display:inline-flex;align-items:center;padding:5px 12px;
+  background:var(--accent-bg);border:1px solid var(--accent-light);
+  border-radius:20px;font-size:12px;color:var(--accent-dark);font-weight:500;
+  letter-spacing:.2px;
+}
+
+/* Progress bar */
+.progress-wrap{height:4px;background:var(--border-light);border-radius:2px;margin-top:auto;overflow:hidden}
+.progress-fill{height:100%;background:var(--gradient);border-radius:2px;transition:width .3s ease}
+
+/* Overall journey progress */
+.journey-bar{display:flex;gap:4px;margin-bottom:16px}
+.journey-seg{flex:1;height:3px;border-radius:2px;background:var(--border-light)}
+.journey-seg.done{background:var(--accent)}
+.journey-seg.active{background:var(--accent);opacity:.5}
+
+/* Intro meta row */
+.meta-row{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.meta-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary)}
+.meta-icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center}
+.meta-icon svg{width:16px;height:16px}
+.chip-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+
+/* Canvas wrapper */
+.canvas-wrap{display:flex;justify-content:center;align-items:center;margin:10px 0}
+.canvas-wrap canvas{border-radius:var(--radius-sm);border:1px solid var(--border-light)}
+
+/* Direction buttons (diamond layout) */
+.dir-diamond{display:grid;grid-template-columns:60px 60px 60px;grid-template-rows:60px 60px 60px;gap:4px;justify-content:center;align-items:center;margin:12px auto;direction:ltr}
+.dir-btn{
+  width:56px;height:56px;border:2px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s ease;-webkit-user-select:none;user-select:none;
+  touch-action:manipulation;
+}
+.dir-btn:active{transform:scale(.92);background:var(--accent-bg);border-color:var(--accent)}
+.dir-btn.correct-flash{background:#e6f9e8;border-color:var(--cyan)}
+.dir-btn.wrong-flash{background:#fce8e6;border-color:var(--coral)}
+.dir-btn svg{width:20px;height:20px}
+.dir-up{grid-column:2;grid-row:1}
+.dir-left{grid-column:1;grid-row:2}
+.dir-right{grid-column:3;grid-row:2}
+.dir-down{grid-column:2;grid-row:3}
+
+/* Sound intervals */
+.intervals-row{display:flex;gap:16px;justify-content:center;margin:16px 0}
+.interval-circle{
+  width:56px;height:56px;border-radius:50%;border:3px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:var(--text-secondary);
+  transition:all .25s ease;background:var(--bg);
+}
+.interval-circle.playing{
+  border-color:var(--accent);background:var(--accent-bg);color:var(--accent);
+  box-shadow:0 0 16px rgba(209,64,156,.2);
+  animation:intervalPulse .4s ease infinite alternate;
+}
+.interval-circle.correct-flash{background:var(--cyan) !important;border-color:var(--cyan) !important;color:#fff !important;transform:scale(1.15);box-shadow:0 0 16px rgba(58,158,149,.5);transition:all .15s ease}
+.interval-circle.wrong-flash{background:var(--coral) !important;border-color:var(--coral) !important;color:#fff !important;transform:scale(0.9);box-shadow:0 0 12px rgba(196,90,74,.4);transition:all .15s ease}
+@keyframes intervalPulse{from{transform:scale(1)}to{transform:scale(1.06)}}
+
+.response-btns{display:flex;gap:12px;justify-content:center;margin:16px 0}
+.resp-btn{
+  width:64px;height:52px;border:2px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);cursor:pointer;font-size:18px;font-weight:700;color:var(--text);
+  font-family:var(--font);transition:all .15s ease;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+}
+.resp-btn:active{transform:scale(.92);background:var(--accent-bg);border-color:var(--accent)}
+.resp-btn:disabled{opacity:.3;pointer-events:none}
+
+/* Dichotic ear buttons */
+.ear-btns{display:flex;gap:16px;justify-content:center;margin:20px 0}
+.ear-btn{
+  flex:1;max-width:140px;min-height:56px;border:2px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);cursor:pointer;font-size:15px;font-weight:600;color:var(--text);
+  font-family:var(--font);transition:all .15s ease;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+}
+.ear-btn:active{transform:scale(.95);background:var(--accent-bg);border-color:var(--accent)}
+
+/* Status text */
+.status-text{text-align:center;font-size:14px;color:var(--text-secondary);min-height:24px;margin:8px 0}
+
+/* Result gauge */
+.gauge{height:10px;border-radius:5px;background:var(--border-light);overflow:hidden;position:relative;margin:10px 0 6px}
+.gauge-fill{height:100%;border-radius:5px;transition:width .6s ease}
+.gauge-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted)}
+
+/* Composite arc */
+.composite-wrap{display:flex;justify-content:center;margin:0}
+.composite-circle{position:relative}
+.composite-circle svg{width:100%;height:100%}
+.composite-score{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.composite-score .value{font-size:30px;font-weight:800;color:var(--navy);line-height:1}
+.composite-score .label-text{font-size:11px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+
+/* Result cards */
+.result-card{margin-bottom:12px}
+.result-value{font-size:24px;font-weight:800;color:var(--navy);margin:4px 0}
+.result-interp{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-top:8px}
+.result-detail{font-size:11px;color:var(--text-muted);margin-top:6px}
+
+/* Trend arrow */
+.trend{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:12px}
+.trend-up{color:var(--cyan);background:#e6f9f5}
+.trend-down{color:var(--coral);background:#fce8e6}
+.trend-same{color:var(--amber);background:#fdf3e2}
+
+/* Brightness illustration */
+.brightness-illust{display:flex;flex-direction:column;align-items:center;gap:6px;margin:14px 0}
+.phone-rect{width:60px;height:100px;border:3px solid var(--navy);border-radius:10px;position:relative;background:#fafafa}
+.phone-rect::after{content:'';position:absolute;top:6px;left:6px;right:6px;bottom:6px;background:var(--gradient);border-radius:4px;opacity:.15}
+.phone-notch{width:20px;height:4px;background:var(--navy);border-radius:2px;position:absolute;top:4px;left:50%;transform:translateX(-50%)}
+.distance-arrow{display:flex;align-items:center;gap:4px;color:var(--text-secondary);font-size:12px;font-weight:500;margin-top:8px}
+.distance-line{width:80px;height:2px;background:var(--text-muted);position:relative}
+.distance-line::before,.distance-line::after{content:'';position:absolute;top:-3px;width:2px;height:8px;background:var(--text-muted)}
+.distance-line::before{left:0}
+.distance-line::after{right:0}
+
+/* Disclaimer */
+.disclaimer{font-size:10px;color:var(--text-muted);line-height:1.55;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-light)}
+
+/* Headphones check */
+.headphones-icon{width:48px;height:48px;margin:0 auto 10px}
+.checklist{list-style:none;margin:10px 0}
+.checklist li{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:13px;color:var(--text-secondary);line-height:1.45}
+.check-bullet{width:20px;height:20px;min-width:20px;border-radius:50%;background:var(--accent-bg);border:1.5px solid var(--accent-light);display:flex;align-items:center;justify-content:center;margin-top:1px}
+.check-bullet svg{width:12px;height:12px}
+
+/* Trial counter */
+.trial-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.trial-label{font-size:13px;font-weight:600;color:var(--navy)}
+.trial-count{font-size:12px;color:var(--text-muted);font-weight:500;font-variant-numeric:tabular-nums}
+
+/* Done badge */
+.done-badge{
+  width:48px;height:48px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
+}
+.done-badge svg{width:28px;height:28px;color:var(--accent)}
+
+/* Previous session comparison */
+.comparison-row{display:flex;gap:12px;margin:8px 0}
+.comparison-item{flex:1;padding:10px;border-radius:var(--radius-sm);background:var(--bg-off);border:1px solid var(--border-light);text-align:center}
+.comparison-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.comparison-value{font-size:16px;font-weight:700;color:var(--navy)}
+
+/* Understanding section */
+.understand-item{padding:12px 0;border-bottom:1px solid var(--border-light)}
+.understand-item:last-child{border-bottom:none}
+.understand-q{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.understand-a{font-size:13px;color:var(--text-secondary);line-height:1.6}
+
+/* Expandable */
+.expandable-toggle{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--accent);cursor:pointer;background:none;border:none;padding:8px 0;font-family:var(--font)}
+.expandable-toggle svg{width:14px;height:14px;transition:transform .2s}
+.expandable-toggle.open svg{transform:rotate(90deg)}
+.expandable-content{display:none;font-size:13px;color:var(--text-secondary);line-height:1.65;padding:8px 0 16px}
+.expandable-content.show{display:block}
+
+/* Color discrimination */
+.color-circles-row{display:flex;gap:16px;justify-content:center;align-items:center;margin:16px 0}
+.color-circle{border-radius:50%;cursor:pointer;transition:all .15s ease;border:3px solid transparent}
+.color-circle:hover{transform:scale(1.05)}
+.color-circle:active{transform:scale(.95)}
+.color-circle.selected{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,26,46,.15)}
+.color-surround{background:#808080;border-radius:var(--radius);padding:20px 16px;display:flex;justify-content:center;align-items:center;gap:16px}
+
+/* Flicker */
+.flicker-area{display:flex;justify-content:center;align-items:center;margin:20px 0}
+.flicker-circle{width:80px;height:80px;border-radius:50%;background:var(--accent);transition:none}
+.flicker-btns{display:flex;gap:12px;justify-content:center;margin:20px 0}
+.flicker-btn{
+  flex:1;max-width:160px;min-height:52px;border:2px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);cursor:pointer;font-size:14px;font-weight:600;color:var(--text);
+  font-family:var(--font);transition:all .15s ease;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+}
+.flicker-btn:active{transform:scale(.95);background:var(--accent-bg);border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ============================
+// MARKABLE SVG LOGO
+// ============================
+var MARKABLE_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 258" role="img" aria-label="MARKABLE"><path d="M 1004 116 L 1002 118 L 1002 119 L 1000 120 L 1000 121 L 984 138 L 984 139 L 979 144 L 979 145 L 974 150 L 974 151 L 970 155 L 970 156 L 959 169 L 959 172 L 962 178 L 964 180 L 969 191 L 971 193 L 973 198 L 975 200 L 980 211 L 982 213 L 989 227 L 991 229 L 991 231 L 993 233 L 996 240 L 998 242 L 1003 253 L 1006 257 L 1086 257 L 1085 254 L 1083 252 L 1083 250 L 1081 248 L 1079 243 L 1077 241 L 1074 234 L 1072 232 L 1070 227 L 1068 225 L 1064 216 L 1062 214 L 1059 207 L 1057 205 L 1055 200 L 1053 198 L 1047 186 L 1045 184 L 1040 174 L 1038 172 L 1036 167 L 1034 165 L 1031 158 L 1029 156 L 1026 149 L 1024 147 L 1018 135 L 1016 133 L 1015 130 L 1013 128 L 1012 125 L 1010 123 L 1007 117 L 1006 116 Z M 1948 104 L 1948 155 L 2039 155 L 2039 105 L 2038 104 Z M 1864 5 L 1865 5 L 1868 8 L 1869 10 L 1869 15 L 1870 16 L 1870 257 L 2043 257 L 2044 256 L 2045 248 L 2046 247 L 2046 243 L 2047 242 L 2047 207 L 1938 207 L 1936 205 L 1936 57 L 1937 56 L 2044 56 L 2044 4 L 1879 4 L 1878 5 Z M 1640 4 L 1642 5 L 1646 10 L 1646 24 L 1647 25 L 1647 257 L 1814 257 L 1814 254 L 1815 253 L 1815 250 L 1816 249 L 1816 243 L 1817 242 L 1817 238 L 1818 237 L 1818 234 L 1819 233 L 1820 223 L 1821 222 L 1821 218 L 1822 217 L 1822 213 L 1823 212 L 1823 207 L 1715 207 L 1714 206 L 1714 4 Z M 1469 4 L 1469 48 L 1497 49 L 1498 50 L 1505 51 L 1507 53 L 1508 53 L 1515 60 L 1518 66 L 1518 69 L 1519 70 L 1519 79 L 1518 80 L 1518 83 L 1514 90 L 1506 97 L 1502 98 L 1501 99 L 1499 99 L 1498 100 L 1469 100 L 1469 149 L 1499 149 L 1500 150 L 1506 150 L 1507 151 L 1509 151 L 1511 153 L 1514 154 L 1521 161 L 1525 169 L 1525 173 L 1526 174 L 1526 189 L 1525 190 L 1525 193 L 1520 202 L 1513 209 L 1509 211 L 1507 211 L 1506 212 L 1497 212 L 1496 213 L 1469 213 L 1469 257 L 1535 257 L 1541 254 L 1543 254 L 1555 248 L 1557 246 L 1560 245 L 1563 242 L 1564 242 L 1567 239 L 1568 239 L 1576 231 L 1576 230 L 1583 222 L 1585 217 L 1587 215 L 1588 211 L 1591 206 L 1593 198 L 1594 197 L 1594 193 L 1595 192 L 1595 168 L 1594 167 L 1594 163 L 1591 157 L 1590 152 L 1588 150 L 1584 142 L 1579 137 L 1579 136 L 1578 136 L 1573 131 L 1570 130 L 1566 127 L 1564 127 L 1561 125 L 1558 125 L 1557 124 L 1553 124 L 1552 123 L 1543 123 L 1542 122 L 1543 121 L 1546 121 L 1547 120 L 1552 120 L 1553 119 L 1556 119 L 1564 115 L 1570 110 L 1571 110 L 1579 101 L 1580 98 L 1582 96 L 1584 92 L 1584 90 L 1586 86 L 1586 83 L 1587 82 L 1587 62 L 1586 61 L 1586 57 L 1585 56 L 1583 48 L 1581 45 L 1581 43 L 1579 39 L 1577 37 L 1576 34 L 1572 30 L 1572 29 L 1560 17 L 1559 17 L 1557 15 L 1556 15 L 1554 13 L 1551 12 L 1547 9 L 1545 9 L 1539 6 L 1536 6 L 1535 5 L 1529 5 L 1528 4 Z M 1389 4 L 1388 5 L 1389 5 L 1393 10 L 1393 257 L 1459 257 L 1459 4 Z M 1181 4 L 1180 5 L 1181 5 L 1185 10 L 1185 17 L 1184 18 L 1184 20 L 1182 24 L 1182 28 L 1181 29 L 1181 32 L 1179 36 L 1179 39 L 1178 40 L 1177 47 L 1176 48 L 1176 50 L 1174 54 L 1174 57 L 1173 58 L 1173 61 L 1171 65 L 1171 68 L 1170 69 L 1169 76 L 1168 77 L 1167 83 L 1166 84 L 1166 87 L 1165 88 L 1165 90 L 1163 94 L 1163 98 L 1162 99 L 1161 105 L 1159 109 L 1159 113 L 1158 114 L 1158 116 L 1157 117 L 1157 119 L 1155 123 L 1155 126 L 1154 127 L 1153 134 L 1151 138 L 1151 141 L 1150 142 L 1150 145 L 1148 149 L 1147 156 L 1145 160 L 1144 167 L 1143 168 L 1142 174 L 1140 178 L 1139 185 L 1138 186 L 1138 188 L 1136 192 L 1135 199 L 1134 200 L 1134 202 L 1132 206 L 1132 209 L 1131 210 L 1131 212 L 1129 216 L 1128 223 L 1127 224 L 1127 226 L 1125 230 L 1125 233 L 1124 234 L 1124 236 L 1123 237 L 1123 239 L 1122 240 L 1122 242 L 1120 246 L 1120 249 L 1119 250 L 1119 252 L 1118 253 L 1117 257 L 1181 257 L 1182 255 L 1182 252 L 1183 251 L 1183 248 L 1184 247 L 1184 244 L 1185 243 L 1185 240 L 1186 239 L 1186 236 L 1187 235 L 1187 232 L 1188 231 L 1188 228 L 1190 224 L 1190 220 L 1191 219 L 1191 217 L 1193 213 L 1193 210 L 1195 207 L 1271 207 L 1273 210 L 1275 222 L 1277 226 L 1278 233 L 1279 234 L 1279 236 L 1281 240 L 1282 248 L 1283 249 L 1285 257 L 1352 257 L 1351 256 L 1351 252 L 1349 249 L 1349 246 L 1347 242 L 1347 239 L 1346 238 L 1346 236 L 1345 235 L 1345 233 L 1343 229 L 1343 226 L 1342 225 L 1342 222 L 1341 221 L 1341 219 L 1339 215 L 1338 208 L 1335 202 L 1335 199 L 1334 198 L 1334 195 L 1333 194 L 1332 187 L 1331 186 L 1331 184 L 1330 183 L 1330 181 L 1328 177 L 1328 174 L 1327 173 L 1327 170 L 1326 169 L 1325 163 L 1323 159 L 1323 156 L 1321 153 L 1320 146 L 1319 145 L 1319 143 L 1318 142 L 1318 140 L 1316 136 L 1316 133 L 1315 132 L 1315 130 L 1313 126 L 1312 119 L 1311 118 L 1311 116 L 1309 112 L 1309 109 L 1308 108 L 1307 102 L 1305 98 L 1304 91 L 1303 90 L 1303 88 L 1301 84 L 1301 81 L 1300 80 L 1300 78 L 1299 77 L 1299 75 L 1297 71 L 1297 68 L 1296 67 L 1296 65 L 1294 61 L 1293 53 L 1292 52 L 1291 46 L 1289 42 L 1289 39 L 1288 38 L 1288 36 L 1286 32 L 1286 29 L 1284 25 L 1284 22 L 1283 21 L 1283 19 L 1281 15 L 1281 11 L 1279 8 L 1278 4 Z M 1233 62 L 1235 66 L 1235 69 L 1236 70 L 1236 73 L 1238 77 L 1238 80 L 1239 81 L 1239 84 L 1240 85 L 1241 92 L 1243 96 L 1243 99 L 1244 100 L 1245 107 L 1247 111 L 1248 119 L 1250 123 L 1250 126 L 1251 127 L 1252 134 L 1254 138 L 1255 146 L 1257 150 L 1257 154 L 1256 155 L 1217 155 L 1216 154 L 1211 154 L 1210 153 L 1211 147 L 1212 146 L 1212 143 L 1213 142 L 1213 138 L 1215 134 L 1215 131 L 1216 130 L 1217 123 L 1218 122 L 1219 116 L 1220 115 L 1220 111 L 1221 110 L 1221 107 L 1222 106 L 1222 103 L 1223 102 L 1223 99 L 1224 98 L 1224 94 L 1225 93 L 1226 87 L 1227 86 L 1227 83 L 1228 82 L 1228 78 L 1229 77 L 1229 74 L 1230 73 L 1230 70 L 1231 69 L 1231 65 Z M 1089 4 L 1003 4 L 999 9 L 997 13 L 988 24 L 986 28 L 983 31 L 983 32 L 980 35 L 980 36 L 977 39 L 977 40 L 974 43 L 974 44 L 971 47 L 971 48 L 968 51 L 968 52 L 964 56 L 964 57 L 958 64 L 956 68 L 949 76 L 949 77 L 946 80 L 944 84 L 937 92 L 937 93 L 929 103 L 928 102 L 928 9 L 927 8 L 927 4 L 859 4 L 858 5 L 855 5 L 856 5 L 860 9 L 861 11 L 861 257 L 927 257 L 927 192 L 928 190 L 940 177 L 940 176 L 956 158 L 956 157 L 961 152 L 961 151 L 967 145 L 967 144 L 972 139 L 972 138 L 979 131 L 979 130 L 990 118 L 990 117 L 995 112 L 995 111 L 1009 96 L 1009 95 L 1014 90 L 1014 89 L 1021 82 L 1021 81 L 1028 74 L 1028 73 L 1048 51 L 1048 50 L 1055 43 L 1055 42 L 1063 34 L 1063 33 L 1089 5 Z M 593 4 L 597 8 L 597 10 L 598 11 L 598 23 L 599 24 L 599 257 L 667 257 L 667 164 L 668 163 L 700 163 L 701 164 L 709 164 L 710 165 L 713 165 L 717 167 L 721 171 L 721 173 L 723 177 L 723 182 L 724 183 L 724 190 L 725 191 L 725 197 L 726 198 L 726 207 L 727 208 L 727 222 L 728 223 L 728 238 L 729 239 L 729 253 L 730 254 L 730 257 L 802 257 L 802 245 L 801 244 L 801 230 L 800 229 L 800 213 L 799 212 L 799 200 L 798 199 L 798 190 L 797 189 L 797 182 L 796 181 L 796 173 L 795 172 L 795 168 L 794 167 L 794 164 L 793 163 L 792 157 L 787 148 L 781 142 L 770 136 L 768 136 L 767 135 L 763 135 L 762 134 L 759 134 L 758 133 L 759 132 L 763 132 L 764 131 L 768 131 L 769 130 L 774 129 L 783 124 L 792 115 L 792 114 L 795 111 L 796 107 L 799 102 L 799 100 L 801 96 L 801 92 L 802 91 L 802 83 L 803 82 L 802 65 L 801 64 L 801 60 L 800 59 L 799 52 L 797 49 L 796 44 L 788 30 L 777 19 L 776 19 L 771 15 L 761 10 L 759 10 L 758 9 L 756 9 L 752 7 L 749 7 L 748 6 L 744 6 L 743 5 L 735 5 L 734 4 L 675 4 L 675 54 L 676 55 L 713 55 L 717 58 L 722 60 L 724 62 L 724 63 L 726 64 L 730 72 L 730 75 L 731 76 L 731 90 L 730 91 L 729 96 L 726 100 L 726 101 L 721 106 L 711 111 L 707 111 L 706 112 L 668 112 L 667 111 L 667 4 Z M 385 4 L 385 5 L 389 9 L 389 12 L 390 13 L 389 15 L 389 18 L 388 19 L 387 25 L 385 29 L 384 37 L 383 38 L 383 41 L 382 42 L 382 44 L 380 48 L 379 55 L 378 56 L 378 58 L 376 62 L 376 65 L 375 66 L 375 69 L 374 70 L 374 73 L 373 74 L 372 81 L 371 82 L 371 84 L 369 88 L 368 95 L 366 99 L 366 102 L 365 103 L 365 106 L 364 107 L 363 114 L 362 115 L 362 117 L 360 121 L 360 124 L 359 125 L 359 127 L 357 131 L 357 135 L 356 136 L 356 139 L 354 143 L 354 146 L 353 147 L 353 150 L 351 154 L 351 157 L 349 161 L 349 164 L 348 165 L 348 168 L 346 172 L 345 179 L 344 180 L 344 182 L 342 186 L 341 193 L 340 194 L 340 196 L 338 200 L 337 207 L 336 208 L 336 210 L 334 214 L 334 217 L 333 218 L 333 220 L 331 224 L 331 227 L 329 231 L 329 234 L 327 237 L 327 240 L 326 241 L 326 243 L 325 244 L 325 246 L 323 250 L 323 253 L 321 257 L 385 257 L 386 256 L 386 253 L 387 252 L 387 249 L 388 248 L 389 241 L 391 237 L 391 233 L 392 232 L 392 229 L 394 225 L 394 222 L 395 221 L 396 214 L 397 213 L 397 211 L 399 207 L 475 207 L 477 209 L 477 212 L 478 213 L 478 216 L 479 217 L 479 221 L 480 222 L 481 228 L 483 232 L 483 235 L 484 236 L 484 238 L 486 242 L 487 251 L 490 257 L 556 257 L 556 255 L 555 254 L 555 252 L 554 251 L 554 249 L 552 245 L 552 241 L 551 240 L 551 238 L 550 237 L 550 235 L 548 231 L 548 228 L 547 227 L 547 225 L 545 221 L 544 214 L 543 213 L 543 211 L 542 210 L 542 208 L 540 204 L 540 201 L 538 197 L 538 194 L 537 193 L 536 186 L 535 185 L 535 183 L 534 182 L 534 180 L 532 176 L 532 173 L 530 169 L 529 162 L 528 161 L 528 159 L 527 158 L 527 156 L 525 152 L 524 145 L 523 144 L 523 142 L 521 138 L 521 135 L 520 134 L 520 132 L 519 131 L 519 129 L 517 125 L 517 122 L 515 118 L 515 115 L 513 111 L 513 108 L 512 107 L 512 105 L 510 101 L 510 98 L 509 97 L 509 94 L 508 93 L 507 87 L 505 83 L 505 80 L 504 79 L 504 77 L 502 73 L 502 70 L 501 69 L 501 67 L 500 66 L 500 64 L 498 60 L 497 52 L 495 48 L 494 41 L 493 40 L 493 38 L 491 34 L 491 31 L 490 30 L 490 28 L 489 27 L 489 25 L 487 21 L 487 18 L 486 17 L 486 14 L 485 13 L 483 5 L 482 4 Z M 437 62 L 440 68 L 441 76 L 443 80 L 443 83 L 444 84 L 445 91 L 447 95 L 447 98 L 448 99 L 449 106 L 451 110 L 451 113 L 452 114 L 452 117 L 453 118 L 454 125 L 456 129 L 457 137 L 458 138 L 459 144 L 460 145 L 460 149 L 461 150 L 461 154 L 460 155 L 422 155 L 421 154 L 415 154 L 414 153 L 415 151 L 415 148 L 416 147 L 416 144 L 417 143 L 417 140 L 418 139 L 418 136 L 419 135 L 419 132 L 420 131 L 420 128 L 422 124 L 422 120 L 423 119 L 424 113 L 425 112 L 425 109 L 426 108 L 426 104 L 427 103 L 427 100 L 428 99 L 428 96 L 429 95 L 429 92 L 430 91 L 430 88 L 431 87 L 432 80 L 433 79 L 434 70 L 435 69 L 436 63 Z M 0 4 L 0 5 L 1 5 L 4 9 L 4 22 L 5 23 L 5 257 L 72 257 L 72 93 L 73 92 L 73 85 L 72 84 L 72 69 L 73 68 L 75 72 L 75 76 L 76 77 L 77 85 L 78 86 L 78 91 L 79 92 L 79 96 L 80 97 L 80 101 L 81 102 L 81 106 L 82 107 L 82 112 L 83 113 L 83 117 L 84 118 L 84 122 L 85 123 L 85 128 L 86 129 L 86 133 L 87 134 L 87 138 L 88 139 L 88 143 L 89 144 L 89 149 L 90 150 L 90 154 L 91 155 L 91 159 L 92 160 L 92 164 L 93 165 L 93 170 L 94 171 L 94 175 L 95 176 L 95 180 L 96 181 L 96 185 L 97 186 L 97 192 L 98 193 L 98 197 L 99 198 L 99 202 L 100 203 L 101 215 L 102 216 L 102 220 L 103 221 L 103 225 L 104 226 L 105 238 L 106 239 L 106 243 L 107 244 L 107 248 L 108 249 L 108 255 L 109 257 L 168 257 L 168 255 L 169 254 L 169 250 L 170 249 L 170 244 L 171 243 L 172 235 L 173 234 L 173 229 L 174 228 L 175 219 L 176 218 L 176 215 L 177 214 L 178 204 L 179 203 L 180 195 L 181 194 L 181 189 L 182 188 L 183 180 L 184 179 L 184 176 L 185 175 L 185 170 L 186 169 L 186 166 L 187 165 L 187 162 L 188 161 L 189 152 L 190 151 L 190 148 L 191 147 L 191 144 L 192 143 L 193 134 L 194 133 L 194 130 L 195 129 L 195 126 L 196 125 L 196 121 L 197 120 L 197 117 L 198 116 L 198 113 L 199 112 L 199 109 L 200 108 L 200 104 L 201 103 L 201 100 L 202 99 L 202 96 L 203 95 L 203 92 L 204 91 L 204 87 L 205 86 L 206 80 L 207 79 L 207 76 L 208 75 L 208 71 L 210 67 L 210 64 L 211 63 L 211 60 L 212 59 L 212 56 L 213 55 L 214 56 L 214 257 L 280 257 L 280 5 L 279 4 L 180 4 L 180 7 L 178 11 L 177 19 L 176 20 L 176 23 L 175 24 L 175 27 L 174 28 L 174 31 L 173 32 L 173 36 L 172 37 L 172 40 L 171 41 L 171 44 L 170 45 L 169 55 L 167 59 L 166 67 L 165 68 L 165 71 L 163 75 L 162 85 L 161 86 L 161 89 L 160 90 L 160 93 L 159 94 L 159 97 L 158 98 L 158 102 L 157 103 L 157 106 L 156 107 L 155 113 L 154 114 L 154 118 L 153 119 L 153 123 L 152 124 L 152 127 L 151 128 L 151 131 L 150 132 L 150 136 L 149 137 L 149 140 L 148 141 L 148 144 L 147 145 L 146 152 L 144 156 L 144 159 L 142 163 L 141 162 L 141 159 L 140 158 L 139 148 L 138 147 L 138 143 L 137 142 L 137 138 L 136 137 L 136 133 L 135 132 L 134 123 L 133 122 L 133 119 L 132 118 L 132 113 L 131 112 L 130 103 L 129 102 L 128 94 L 127 93 L 127 89 L 126 88 L 126 85 L 125 84 L 125 80 L 124 79 L 123 70 L 122 69 L 122 66 L 121 65 L 121 62 L 120 61 L 120 56 L 119 55 L 119 51 L 118 50 L 118 47 L 117 46 L 116 36 L 115 35 L 115 32 L 114 31 L 114 28 L 113 27 L 112 17 L 111 16 L 111 13 L 110 12 L 109 5 L 105 5 L 104 4 Z" fill="#d33ca3" fill-rule="evenodd"/></svg>';
+
+// ============================
+// SVG ICONS (no emoji)
+// ============================
+var ICONS = {
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+  arrowUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12l7-7 7 7"/></svg>',
+  arrowDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>',
+  arrowLeft: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>',
+  arrowRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>',
+  headphones: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>',
+  volume: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.08"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  ear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 18.5a3.5 3.5 0 017 0c0 1.57-.75 2.5-2 2.5H8.5"/><path d="M17.5 5.5A7 7 0 005 11c0 1.5.5 3 1.5 4.5"/><path d="M15 8a3 3 0 00-6 0c0 2 2 3 2 5"/></svg>',
+  trendUp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>',
+  trendDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 18l-9.5-9.5-5 5L1 6"/><path d="M17 18h6v-6"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>',
+  chevronRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+  wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12c1-3 3-3 4 0s3 3 4 0 3-3 4 0 3 3 4 0 3-3 4 0"/></svg>',
+  gap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12h7M15 12h7"/><path d="M9 8v8M15 8v8"/></svg>',
+  pulse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12h4l2-6 4 12 2-6h4"/><circle cx="20" cy="12" r="2"/></svg>',
+  music: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4.5a4.5 4.5 0 00-4.5 4.5c0 1.5.7 2.8 1.8 3.7L12 15l2.7-2.3A4.5 4.5 0 0012 4.5z"/><path d="M12 15v7"/><path d="M8 20h8"/></svg>',
+  palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="8" cy="10" r="1.5" fill="currentColor"/><circle cx="12" cy="7" r="1.5" fill="currentColor"/><circle cx="16" cy="10" r="1.5" fill="currentColor"/><path d="M15.6 14a2 2 0 01-1.6 3h-1a3 3 0 00-3 3 1 1 0 01-1 1 7 7 0 110-14c.6 0 1 .4 1 1v1"/></svg>',
+  zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+};
+
+// ============================
+// STATE
+// ============================
+var currentScreen = 'intro';
+var testActive = false;
+var audioCtx = null;
+var state = {
+  useHeadphones: false,
+  currentTestIndex: 0,
+  csResult: null,
+  colorResult: null,
+  flickerResult: null,
+  tinResult: null,
+  gapResult: null,
+  amResult: null,
+  dichoticResult: null,
+};
+
+// Test order: contrast, color, flicker, toneNoise, gap, am
+var TOTAL_TESTS = 6;
+
+// Contrast sensitivity state
+var CS = {
+  logCS: 1.5,
+  step: 0.15,
+  minLogCS: 0.0,
+  maxLogCS: 2.1,
+  consecutiveCorrect: 0,
+  reversals: [],
+  lastDirection: null,
+  trials: [],
+  trialNum: 0,
+  maxTrials: 15,
+  reversalsForEnd: 6,
+  currentGap: null
+};
+
+// Color Discrimination Ratio state
+var COLOR = {
+  phase: 'blue',
+  baseHue: 220,
+  deltaHue: 8,
+  stepFactor: 1.3,
+  minDelta: 1,
+  maxDelta: 30,
+  consecutiveCorrect: 0,
+  reversals: [],
+  lastDirection: null,
+  trials: [],
+  trialNum: 0,
+  maxTrials: 8,
+  targetInterval: null,
+  responding: false,
+  blueThreshold: null,
+  redThreshold: null
+};
+
+// Flicker Sensitivity (CFF) state
+var FLICKER = {
+  frequency: 5,
+  step: 3,
+  minFreq: 3,
+  maxFreq: 50,
+  runNum: 0,
+  maxRuns: 3,
+  runThresholds: [],
+  animFrame: null
+};
+
+// Tone-in-noise state
+var TIN = {
+  snr: -4,
+  stepCoarse: 4,
+  stepFine: 2,
+  consecutiveCorrect: 0,
+  reversals: [],
+  lastDirection: null,
+  trials: [],
+  trialNum: 0,
+  freq: 2000,
+  noiseGain: 0.12,
+  phase: 'primary',
+  maxTrials: 8,
+  checkTrials: 2,
+  checkCorrect: 0,
+  targetInterval: null,
+  responding: false
+};
+
+// Gap detection state
+var GAP = {
+  gapMs: 6,
+  stepFactor: 1.414,
+  minGap: 1,
+  maxGap: 40,
+  consecutiveCorrect: 0,
+  reversals: [],
+  lastDirection: null,
+  trials: [],
+  trialNum: 0,
+  maxTrials: 8,
+  targetInterval: null,
+  responding: false,
+  noiseGain: 0.15
+};
+
+// AM detection state
+var AM = {
+  modDB: -14,
+  stepCoarse: 2,
+  stepFine: 1,
+  consecutiveCorrect: 0,
+  reversals: [],
+  lastDirection: null,
+  trials: [],
+  trialNum: 0,
+  maxTrials: 8,
+  targetInterval: null,
+  responding: false,
+  noiseGain: 0.12
+};
+
+// Dichotic state
+var DICH = {
+  trials: [],
+  trialNum: 0,
+  maxTrials: 12,
+  responding: false,
+  toneGain: 0.2
+};
+
+// ============================
+// UTILITY
+// ============================
+function isDesktop() {
+  return !('ontouchstart' in window) && window.innerWidth > 768;
+}
+
+// Keyboard support for desktop
+document.addEventListener('keydown', function(e) {
+  if (!testActive) return;
+  // Contrast test: arrow keys
+  if (currentScreen === 'contrast') {
+    var map = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
+    if (map[e.key]) { e.preventDefault(); answerCS(map[e.key]); }
+  }
+  // Flicker test: 1=flickering, 2=steady
+  if (currentScreen === 'flicker') {
+    if (e.key === '1') { e.preventDefault(); answerFlicker('flickering'); }
+    if (e.key === '2') { e.preventDefault(); answerFlicker('steady'); }
+  }
+  // 3IFC tests: 1/2/3 keys, 0 = didn't hear
+  if (currentScreen === 'toneNoise' && TIN.responding) {
+    if (e.key >= '0' && e.key <= '3') { e.preventDefault(); answerTIN(parseInt(e.key)); }
+  }
+  if (currentScreen === 'gap' && GAP.responding) {
+    if (e.key >= '0' && e.key <= '3') { e.preventDefault(); answerGap(parseInt(e.key)); }
+  }
+  if (currentScreen === 'am' && AM.responding) {
+    if (e.key >= '0' && e.key <= '3') { e.preventDefault(); answerAM(parseInt(e.key)); }
+  }
+  // Color test: 1/2/3 keys
+  if (currentScreen === 'color' && COLOR.responding) {
+    if (e.key >= '1' && e.key <= '3') { e.preventDefault(); answerColor(parseInt(e.key)); }
+    if (e.key === '0') { e.preventDefault(); answerColor(0); }
+  }
+  // Dichotic test: left/right arrow keys
+  if (currentScreen === 'dichotic' && DICH.responding) {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); answerDich('left'); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); answerDich('right'); }
+  }
+});
+
+function getStepLabel() {
+  var labels = {
+    intro: '',
+    brightness: 'הכנה',
+    contrast: 'בדיקה 1 מתוך 5',
+    contrastDone: '',
+    colorDemo: 'הדגמת צבע',
+    color: 'בדיקה 2 מתוך 5',
+    colorDone: '',
+    flickerDemo: 'הדגמת הבהוב',
+    flicker: 'בדיקה 3 מתוך 5',
+    flickerDone: '',
+    headphones: 'הכנה',
+    tinDemo: 'הדגמת שמיעה',
+    toneNoise: 'בדיקה 3 מתוך 5',
+    tinDone: '',
+    gapDemo: 'הדגמת רווחים',
+    gap: 'בדיקה 4 מתוך 5',
+    gapDone: '',
+    amDemo: 'הדגמת קצב',
+    am: 'בדיקה 5 מתוך 5',
+    amDone: '',
+    dichoticIntro: 'בונוס',
+    dichotic: 'בונוס',
+    dichoticDone: '',
+    results: 'תוצאות'
+  };
+  return labels[currentScreen] || '';
+}
+
+function ensureAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function journeyProgress(testIdx) {
+  var total = TOTAL_TESTS;
+  var html = '<div class="journey-bar">';
+  for (var i = 0; i < total; i++) {
+    if (i < testIdx) html += '<div class="journey-seg done"></div>';
+    else if (i === testIdx) html += '<div class="journey-seg active"></div>';
+    else html += '<div class="journey-seg"></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// Response countdown - shows seconds remaining and auto-answers when done
+function startResponseCountdown(statusId, seconds, autoAnswer) {
+  var remaining = seconds;
+  var el = document.getElementById(statusId);
+  if (el) { el.textContent = 'בחרי עכשיו (' + remaining + 'ש)'; el.style.color = ''; }
+  var interval = setInterval(function() {
+    remaining--;
+    if (el) {
+      el.textContent = remaining > 0 ? 'בחרי עכשיו (' + remaining + 'ש)' : 'נגמר הזמן';
+      if (remaining <= 3) el.style.color = 'var(--coral)';
+    }
+    if (remaining <= 0) {
+      clearInterval(interval);
+      autoAnswer();
+    }
+  }, 1000);
+  return interval;
+}
+
+// ============================
+// RENDER
+// ============================
+function render(screenName, html, showNav) {
+  if (showNav === undefined) showNav = true;
+  currentScreen = screenName;
+  var app = document.getElementById('app');
+  app.innerHTML =
+    (showNav ? '<div class="nav"><div class="nav-logo"></div><div class="nav-step">' + getStepLabel() + '</div></div>' : '') +
+    '<div class="screen">' + html + '</div>';
+  if (AFTER_RENDER[screenName]) AFTER_RENDER[screenName]();
+  window.scrollTo(0, 0);
+}
+
+var AFTER_RENDER = {};
+
+// beforeunload
+window.addEventListener('beforeunload', function(e) {
+  if (testActive) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+// ============================
+// SCREEN 1: INTRO
+// ============================
+function showIntro() {
+  render('intro', '<div style="display:flex;flex-direction:column;flex:1">' +
+    '<div style="padding:24px 0 16px">' +
+      '<div class="eyebrow" style="margin-bottom:20px"><span dir="ltr">SENSE\u2122</span></div>' +
+      '<h1 style="font-size:32px;margin-bottom:14px">דגימת חושים</h1>' +
+      '<p class="subtitle" style="font-size:15px;line-height:1.65;margin-bottom:0">שינויים הורמונליים משפיעים על החושים שלך בצורה מדידה. הבדיקה הזו קולטת שישה אותות חושיים בראייה ובשמיעה.</p>' +
+      '<p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-top:8px">ראייה, שמיעה ושיווי משקל עשויים להשתנות בעקבות תנודות הורמונליות. דגימה קצרה של 6 מדדים חושיים.</p>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;margin:20px 0 12px;flex-wrap:wrap">' +
+      '<div class="meta-item"><div class="meta-icon">' + ICONS.clock + '</div><span>~2.5 דק\'</span></div>' +
+      '<div class="meta-item"><div class="meta-icon">' + ICONS.activity + '</div><span>5 בדיקות</span></div>' +
+    '</div>' +
+    '<div class="card" style="padding:16px 18px;margin:8px 0 16px">' +
+      '<div class="label" style="margin-bottom:12px">מה אנחנו בודקים</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+        '<div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0"></div><span style="font-size:13px;color:var(--text-secondary)">ניגודיות</span></div>' +
+        '<div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;opacity:.85"></div><span style="font-size:13px;color:var(--text-secondary)">צבע</span></div>' +
+        '<div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#7b26a2;flex-shrink:0"></div><span style="font-size:13px;color:var(--text-secondary)">שמיעה</span></div>' +
+        '<div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#7b26a2;flex-shrink:0;opacity:.85"></div><span style="font-size:13px;color:var(--text-secondary)">רווחים</span></div>' +
+        '<div style="display:flex;align-items:center;gap:8px"><div style="width:8px;height:8px;border-radius:50%;background:#7b26a2;flex-shrink:0;opacity:.7"></div><span style="font-size:13px;color:var(--text-secondary)">קצב</span></div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="expandable-toggle" onclick="toggleExpand(this)"><span>' + ICONS.chevronRight + '</span> למה זה קורה?</button>' +
+    '<div class="expandable-content">בתקופת הפרימנופאוזה, תנודות ברמות האסטרוגן והפרוגסטרון משפיעות על עיבוד חושי. קולטני אסטרוגן נמצאים בשבלול האוזן, ברשתית ובמסלולים העצביים השולטים בעיבוד זמני. שינויים בהורמונים אלו עשויים להשפיע על רגישות לניגודיות, הבחנת צבעים, סף שמיעה וזיהוי רווחים.</div>' +
+    '<div style="flex:1"></div>' +
+    '<button class="btn btn-primary" onclick="showBrightness()" style="margin-top:16px">בואי נתחיל</button>' +
+    '<p class="disclaimer">אות רווחה כללי בלבד. אינו מהווה ייעוץ רפואי, אבחון או טיפול.</p>' +
+  '</div>');
+}
+
+function toggleExpand(btn) {
+  btn.classList.toggle('open');
+  var content = btn.nextElementSibling;
+  content.classList.toggle('show');
+}
+
+// ============================
+// SCREEN 2: BRIGHTNESS CHECK
+// ============================
+function showBrightness() {
+  render('brightness', '<div style="display:flex;flex-direction:column;flex:1">' +
+    '<div style="background:linear-gradient(135deg,var(--accent-bg),#f3e8ff);border-radius:var(--radius);padding:24px 20px;margin:8px 0 20px;text-align:center">' +
+      '<div style="width:48px;height:48px;margin:0 auto 12px;background:rgba(209,64,156,.1);border-radius:50%;display:flex;align-items:center;justify-content:center">' + ICONS.sun + '</div>' +
+      '<h2 style="margin-bottom:8px">לפני שמתחילות</h2>' +
+      '<p style="font-size:13px;color:var(--text-secondary);line-height:1.5">הכיני את הסביבה למדידות מדויקות</p>' +
+    '</div>' +
+    '<div class="card" style="margin-bottom:12px;display:flex;align-items:flex-start;gap:14px">' +
+      '<div style="width:36px;height:36px;min-width:36px;background:var(--accent-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--accent)">' + ICONS.sun + '</div>' +
+      '<div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px">בהירות מקסימלית</div><div style="font-size:12px;color:var(--text-muted)">כווני את בהירות המסך ל-100%</div></div>' +
+    '</div>' +
+    '<div class="card" style="margin-bottom:12px;display:flex;align-items:flex-start;gap:14px">' +
+      '<div style="width:36px;height:36px;min-width:36px;background:#f3e8ff;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#7b26a2">' + ICONS.eye + '</div>' +
+      '<div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px">מרחק זרוע</div><div style="font-size:12px;color:var(--text-muted)">החזיקי במרחק כ-30 ס\u05F4מ מהעיניים</div></div>' +
+    '</div>' +
+    '<div style="flex:1"></div>' +
+    '<button class="btn btn-primary" onclick="startContrastTest()">מוכנה</button>' +
+  '</div>');
+}
+
+// ============================
+// SCREEN 3: CONTRAST SENSITIVITY TEST (Landolt C)
+// ============================
+function resetCS() {
+  CS.logCS = 1.5;
+  CS.step = 0.15;
+  CS.consecutiveCorrect = 0;
+  CS.reversals = [];
+  CS.lastDirection = null;
+  CS.trials = [];
+  CS.trialNum = 0;
+  CS.currentGap = null;
+}
+
+function drawLandoltC(canvas, gapDirection, opacity) {
+  var dpr = window.devicePixelRatio || 1;
+  var displaySize = 200;
+  canvas.style.width = displaySize + 'px';
+  canvas.style.height = displaySize + 'px';
+  canvas.width = displaySize * dpr;
+  canvas.height = displaySize * dpr;
+
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, displaySize, displaySize);
+
+  var cx = displaySize / 2;
+  var cy = displaySize / 2;
+  var size = 24;
+  var radius = size / 2;
+  var strokeWidth = size * 0.2;
+  var gapAngle = Math.PI / 4;
+
+  var dirAngles = { right: 0, down: Math.PI / 2, left: Math.PI, up: 3 * Math.PI / 2 };
+  var gapCenter = dirAngles[gapDirection];
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius - strokeWidth / 2, gapCenter + gapAngle / 2, gapCenter - gapAngle / 2 + 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(0,0,0,' + opacity + ')';
+  ctx.lineWidth = strokeWidth;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+}
+
+function getCSOpacity() {
+  return Math.pow(10, -CS.logCS);
+}
+
+function getRandomDirection() {
+  var dirs = ['up', 'right', 'down', 'left'];
+  return dirs[Math.floor(Math.random() * dirs.length)];
+}
+
+function startContrastTest() {
+  resetCS();
+  testActive = true;
+  state.currentTestIndex = 0;
+  showContrastTrial();
+}
+
+function showContrastTrial() {
+  if (!testActive) return;
+
+  if (CS.reversals.length >= CS.reversalsForEnd || CS.trialNum >= CS.maxTrials) {
+    finishContrastTest();
+    return;
+  }
+
+  CS.currentGap = getRandomDirection();
+  var opacity = getCSOpacity();
+  var progress = Math.min(CS.trialNum / CS.maxTrials, CS.reversals.length / CS.reversalsForEnd) * 100;
+
+  render('contrast', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(0) +
+    '<div class="trial-header"><span class="trial-label">רגישות לניגודיות</span><span class="trial-count">ניסיון ' + (CS.trialNum + 1) + '</span></div>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<p style="text-align:center;font-size:15px;color:var(--text-secondary);margin-bottom:4px;font-weight:500">לאיזה כיוון הפתח?</p>' +
+      '<p style="text-align:center;font-size:11px;color:var(--text-muted);margin-bottom:4px">החזיקי במרחק זרוע</p>' +
+      (isDesktop() ? '<p style="text-align:center;font-size:11px;color:var(--accent);margin-bottom:16px">ניתן להשתמש בחיצי המקלדת</p>' : '<p style="margin-bottom:16px"></p>') +
+      '<div class="canvas-wrap" style="margin:0 0 20px"><canvas id="csCanvas"></canvas></div>' +
+      '<div class="dir-diamond">' +
+        '<button class="dir-btn dir-up" onclick="answerCS(\'up\')" aria-label="למעלה">' + ICONS.arrowUp + '</button>' +
+        '<button class="dir-btn dir-left" onclick="answerCS(\'left\')" aria-label="שמאלה">' + ICONS.arrowLeft + '</button>' +
+        '<button class="dir-btn dir-right" onclick="answerCS(\'right\')" aria-label="ימינה">' + ICONS.arrowRight + '</button>' +
+        '<button class="dir-btn dir-down" onclick="answerCS(\'down\')" aria-label="למטה">' + ICONS.arrowDown + '</button>' +
+      '</div>' +
+    '</div>' +
+    '<div><div class="progress-wrap"><div class="progress-fill" style="width:' + progress + '%"></div></div>' +
+    '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipTest(\'contrast\')">דלגי על בדיקה זו</button></div></div>' +
+  '</div>');
+
+  AFTER_RENDER['contrast'] = function() {
+    var canvas = document.getElementById('csCanvas');
+    if (canvas) drawLandoltC(canvas, CS.currentGap, opacity);
+  };
+  AFTER_RENDER['contrast']();
+}
+
+function answerCS(direction) {
+  if (!testActive) return;
+  var correct = direction === CS.currentGap;
+
+  CS.trials.push({ trial: CS.trialNum, logCS: CS.logCS, gap: CS.currentGap, response: direction, correct: correct });
+
+  var btn = document.querySelector('.dir-' + direction);
+  if (btn) btn.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+
+  if (correct) {
+    CS.consecutiveCorrect++;
+    if (CS.consecutiveCorrect >= 2) {
+      var newDir = 'up';
+      if (CS.lastDirection === 'down') CS.reversals.push(CS.logCS);
+      CS.lastDirection = newDir;
+      CS.logCS = Math.min(CS.logCS + CS.step, CS.maxLogCS);
+      CS.consecutiveCorrect = 0;
+    }
+  } else {
+    CS.consecutiveCorrect = 0;
+    var newDir2 = 'down';
+    if (CS.lastDirection === 'up') CS.reversals.push(CS.logCS);
+    CS.lastDirection = newDir2;
+    CS.logCS = Math.max(CS.logCS - CS.step, CS.minLogCS);
+  }
+
+  CS.trialNum++;
+  setTimeout(showContrastTrial, 200);
+}
+
+function finishContrastTest() {
+  var threshold;
+  if (CS.reversals.length >= 4) {
+    var last4 = CS.reversals.slice(-4);
+    threshold = last4.reduce(function(a, b) { return a + b; }, 0) / last4.length;
+  } else if (CS.reversals.length > 0) {
+    threshold = CS.reversals.reduce(function(a, b) { return a + b; }, 0) / CS.reversals.length;
+  } else {
+    threshold = CS.logCS;
+  }
+  state.csResult = { logCS: Math.round(threshold * 100) / 100, trials: CS.trialNum, reversals: CS.reversals.length };
+  testActive = false;
+  showTransition('\u05E0\u05D9\u05D2\u05D5\u05D3\u05D9\u05D5\u05EA \u05E0\u05E7\u05DC\u05D8\u05D4!', '\u05E6\u05D9\u05D5\u05DF: ' + state.csResult.logCS, showColorDemo);
+}
+
+function skipTest(name) {
+  testActive = false;
+  if (FLICKER.animFrame) { cancelAnimationFrame(FLICKER.animFrame); FLICKER.animFrame = null; }
+  if (name === 'contrast') { state.csResult = null; showColorDemo(); }
+  else if (name === 'color') { state.colorResult = null; showHeadphones(); }
+  else if (name === 'flicker') { state.flickerResult = null; showHeadphones(); }
+  else if (name === 'toneNoise') { state.tinResult = null; showGapDemo(); }
+  else if (name === 'gap') { state.gapResult = null; showAMDemo(); }
+  else if (name === 'am') { state.amResult = null; checkDichotic(); }
+  else if (name === 'dichotic') { state.dichoticResult = null; showResults(); }
+}
+
+// ============================
+// TRANSITION SCREEN
+// ============================
+function showTransition(title, detail, nextFn) {
+  var testNum = state.currentTestIndex + 1;
+  var pctDone = Math.round((testNum / TOTAL_TESTS) * 100);
+  render(currentScreen + 'Done', '<div style="display:flex;flex-direction:column;flex:1;align-items:center">' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%">' +
+      '<div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent-bg),#f3e8ff);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 8px 30px rgba(209,64,156,.12)">' +
+        '<div style="width:48px;height:48px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;color:#fff">' + ICONS.check + '</div>' +
+      '</div>' +
+      '<h2 style="text-align:center;margin-bottom:6px">' + title + '</h2>' +
+      '<p style="font-size:14px;color:var(--text-muted);margin-bottom:20px">' + detail + '</p>' +
+      '<div style="width:100%;max-width:200px;text-align:center">' +
+        '<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;font-weight:600">' + testNum + ' מתוך ' + TOTAL_TESTS + ' הושלמו</div>' +
+        '<div style="height:6px;background:var(--border-light);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + pctDone + '%;background:var(--gradient);border-radius:3px;transition:width .5s"></div></div>' +
+      '</div>' +
+    '</div>' +
+    '<button class="btn btn-primary" style="width:100%" onclick="window._transNext()">המשיכי</button>' +
+  '</div>');
+  window._transNext = nextFn;
+}
+
+// ============================
+// SCREEN 4: COLOR DISCRIMINATION RATIO (NEW)
+// ============================
+function resetCOLOR() {
+  COLOR.phase = 'blue';
+  COLOR.baseHue = 220;
+  COLOR.deltaHue = 8;
+  COLOR.stepFactor = 1.3;
+  COLOR.consecutiveCorrect = 0;
+  COLOR.reversals = [];
+  COLOR.lastDirection = null;
+  COLOR.trials = [];
+  COLOR.trialNum = 0;
+  COLOR.targetInterval = null;
+  COLOR.responding = false;
+  COLOR.blueThreshold = null;
+  COLOR.redThreshold = null;
+}
+
+function showColorDemo() {
+  render('colorDemo', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(1) +
+    '<h2 style="margin-bottom:10px">אבחנת צבע</h2>' +
+    '<p class="subtitle">שלושה עיגולים מופיעים. שניים באותו גוון, אחד שונה. מצאי את השונה.</p>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="color-surround" style="margin:0 0 16px;width:100%">' +
+        '<div style="width:70px;height:70px;border-radius:50%;background:hsl(220,80%,50%)"></div>' +
+        '<div style="width:70px;height:70px;border-radius:50%;background:hsl(235,80%,50%);box-shadow:0 0 0 3px rgba(255,255,255,.4)"></div>' +
+        '<div style="width:70px;height:70px;border-radius:50%;background:hsl(220,80%,50%)"></div>' +
+      '</div>' +
+      '<p style="font-size:13px;color:var(--text-secondary);text-align:center">עיגול 2 בגוון שונה. מצליחה לזהות?</p>' +
+      '<p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px">בודקים כחול ואז אדום. היחס חושף רגישות במסלול S-cone.</p>' +
+    '</div>' +
+    '<button class="btn btn-primary" onclick="startColorTest()">התחילי את הבדיקה</button>' +
+  '</div>');
+}
+
+function startColorTest() {
+  resetCOLOR();
+  testActive = true;
+  state.currentTestIndex = 1;
+  runColorTrial();
+}
+
+function runColorTrial() {
+  if (!testActive) return;
+
+  // Check if current phase is done
+  if (COLOR.trialNum >= COLOR.maxTrials) {
+    // Save threshold for this phase
+    var threshold = computeColorThreshold();
+    if (COLOR.phase === 'blue') {
+      COLOR.blueThreshold = threshold;
+      // Switch to red
+      COLOR.phase = 'red';
+      COLOR.baseHue = 0;
+      COLOR.deltaHue = 8;
+      COLOR.consecutiveCorrect = 0;
+      COLOR.reversals = [];
+      COLOR.lastDirection = null;
+      COLOR.trials = [];
+      COLOR.trialNum = 0;
+      runColorTrial();
+      return;
+    } else {
+      COLOR.redThreshold = threshold;
+      finishColorTest();
+      return;
+    }
+  }
+
+  // Pick target interval (1, 2, or 3)
+  COLOR.targetInterval = Math.floor(Math.random() * 3) + 1;
+  COLOR.responding = false;
+
+  var phaseLabel = COLOR.phase === 'blue' ? 'אבחנת כחול' : 'אבחנת אדום';
+  var phaseNum = COLOR.phase === 'blue' ? '\u05D0\u05F3' : '\u05D1\u05F3';
+  var totalTrials = COLOR.maxTrials;
+  var progress = COLOR.trialNum / totalTrials * 100;
+
+  // Build color circles
+  var base = COLOR.baseHue;
+  var delta = COLOR.deltaHue;
+  // Randomly add or subtract delta for target
+  var sign = Math.random() < 0.5 ? 1 : -1;
+  var targetHue = base + delta * sign;
+  COLOR._targetSign = sign;
+
+  var circles = '';
+  for (var i = 1; i <= 3; i++) {
+    var hue = (i === COLOR.targetInterval) ? targetHue : base;
+    circles += '<div class="color-circle" style="width:70px;height:70px;background:hsl(' + hue + ',80%,50%);cursor:pointer" onclick="answerColor(' + i + ')" id="cc-' + i + '"></div>';
+  }
+
+  render('color', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(1) +
+    '<div class="trial-header"><span class="trial-label">' + phaseLabel + ' (שלב ' + phaseNum + ')</span><span class="trial-count">ניסיון ' + (COLOR.trialNum + 1) + ' מתוך ' + totalTrials + '</span></div>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="color-surround" style="width:100%">' + circles + '</div>' +
+      '<div class="status-text" id="color-status" style="margin:16px 0 4px">איזה עיגול בגוון שונה?</div>' +
+      '<p style="text-align:center;font-size:11px;color:var(--text-muted);margin:0 0 4px">הסתכלי ישר</p>' +
+      (isDesktop() ? '<p style="text-align:center;font-size:11px;color:var(--accent);margin:0 0 12px">מקלדת: 1 / 2 / 3</p>' : '<p style="margin:0 0 12px"></p>') +
+      '<div class="response-btns" id="color-resp">' +
+        '<button class="resp-btn" onclick="answerColor(1)">1</button>' +
+        '<button class="resp-btn" onclick="answerColor(2)">2</button>' +
+        '<button class="resp-btn" onclick="answerColor(3)">3</button>' +
+      '</div>' +
+      '<div style="text-align:center;margin-top:4px"><button class="btn btn-ghost" style="font-size:12px;min-height:36px;color:var(--coral)" onclick="answerColor(0)">לא הצלחתי לזהות</button></div>' +
+    '</div>' +
+    '<div><div class="progress-wrap"><div class="progress-fill" style="width:' + progress + '%"></div></div>' +
+    '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipTest(\'color\')">דלגי על בדיקה זו</button></div></div>' +
+  '</div>');
+
+  COLOR.responding = true;
+}
+
+function answerColor(choice) {
+  if (!COLOR.responding) return;
+  COLOR.responding = false;
+
+  var didntSee = (choice === 0);
+  var correct = (!didntSee && choice === COLOR.targetInterval);
+
+  // Flash feedback on circles
+  if (choice >= 1 && choice <= 3) {
+    var el = document.getElementById('cc-' + choice);
+    if (el) el.style.border = correct ? '3px solid var(--cyan)' : '3px solid var(--coral)';
+  }
+  if (!correct) {
+    var tgt = document.getElementById('cc-' + COLOR.targetInterval);
+    if (tgt) tgt.style.border = '3px solid var(--cyan)';
+  }
+
+  COLOR.trials.push({ trial: COLOR.trialNum, phase: COLOR.phase, deltaHue: COLOR.deltaHue, target: COLOR.targetInterval, response: choice, correct: correct, didntSee: didntSee });
+
+  // 2-down-1-up adaptive
+  if (correct) {
+    COLOR.consecutiveCorrect++;
+    if (COLOR.consecutiveCorrect >= 2) {
+      var nDir = 'down';
+      if (COLOR.lastDirection === 'up') COLOR.reversals.push(COLOR.deltaHue);
+      COLOR.lastDirection = nDir;
+      COLOR.deltaHue = Math.max(COLOR.deltaHue / COLOR.stepFactor, COLOR.minDelta);
+      COLOR.consecutiveCorrect = 0;
+    }
+  } else {
+    COLOR.consecutiveCorrect = 0;
+    var nDir2 = 'up';
+    if (COLOR.lastDirection === 'down') COLOR.reversals.push(COLOR.deltaHue);
+    COLOR.lastDirection = nDir2;
+    COLOR.deltaHue = Math.min(COLOR.deltaHue * COLOR.stepFactor, COLOR.maxDelta);
+  }
+
+  COLOR.trialNum++;
+  setTimeout(runColorTrial, 400);
+}
+
+function computeColorThreshold() {
+  if (COLOR.reversals.length >= 4) {
+    var last4 = COLOR.reversals.slice(-4);
+    return last4.reduce(function(a, b) { return a + b; }, 0) / last4.length;
+  } else if (COLOR.reversals.length > 0) {
+    return COLOR.reversals.reduce(function(a, b) { return a + b; }, 0) / COLOR.reversals.length;
+  }
+  return COLOR.deltaHue;
+}
+
+function finishColorTest() {
+  var bdi = COLOR.redThreshold > 0 ? Math.round((COLOR.blueThreshold / COLOR.redThreshold) * 100) / 100 : 1.0;
+  state.colorResult = {
+    bdi: bdi,
+    blueThreshold: Math.round(COLOR.blueThreshold * 10) / 10,
+    redThreshold: Math.round(COLOR.redThreshold * 10) / 10,
+    blueTrials: COLOR.maxTrials,
+    redTrials: COLOR.maxTrials
+  };
+  testActive = false;
+  showTransition('\u05E6\u05D1\u05E2 \u05E0\u05E7\u05DC\u05D8!', '\u05E6\u05D9\u05D5\u05DF: ' + state.colorResult.bdi, showHeadphones);
+}
+
+// ============================
+// SCREEN 5: FLICKER SENSITIVITY (CFF) (NEW)
+// ============================
+function resetFLICKER() {
+  FLICKER.frequency = 5;
+  FLICKER.step = 3;
+  FLICKER.runNum = 0;
+  FLICKER.runThresholds = [];
+  if (FLICKER.animFrame) { cancelAnimationFrame(FLICKER.animFrame); FLICKER.animFrame = null; }
+}
+
+function showFlickerDemo() {
+  render('flickerDemo', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(2) +
+    '<h2 style="margin-bottom:10px">רגישות להבהוב</h2>' +
+    '<p class="subtitle">עיגול יהבהב. ככל שהקצב עולה, הוא ייראה יציב. ספרי לנו מתי.</p>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="flicker-area"><div id="flicker-demo-circle" class="flicker-circle"></div></div>' +
+      '<div class="status-text" id="flicker-demo-status">כך נראה הבהוב ב-5 Hz</div>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' +
+      '<button class="btn btn-primary" id="flicker-demo-play" onclick="playFlickerDemo()">הפעילי הדגמה</button>' +
+      '<button class="btn btn-secondary" id="flicker-demo-start" style="display:none" onclick="startFlickerTest()">התחילי את הבדיקה</button>' +
+    '</div>' +
+  '</div>');
+}
+
+function playFlickerDemo() {
+  var btn = document.getElementById('flicker-demo-play');
+  if (btn) btn.disabled = true;
+
+  // Show flickering at 5 Hz for 3 seconds
+  startFlickerAnimation('flicker-demo-circle', 5);
+  setTimeout(function() {
+    stopFlickerAnimation();
+    var circle = document.getElementById('flicker-demo-circle');
+    if (circle) circle.style.opacity = '1';
+    var status = document.getElementById('flicker-demo-status');
+    if (status) status.textContent = 'עכשיו העיגול יציב. בנקודה הזו היית לוחצת "נראה יציב".';
+    var startBtn = document.getElementById('flicker-demo-start');
+    if (startBtn) startBtn.style.display = '';
+    if (btn) { btn.textContent = 'הפעילי שוב'; btn.disabled = false; }
+  }, 3000);
+}
+
+function startFlickerAnimation(elementId, freq) {
+  stopFlickerAnimation();
+  var circle = document.getElementById(elementId);
+  if (!circle) return;
+  var startTime = performance.now();
+
+  function animate(now) {
+    var elapsed = (now - startTime) / 1000;
+    // Sinusoidal modulation: opacity oscillates between 0.15 and 1.0
+    var phase = Math.sin(2 * Math.PI * freq * elapsed);
+    var opacity = 0.575 + 0.425 * phase;
+    circle.style.opacity = opacity;
+    FLICKER.animFrame = requestAnimationFrame(animate);
+  }
+  FLICKER.animFrame = requestAnimationFrame(animate);
+}
+
+function stopFlickerAnimation() {
+  if (FLICKER.animFrame) {
+    cancelAnimationFrame(FLICKER.animFrame);
+    FLICKER.animFrame = null;
+  }
+}
+
+function startFlickerTest() {
+  resetFLICKER();
+  testActive = true;
+  state.currentTestIndex = 2;
+  runFlickerRun();
+}
+
+function runFlickerRun() {
+  if (!testActive) return;
+
+  if (FLICKER.runNum >= FLICKER.maxRuns) {
+    finishFlickerTest();
+    return;
+  }
+
+  // Start frequency: random between 3-8 Hz for runs after the first
+  if (FLICKER.runNum > 0) {
+    FLICKER.frequency = FLICKER.minFreq + Math.floor(Math.random() * 6);
+  } else {
+    FLICKER.frequency = 5;
+  }
+
+  showFlickerTrial();
+}
+
+function showFlickerTrial() {
+  if (!testActive) return;
+
+  // If frequency exceeds max, record threshold as maxFreq
+  if (FLICKER.frequency > FLICKER.maxFreq) {
+    FLICKER.runThresholds.push(FLICKER.maxFreq);
+    FLICKER.runNum++;
+    setTimeout(runFlickerRun, 800);
+    return;
+  }
+
+  var runLabel = 'סבב ' + (FLICKER.runNum + 1) + ' מתוך ' + FLICKER.maxRuns;
+  var progress = (FLICKER.runNum / FLICKER.maxRuns) * 100;
+
+  render('flicker', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(2) +
+    '<div class="trial-header"><span class="trial-label">רגישות להבהוב</span><span class="trial-count">' + runLabel + '</span></div>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<p style="text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:4px">מה את רואה עכשיו?</p>' +
+      (isDesktop() ? '<p style="text-align:center;font-size:11px;color:var(--accent);margin-bottom:16px">מקלדת: 1 = מהבהב, 2 = נראה יציב</p>' : '<p style="margin-bottom:16px"></p>') +
+      '<div class="flicker-area"><div id="flicker-test-circle" class="flicker-circle"></div></div>' +
+      '<div class="status-text" id="flicker-status" style="margin:16px 0 20px">הסתכלי על העיגול</div>' +
+      '<div style="display:flex;gap:12px;width:100%">' +
+        '<button class="btn btn-secondary" style="flex:1;min-height:56px;font-size:14px" onclick="answerFlicker(\'flickering\')">מהבהב</button>' +
+        '<button class="btn btn-primary" style="flex:1;min-height:56px;font-size:14px" onclick="answerFlicker(\'steady\')">נראה יציב</button>' +
+      '</div>' +
+    '</div>' +
+    '<div><div class="progress-wrap"><div class="progress-fill" style="width:' + progress + '%"></div></div>' +
+    '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipTest(\'flicker\')">דלגי על בדיקה זו</button></div></div>' +
+  '</div>');
+
+  AFTER_RENDER['flicker'] = function() {
+    startFlickerAnimation('flicker-test-circle', FLICKER.frequency);
+  };
+  AFTER_RENDER['flicker']();
+}
+
+function answerFlicker(response) {
+  if (!testActive) return;
+  stopFlickerAnimation();
+
+  if (response === 'flickering') {
+    // Increase frequency
+    FLICKER.frequency += FLICKER.step;
+    setTimeout(showFlickerTrial, 300);
+  } else {
+    // "Looks steady" - record threshold
+    FLICKER.runThresholds.push(FLICKER.frequency);
+    FLICKER.runNum++;
+    if (FLICKER.runNum >= FLICKER.maxRuns) {
+      finishFlickerTest();
+    } else {
+      // Brief pause between runs
+      var circle = document.getElementById('flicker-test-circle');
+      if (circle) circle.style.opacity = '1';
+      var status = document.getElementById('flicker-status');
+      if (status) status.textContent = 'סבב הושלם. מתחילות סבב הבא...';
+      setTimeout(runFlickerRun, 1200);
+    }
+  }
+}
+
+function finishFlickerTest() {
+  stopFlickerAnimation();
+  var avg = 0;
+  if (FLICKER.runThresholds.length > 0) {
+    avg = FLICKER.runThresholds.reduce(function(a, b) { return a + b; }, 0) / FLICKER.runThresholds.length;
+  }
+  state.flickerResult = { cff: Math.round(avg * 10) / 10, runs: FLICKER.runThresholds.length };
+  testActive = false;
+  showTransition('\u05D4\u05D1\u05D4\u05D5\u05D1 \u05E0\u05E7\u05DC\u05D8!', '\u05E6\u05D9\u05D5\u05DF: ' + state.flickerResult.cff + ' Hz', showHeadphones);
+}
+
+// ============================
+// SCREEN 6: HEADPHONE/VOLUME CHECK
+// ============================
+function showHeadphones() {
+  render('headphones', '<div style="display:flex;flex-direction:column;flex:1">' +
+    '<div style="background:linear-gradient(135deg,#f3e8ff,var(--accent-bg));border-radius:var(--radius);padding:24px 20px;margin:8px 0 20px;text-align:center">' +
+      '<div style="width:48px;height:48px;margin:0 auto 12px;background:rgba(123,38,162,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#7b26a2">' + ICONS.headphones + '</div>' +
+      '<h2 style="margin-bottom:8px">בדיקות שמיעה</h2>' +
+      '<p style="font-size:13px;color:var(--text-secondary)">השתמשי באוזניות לתוצאות מיטביות</p>' +
+    '</div>' +
+    '<div class="card" style="margin-bottom:12px;display:flex;align-items:flex-start;gap:14px">' +
+      '<div style="width:36px;height:36px;min-width:36px;background:#f3e8ff;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#7b26a2">' + ICONS.volume + '</div>' +
+      '<div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px">עוצמה ב-50%</div><div style="font-size:12px;color:var(--text-muted)">כווני לעוצמת שמיעה נוחה</div></div>' +
+    '</div>' +
+    '<div class="card" style="margin-bottom:12px;display:flex;align-items:flex-start;gap:14px">' +
+      '<div style="width:36px;height:36px;min-width:36px;background:var(--accent-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--accent)">' + ICONS.check + '</div>' +
+      '<div><div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:2px">סביבה שקטה</div><div style="font-size:12px;color:var(--text-muted)">מזערי רעשי רקע</div></div>' +
+    '</div>' +
+    '<div style="flex:1"></div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' +
+      '<button class="btn btn-primary" onclick="setHeadphones(true)">יש לי אוזניות</button>' +
+      '<button class="btn btn-secondary" onclick="setHeadphones(false)">רמקול הטלפון</button>' +
+    '</div>' +
+  '</div>');
+}
+
+function setHeadphones(hp) {
+  state.useHeadphones = hp;
+  showCalibration();
+}
+
+function showCalibration() {
+  render('headphones', '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+    '<div style="text-align:center;margin-bottom:20px"><div class="headphones-icon">' + ICONS.volume + '</div></div>' +
+    '<h2 style="text-align:center">כיול עוצמה</h2>' +
+    '<p class="subtitle" style="text-align:center">נשמיע צליל שקט מאוד. אם לא שומעת, הגבירי מעט את העוצמה.</p>' +
+    '<div class="status-text" id="cal-status">לחצי "השמיעי צליל" לבדיקת העוצמה</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px;margin-top:20px;width:100%">' +
+      '<button class="btn btn-primary" id="cal-play-btn" onclick="playCalibrationTone()">השמיעי צליל</button>' +
+      '<div id="cal-response" style="display:none;display:flex;flex-direction:column;gap:10px">' +
+      '</div>' +
+    '</div>' +
+  '</div>');
+}
+
+function playCalibrationTone() {
+  var ctx = ensureAudioContext();
+  var osc = ctx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 1000;
+  var g = ctx.createGain();
+  var now = ctx.currentTime;
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.02, now + 0.02);
+  g.gain.setValueAtTime(0.02, now + 0.8);
+  g.gain.linearRampToValueAtTime(0, now + 0.85);
+  osc.connect(g);
+  g.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.9);
+
+  var playBtn = document.getElementById('cal-play-btn');
+  if (playBtn) playBtn.disabled = true;
+
+  setTimeout(function() {
+    if (playBtn) playBtn.disabled = false;
+    var status = document.getElementById('cal-status');
+    if (status) status.textContent = 'שמעת את הצליל?';
+    // Show response buttons by replacing the play button area
+    var parent = playBtn.parentNode;
+    parent.innerHTML =
+      '<button class="btn btn-primary" onclick="calConfirm()">שומעת</button>' +
+      '<button class="btn btn-secondary" onclick="calRetry()">לא שומעת</button>';
+  }, 1000);
+}
+
+function calRetry() {
+  var status = document.getElementById('cal-status');
+  if (status) {
+    status.textContent = 'הגבירי את העוצמה ונסי שוב.';
+    status.style.color = 'var(--coral)';
+  }
+  // Re-show play button
+  showCalibration();
+  var calStatus = document.getElementById('cal-status');
+  if (calStatus) {
+    calStatus.textContent = 'הגבירי את העוצמה ולחצי שוב על "השמיעי צליל".';
+    calStatus.style.color = 'var(--coral)';
+  }
+}
+
+function calConfirm() {
+  showTINDemo();
+}
+
+// ============================
+// SCREEN 7: TONE-IN-NOISE (3IFC)
+// ============================
+function resetTIN() {
+  TIN.snr = -4;
+  TIN.stepCoarse = 4;
+  TIN.stepFine = 2;
+  TIN.consecutiveCorrect = 0;
+  TIN.reversals = [];
+  TIN.lastDirection = null;
+  TIN.trials = [];
+  TIN.trialNum = 0;
+  TIN.freq = 2000;
+  TIN.phase = 'primary';
+  TIN.checkCorrect = 0;
+  TIN.targetInterval = null;
+  TIN.responding = false;
+}
+
+function showTINDemo() {
+  render('tinDemo', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(3) +
+    '<h2 style="margin-bottom:10px">זיהוי צלילים</h2>' +
+    '<p class="subtitle">שלושה צלילים מושמעים. באחד מוסתר צליל ברעש. מצאי באיזה.</p>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="intervals-row">' +
+        '<div class="interval-circle" id="demo-int-1">1</div>' +
+        '<div class="interval-circle" id="demo-int-2">2</div>' +
+        '<div class="interval-circle" id="demo-int-3">3</div>' +
+      '</div>' +
+      '<div class="status-text" id="demo-status">לחצי "הפעילי הדגמה" לשמוע דוגמה</div>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' +
+      '<button class="btn btn-primary" id="demo-play-btn" onclick="playTINDemo()">הפעילי הדגמה</button>' +
+      '<button class="btn btn-secondary" id="demo-start-btn" style="display:none" onclick="startTINTest()">התחילי את הבדיקה</button>' +
+    '</div>' +
+  '</div>');
+}
+
+function playTINDemo() {
+  var ctx = ensureAudioContext();
+  var playBtn = document.getElementById('demo-play-btn');
+  if (playBtn) playBtn.disabled = true;
+  var demoTarget = 2;
+  playThreeIntervalsNoise(ctx, 2000, TIN.noiseGain, 12, demoTarget, function() {
+    var status = document.getElementById('demo-status');
+    if (status) status.textContent = 'בקטע 2 היה הצליל. זה נהיה קשה יותר בהמשך.';
+    var startBtn = document.getElementById('demo-start-btn');
+    if (startBtn) startBtn.style.display = '';
+    if (playBtn) { playBtn.textContent = 'הפעילי שוב'; playBtn.disabled = false; }
+  }, 'demo-int-');
+}
+
+function playThreeIntervalsNoise(ctx, freq, noiseGain, snrDB, targetInterval, onDone, idPrefix) {
+  var dur = 0.45;
+  var gap = 0.45;
+  playSequentialIntervals(function(c, startTime, d, idx) {
+    playNoiseInterval(c, freq, d, idx === targetInterval, snrDB, noiseGain, startTime);
+  }, dur, gap, idPrefix || 'int-', onDone);
+}
+
+function playNoiseInterval(ctx, freq, duration, hasSignal, snrDB, noiseGain, startTime) {
+  var bufferSize = Math.ceil(ctx.sampleRate * duration);
+  var noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  var data = noiseBuffer.getChannelData(0);
+  for (var i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+  var noiseSrc = ctx.createBufferSource();
+  noiseSrc.buffer = noiseBuffer;
+  var filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = freq;
+  filter.Q.value = 4.32;
+  var nGain = ctx.createGain();
+  nGain.gain.value = noiseGain;
+  noiseSrc.connect(filter);
+  filter.connect(nGain);
+  nGain.connect(ctx.destination);
+  noiseSrc.start(startTime);
+  noiseSrc.stop(startTime + duration);
+
+  if (hasSignal) {
+    var toneStart = duration * 0.15;
+    var toneDur = duration * 0.6;
+    var ramp = 0.015;
+    var toneLevel = noiseGain * Math.pow(10, snrDB / 20);
+    var osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    var tGain = ctx.createGain();
+    tGain.gain.setValueAtTime(0, startTime + toneStart);
+    tGain.gain.linearRampToValueAtTime(toneLevel, startTime + toneStart + ramp);
+    tGain.gain.setValueAtTime(toneLevel, startTime + toneStart + toneDur - ramp);
+    tGain.gain.linearRampToValueAtTime(0, startTime + toneStart + toneDur);
+    osc.connect(tGain);
+    tGain.connect(ctx.destination);
+    osc.start(startTime + toneStart);
+    osc.stop(startTime + toneStart + toneDur);
+  }
+}
+
+// Sequential playback: play one interval at a time with visual sync
+function playSequentialIntervals(playFn, dur, gap, prefix, onDone) {
+  var current = 0;
+  function playNext() {
+    if (current >= 3) {
+      setTimeout(onDone, 100);
+      return;
+    }
+    var idx = current + 1;
+    var el = document.getElementById(prefix + idx);
+    if (el) el.classList.add('playing');
+    var ctx = ensureAudioContext();
+    playFn(ctx, ctx.currentTime + 0.02, dur, idx);
+    setTimeout(function() {
+      if (el) el.classList.remove('playing');
+      current++;
+      setTimeout(playNext, gap * 1000);
+    }, dur * 1000);
+  }
+  playNext();
+}
+
+function startTINTest() {
+  resetTIN();
+  testActive = true;
+  state.currentTestIndex = 3;
+  runTINTrial();
+}
+
+function runTINTrial() {
+  if (!testActive) return;
+
+  if (TIN.phase === 'primary' && (TIN.reversals.length >= 5 || TIN.trialNum >= TIN.maxTrials)) {
+    TIN.phase = 'check';
+    TIN.freq = 4000;
+    TIN.trialNum = 0;
+    TIN.checkCorrect = 0;
+  }
+  if (TIN.phase === 'check' && TIN.trialNum >= TIN.checkTrials) {
+    finishTINTest();
+    return;
+  }
+
+  var totalTrials = TIN.phase === 'primary' ? TIN.maxTrials : TIN.checkTrials;
+  var progress = TIN.phase === 'primary' ? Math.min(TIN.trialNum / TIN.maxTrials, TIN.reversals.length / 5) * 100 : (TIN.trialNum / TIN.checkTrials) * 100;
+
+  TIN.targetInterval = Math.floor(Math.random() * 3) + 1;
+  TIN.responding = false;
+
+  render('toneNoise', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(3) +
+    '<div class="trial-header"><span class="trial-label">זיהוי צלילים' + (TIN.phase === 'check' ? ' (4kHz)' : '') + '</span><span class="trial-count">ניסיון ' + (TIN.trialNum + 1) + ' מתוך ' + totalTrials + '</span></div>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="intervals-row">' +
+        '<div class="interval-circle" id="int-1">1</div>' +
+        '<div class="interval-circle" id="int-2">2</div>' +
+        '<div class="interval-circle" id="int-3">3</div>' +
+      '</div>' +
+      '<div class="status-text" id="tin-status">הקשיבי היטב...</div>' +
+      (isDesktop() ? '<p style="text-align:center;font-size:11px;color:var(--accent);margin:0 0 8px">מקלדת: 1 / 2 / 3</p>' : '') +
+      '<div class="response-btns" id="tin-resp" style="visibility:hidden">' +
+        '<button class="resp-btn" onclick="answerTIN(1)">1</button>' +
+        '<button class="resp-btn" onclick="answerTIN(2)">2</button>' +
+        '<button class="resp-btn" onclick="answerTIN(3)">3</button>' +
+      '</div>' +
+      '<div style="text-align:center;margin-top:8px;visibility:hidden" id="tin-unsure"><button class="btn btn-ghost" style="font-size:12px;min-height:36px;color:var(--coral)" onclick="answerTIN(0)">לא הצלחתי לזהות</button></div>' +
+    '</div>' +
+    '<div><div class="progress-wrap"><div class="progress-fill" style="width:' + progress + '%"></div></div>' +
+    '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipTest(\'toneNoise\')">דלגי על בדיקה זו</button></div></div>' +
+  '</div>');
+
+  AFTER_RENDER['toneNoise'] = function() {
+    var ctx = ensureAudioContext();
+    playThreeIntervalsNoise(ctx, TIN.freq, TIN.noiseGain, TIN.snr, TIN.targetInterval, function() {
+      // Clear any lingering highlights
+      for (var k = 1; k <= 3; k++) { var cc = document.getElementById('int-' + k); if (cc) cc.classList.remove('playing'); }
+      var status = document.getElementById('tin-status');
+      if (status) status.textContent = 'באיזה קטע היה הצליל? (8ש)';
+      var resp = document.getElementById('tin-resp');
+      if (resp) resp.style.visibility = 'visible';
+      var unsure = document.getElementById('tin-unsure');
+      if (unsure) unsure.style.visibility = 'visible';
+      TIN.responding = true;
+      TIN._countdown = startResponseCountdown('tin-status', 8, function() {
+        if (TIN.responding) answerTIN(-1);
+      });
+    }, 'int-');
+  };
+  AFTER_RENDER['toneNoise']();
+}
+
+function answerTIN(choice) {
+  if (!TIN.responding) return;
+  TIN.responding = false;
+  if (TIN._countdown) { clearInterval(TIN._countdown); TIN._countdown = null; }
+
+  var isTimeout = (choice === -1);
+  var didntHear = (choice === 0);
+  var correct = (!didntHear && !isTimeout && choice === TIN.targetInterval);
+
+  // Only show feedback if user actually chose (not timeout)
+  if (!isTimeout) {
+    if (choice >= 1 && choice <= 3) {
+      var userCircle = document.getElementById('int-' + choice);
+      if (userCircle) userCircle.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+    }
+    setTimeout(function() {
+      if (!correct) {
+        var correctCircle = document.getElementById('int-' + TIN.targetInterval);
+        if (correctCircle) correctCircle.classList.add('correct-flash');
+      }
+      var status = document.getElementById('tin-status');
+      if (status) {
+        status.textContent = correct ? 'נכון!' : 'התשובה הייתה ' + TIN.targetInterval;
+        status.style.color = correct ? 'var(--cyan)' : 'var(--coral)';
+      }
+    }, 400);
+  } else {
+    var status = document.getElementById('tin-status');
+    if (status) { status.textContent = 'נגמר הזמן - ממשיכות'; status.style.color = 'var(--text-muted)'; }
+  }
+
+  TIN.trials.push({ trial: TIN.trialNum, snr: TIN.snr, target: TIN.targetInterval, response: choice, correct: correct, didntHear: didntHear });
+
+  if (TIN.phase === 'check') {
+    if (correct) TIN.checkCorrect++;
+    TIN.trialNum++;
+    setTimeout(runTINTrial, 2200);
+    return;
+  }
+
+  var step = TIN.reversals.length >= 3 ? TIN.stepFine : TIN.stepCoarse;
+  if (correct) {
+    TIN.consecutiveCorrect++;
+    if (TIN.consecutiveCorrect >= 2) {
+      var nDir = 'down';
+      if (TIN.lastDirection === 'up') TIN.reversals.push(TIN.snr);
+      TIN.lastDirection = nDir;
+      TIN.snr = Math.max(TIN.snr - step, -20);
+      TIN.consecutiveCorrect = 0;
+    }
+  } else {
+    TIN.consecutiveCorrect = 0;
+    var nDir2 = 'up';
+    if (TIN.lastDirection === 'down') TIN.reversals.push(TIN.snr);
+    TIN.lastDirection = nDir2;
+    TIN.snr = Math.min(TIN.snr + step, 16);
+  }
+
+  TIN.trialNum++;
+  setTimeout(runTINTrial, 2200);
+}
+
+function finishTINTest() {
+  var threshold;
+  if (TIN.reversals.length >= 4) {
+    var last4 = TIN.reversals.slice(-4);
+    threshold = last4.reduce(function(a, b) { return a + b; }, 0) / last4.length;
+  } else if (TIN.reversals.length > 0) {
+    threshold = TIN.reversals.reduce(function(a, b) { return a + b; }, 0) / TIN.reversals.length;
+  } else {
+    threshold = TIN.snr;
+  }
+  state.tinResult = { snr: Math.round(threshold * 10) / 10, trials: TIN.trials.length, reversals: TIN.reversals.length, freq: 2000, highFreqPassed: TIN.checkCorrect >= 1 };
+  testActive = false;
+  showTransition('\u05E9\u05DE\u05D9\u05E2\u05D4 \u05E0\u05E7\u05DC\u05D8\u05D4!', '\u05E6\u05D9\u05D5\u05DF: ' + state.tinResult.snr + ' dB', showGapDemo);
+}
+
+// ============================
+// SCREEN 8: GAP DETECTION (3IFC)
+// ============================
+function resetGAP() {
+  GAP.gapMs = 6;
+  GAP.consecutiveCorrect = 0;
+  GAP.reversals = [];
+  GAP.lastDirection = null;
+  GAP.trials = [];
+  GAP.trialNum = 0;
+  GAP.targetInterval = null;
+  GAP.responding = false;
+}
+
+function showGapDemo() {
+  render('gapDemo', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(4) +
+    '<h2 style="margin-bottom:10px">זיהוי רווחים</h2>' +
+    '<p class="subtitle">שלושה פרצי רעש מושמעים. באחד יש רווח שקט. מצאי את זה עם ההפסקה.</p>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="intervals-row">' +
+        '<div class="interval-circle" id="gdemo-1">1</div>' +
+        '<div class="interval-circle" id="gdemo-2">2</div>' +
+        '<div class="interval-circle" id="gdemo-3">3</div>' +
+      '</div>' +
+      '<div class="status-text" id="gdemo-status">לחצי "הפעילי הדגמה" לשמוע דוגמה</div>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' +
+      '<button class="btn btn-primary" id="gdemo-play" onclick="playGapDemo()">הפעילי הדגמה</button>' +
+      '<button class="btn btn-secondary" id="gdemo-start" style="display:none" onclick="startGapTest()">התחילי את הבדיקה</button>' +
+    '</div>' +
+  '</div>');
+}
+
+function playGapDemo() {
+  var ctx = ensureAudioContext();
+  var btn = document.getElementById('gdemo-play');
+  if (btn) btn.disabled = true;
+  var target = 2;
+  playThreeGapIntervals(ctx, GAP.noiseGain, 30, target, function() {
+    var s = document.getElementById('gdemo-status');
+    if (s) s.textContent = 'בקטע 2 היה הרווח. הקשיבי להפסקה הקטנה.';
+    var sb = document.getElementById('gdemo-start');
+    if (sb) sb.style.display = '';
+    if (btn) { btn.textContent = 'הפעילי שוב'; btn.disabled = false; }
+  }, 'gdemo-');
+}
+
+function playThreeGapIntervals(ctx, gain, gapMs, targetInterval, onDone, idPrefix) {
+  var dur = 0.45;
+  var silence = 0.45;
+  playSequentialIntervals(function(c, startTime, d, idx) {
+    playGapOrNoGap(c, startTime, d, idx === targetInterval ? gapMs : 0, gain);
+  }, dur, silence, idPrefix || 'gint-', onDone);
+}
+
+function playGapOrNoGap(ctx, startTime, duration, gapMs, gain) {
+  var sr = ctx.sampleRate;
+  var totalSamples = Math.ceil(sr * duration);
+  var buffer = ctx.createBuffer(1, totalSamples, sr);
+  var data = buffer.getChannelData(0);
+
+  for (var i = 0; i < totalSamples; i++) data[i] = Math.random() * 2 - 1;
+
+  if (gapMs > 0) {
+    var gapSamples = Math.ceil(sr * gapMs / 1000);
+    var gapStart = Math.floor(totalSamples / 2 - gapSamples / 2);
+    var rampSamples = Math.ceil(sr * 0.001);
+    for (var j = gapStart; j < gapStart + gapSamples && j < totalSamples; j++) {
+      if (j < gapStart + rampSamples) {
+        data[j] *= 0.5 * (1 + Math.cos(Math.PI * (j - gapStart) / rampSamples));
+      } else if (j > gapStart + gapSamples - rampSamples) {
+        data[j] *= 0.5 * (1 - Math.cos(Math.PI * (j - (gapStart + gapSamples - rampSamples)) / rampSamples));
+      } else {
+        data[j] = 0;
+      }
+    }
+  }
+
+  var src = ctx.createBufferSource();
+  src.buffer = buffer;
+  var filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 2000;
+  filter.Q.value = 0.5;
+  var g = ctx.createGain();
+  g.gain.value = gain;
+  src.connect(filter);
+  filter.connect(g);
+  g.connect(ctx.destination);
+  src.start(startTime);
+  src.stop(startTime + duration);
+}
+
+function startGapTest() {
+  resetGAP();
+  testActive = true;
+  state.currentTestIndex = 4;
+  runGapTrial();
+}
+
+function runGapTrial() {
+  if (!testActive) return;
+  if (GAP.reversals.length >= 5 || GAP.trialNum >= GAP.maxTrials) {
+    finishGapTest();
+    return;
+  }
+
+  var progress = Math.min(GAP.trialNum / GAP.maxTrials, GAP.reversals.length / 5) * 100;
+  GAP.targetInterval = Math.floor(Math.random() * 3) + 1;
+  GAP.responding = false;
+
+  render('gap', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(4) +
+    '<div class="trial-header"><span class="trial-label">זיהוי רווחים</span><span class="trial-count">ניסיון ' + (GAP.trialNum + 1) + ' מתוך ' + GAP.maxTrials + '</span></div>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="intervals-row">' +
+        '<div class="interval-circle" id="gint-1">1</div>' +
+        '<div class="interval-circle" id="gint-2">2</div>' +
+        '<div class="interval-circle" id="gint-3">3</div>' +
+      '</div>' +
+      '<div class="status-text" id="gap-status">הקשיבי היטב...</div>' +
+      (isDesktop() ? '<p style="text-align:center;font-size:11px;color:var(--accent);margin:0 0 8px">מקלדת: 1 / 2 / 3</p>' : '') +
+      '<div class="response-btns" id="gap-resp" style="visibility:hidden">' +
+        '<button class="resp-btn" onclick="answerGap(1)">1</button>' +
+        '<button class="resp-btn" onclick="answerGap(2)">2</button>' +
+        '<button class="resp-btn" onclick="answerGap(3)">3</button>' +
+      '</div>' +
+      '<div style="text-align:center;margin-top:8px;visibility:hidden" id="gap-unsure"><button class="btn btn-ghost" style="font-size:12px;min-height:36px;color:var(--coral)" onclick="answerGap(0)">לא הצלחתי לזהות</button></div>' +
+    '</div>' +
+    '<div><div class="progress-wrap"><div class="progress-fill" style="width:' + progress + '%"></div></div>' +
+    '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipTest(\'gap\')">דלגי על בדיקה זו</button></div></div>' +
+  '</div>');
+
+  AFTER_RENDER['gap'] = function() {
+    var ctx = ensureAudioContext();
+    playThreeGapIntervals(ctx, GAP.noiseGain, GAP.gapMs, GAP.targetInterval, function() {
+      // Clear any lingering highlights
+      for (var k = 1; k <= 3; k++) { var cc = document.getElementById('gint-' + k); if (cc) cc.classList.remove('playing'); }
+      var s = document.getElementById('gap-status');
+      if (s) s.textContent = 'באיזה קטע היה הרווח? (8ש)';
+      var r = document.getElementById('gap-resp');
+      if (r) r.style.visibility = 'visible';
+      var u = document.getElementById('gap-unsure');
+      if (u) u.style.visibility = 'visible';
+      GAP.responding = true;
+      GAP._countdown = startResponseCountdown('gap-status', 8, function() {
+        if (GAP.responding) answerGap(-1);
+      });
+    }, 'gint-');
+  };
+  AFTER_RENDER['gap']();
+}
+
+function answerGap(choice) {
+  if (!GAP.responding) return;
+  GAP.responding = false;
+  if (GAP._countdown) { clearInterval(GAP._countdown); GAP._countdown = null; }
+
+  var isTimeout = (choice === -1);
+  var didntHear = (choice === 0);
+  var correct = (!didntHear && !isTimeout && choice === GAP.targetInterval);
+
+  if (!isTimeout) {
+    if (choice >= 1 && choice <= 3) {
+      var userCircle = document.getElementById('gint-' + choice);
+      if (userCircle) userCircle.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+    }
+    setTimeout(function() {
+      if (!correct) {
+        var correctCircle = document.getElementById('gint-' + GAP.targetInterval);
+        if (correctCircle) correctCircle.classList.add('correct-flash');
+      }
+      var status = document.getElementById('gap-status');
+      if (status) {
+        status.textContent = correct ? 'נכון!' : 'התשובה הייתה ' + GAP.targetInterval;
+        status.style.color = correct ? 'var(--cyan)' : 'var(--coral)';
+      }
+    }, 400);
+  } else {
+    var status = document.getElementById('gap-status');
+    if (status) { status.textContent = 'נגמר הזמן - ממשיכות'; status.style.color = 'var(--text-muted)'; }
+  }
+
+  GAP.trials.push({ trial: GAP.trialNum, gapMs: GAP.gapMs, target: GAP.targetInterval, response: choice, correct: correct, didntHear: didntHear });
+
+  if (correct) {
+    GAP.consecutiveCorrect++;
+    if (GAP.consecutiveCorrect >= 2) {
+      var nDir = 'down';
+      if (GAP.lastDirection === 'up') GAP.reversals.push(GAP.gapMs);
+      GAP.lastDirection = nDir;
+      GAP.gapMs = Math.max(GAP.gapMs / GAP.stepFactor, GAP.minGap);
+      GAP.consecutiveCorrect = 0;
+    }
+  } else {
+    GAP.consecutiveCorrect = 0;
+    var nDir2 = 'up';
+    if (GAP.lastDirection === 'down') GAP.reversals.push(GAP.gapMs);
+    GAP.lastDirection = nDir2;
+    GAP.gapMs = Math.min(GAP.gapMs * GAP.stepFactor, GAP.maxGap);
+  }
+
+  GAP.trialNum++;
+  setTimeout(runGapTrial, 2200);
+}
+
+function finishGapTest() {
+  var threshold;
+  if (GAP.reversals.length >= 4) {
+    var last4 = GAP.reversals.slice(-4);
+    threshold = last4.reduce(function(a, b) { return a + b; }, 0) / last4.length;
+  } else if (GAP.reversals.length > 0) {
+    threshold = GAP.reversals.reduce(function(a, b) { return a + b; }, 0) / GAP.reversals.length;
+  } else {
+    threshold = GAP.gapMs;
+  }
+  state.gapResult = { thresholdMs: Math.round(threshold * 10) / 10, trials: GAP.trialNum, reversals: GAP.reversals.length };
+  testActive = false;
+  showTransition('רווחים נקלטו!', 'סף: ' + state.gapResult.thresholdMs + ' ms', showAMDemo);
+}
+
+// ============================
+// SCREEN 9: AM DETECTION (3IFC)
+// ============================
+function resetAM() {
+  AM.modDB = -14;
+  AM.consecutiveCorrect = 0;
+  AM.reversals = [];
+  AM.lastDirection = null;
+  AM.trials = [];
+  AM.trialNum = 0;
+  AM.targetInterval = null;
+  AM.responding = false;
+}
+
+function showAMDemo() {
+  render('amDemo', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(5) +
+    '<h2 style="margin-bottom:10px">זיהוי קצב</h2>' +
+    '<p class="subtitle">שלושה פרצי רעש מושמעים. באחד יש תנודה. מצאי את הפועם.</p>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="intervals-row">' +
+        '<div class="interval-circle" id="amdemo-1">1</div>' +
+        '<div class="interval-circle" id="amdemo-2">2</div>' +
+        '<div class="interval-circle" id="amdemo-3">3</div>' +
+      '</div>' +
+      '<div class="status-text" id="amdemo-status">לחצי "הפעילי הדגמה" לשמוע דוגמה</div>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' +
+      '<button class="btn btn-primary" id="amdemo-play" onclick="playAMDemo()">הפעילי הדגמה</button>' +
+      '<button class="btn btn-secondary" id="amdemo-start" style="display:none" onclick="startAMTest()">התחילי את הבדיקה</button>' +
+    '</div>' +
+  '</div>');
+}
+
+function playAMDemo() {
+  var ctx = ensureAudioContext();
+  var btn = document.getElementById('amdemo-play');
+  if (btn) btn.disabled = true;
+  var target = 2;
+  playThreeAMIntervals(ctx, AM.noiseGain, 0, target, function() {
+    var s = document.getElementById('amdemo-status');
+    if (s) s.textContent = 'בקטע 2 הייתה התנודה. זה נהיה עדין יותר בהמשך.';
+    var sb = document.getElementById('amdemo-start');
+    if (sb) sb.style.display = '';
+    if (btn) { btn.textContent = 'הפעילי שוב'; btn.disabled = false; }
+  }, 'amdemo-');
+}
+
+function playThreeAMIntervals(ctx, gain, modDB, targetInterval, onDone, idPrefix) {
+  var dur = 0.55;
+  var silence = 0.45;
+  playSequentialIntervals(function(c, startTime, d, idx) {
+    playAMOrSteady(c, startTime, d, idx === targetInterval ? modDB : -999, gain);
+  }, dur, silence, idPrefix || 'amint-', onDone);
+}
+
+function playAMOrSteady(ctx, startTime, duration, modDB, gain) {
+  var sr = ctx.sampleRate;
+  var samples = Math.ceil(sr * duration);
+  var buffer = ctx.createBuffer(1, samples, sr);
+  var data = buffer.getChannelData(0);
+  var modDepth = modDB > -50 ? Math.pow(10, modDB / 20) : 0;
+
+  for (var i = 0; i < samples; i++) {
+    var t = i / sr;
+    var noise = Math.random() * 2 - 1;
+    var envelope = 1 + modDepth * Math.sin(2 * Math.PI * 40 * t);
+    data[i] = noise * envelope;
+  }
+
+  var src = ctx.createBufferSource();
+  src.buffer = buffer;
+  var filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.value = 2000;
+  filter.Q.value = 0.5;
+  var g = ctx.createGain();
+  g.gain.value = gain;
+  src.connect(filter);
+  filter.connect(g);
+  g.connect(ctx.destination);
+  src.start(startTime);
+  src.stop(startTime + duration);
+}
+
+function startAMTest() {
+  resetAM();
+  testActive = true;
+  state.currentTestIndex = 5;
+  runAMTrial();
+}
+
+function runAMTrial() {
+  if (!testActive) return;
+  if (AM.reversals.length >= 5 || AM.trialNum >= AM.maxTrials) {
+    finishAMTest();
+    return;
+  }
+
+  var progress = Math.min(AM.trialNum / AM.maxTrials, AM.reversals.length / 5) * 100;
+  AM.targetInterval = Math.floor(Math.random() * 3) + 1;
+  AM.responding = false;
+
+  render('am', '<div style="display:flex;flex-direction:column;flex:1">' +
+    journeyProgress(5) +
+    '<div class="trial-header"><span class="trial-label">זיהוי קצב</span><span class="trial-count">ניסיון ' + (AM.trialNum + 1) + ' מתוך ' + AM.maxTrials + '</span></div>' +
+    '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<div class="intervals-row">' +
+        '<div class="interval-circle" id="amint-1">1</div>' +
+        '<div class="interval-circle" id="amint-2">2</div>' +
+        '<div class="interval-circle" id="amint-3">3</div>' +
+      '</div>' +
+      '<div class="status-text" id="am-status">הקשיבי היטב...</div>' +
+      (isDesktop() ? '<p style="text-align:center;font-size:11px;color:var(--accent);margin:0 0 8px">מקלדת: 1 / 2 / 3</p>' : '') +
+      '<div class="response-btns" id="am-resp" style="visibility:hidden">' +
+        '<button class="resp-btn" onclick="answerAM(1)">1</button>' +
+        '<button class="resp-btn" onclick="answerAM(2)">2</button>' +
+        '<button class="resp-btn" onclick="answerAM(3)">3</button>' +
+      '</div>' +
+      '<div style="text-align:center;margin-top:8px;visibility:hidden" id="am-unsure"><button class="btn btn-ghost" style="font-size:12px;min-height:36px;color:var(--coral)" onclick="answerAM(0)">לא הצלחתי לזהות</button></div>' +
+    '</div>' +
+    '<div><div class="progress-wrap"><div class="progress-fill" style="width:' + progress + '%"></div></div>' +
+    '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipTest(\'am\')">דלגי על בדיקה זו</button></div></div>' +
+  '</div>');
+
+  AFTER_RENDER['am'] = function() {
+    var ctx = ensureAudioContext();
+    playThreeAMIntervals(ctx, AM.noiseGain, AM.modDB, AM.targetInterval, function() {
+      // Clear any lingering highlights
+      for (var k = 1; k <= 3; k++) { var cc = document.getElementById('amint-' + k); if (cc) cc.classList.remove('playing'); }
+      var s = document.getElementById('am-status');
+      if (s) s.textContent = 'באיזה קטע היה הקצב? (8ש)';
+      var r = document.getElementById('am-resp');
+      if (r) r.style.visibility = 'visible';
+      var u = document.getElementById('am-unsure');
+      if (u) u.style.visibility = 'visible';
+      AM.responding = true;
+      AM._countdown = startResponseCountdown('am-status', 8, function() {
+        if (AM.responding) answerAM(-1);
+      });
+    }, 'amint-');
+  };
+  AFTER_RENDER['am']();
+}
+
+function answerAM(choice) {
+  if (!AM.responding) return;
+  AM.responding = false;
+  if (AM._countdown) { clearInterval(AM._countdown); AM._countdown = null; }
+
+  var isTimeout = (choice === -1);
+  var didntHear = (choice === 0);
+  var correct = (!didntHear && !isTimeout && choice === AM.targetInterval);
+
+  if (!isTimeout) {
+    if (choice >= 1 && choice <= 3) {
+      var userCircle = document.getElementById('amint-' + choice);
+      if (userCircle) userCircle.classList.add(correct ? 'correct-flash' : 'wrong-flash');
+    }
+    setTimeout(function() {
+      if (!correct) {
+        var correctCircle = document.getElementById('amint-' + AM.targetInterval);
+        if (correctCircle) correctCircle.classList.add('correct-flash');
+      }
+      var status = document.getElementById('am-status');
+      if (status) {
+        status.textContent = correct ? 'נכון!' : 'התשובה הייתה ' + AM.targetInterval;
+        status.style.color = correct ? 'var(--cyan)' : 'var(--coral)';
+      }
+    }, 400);
+  } else {
+    var status = document.getElementById('am-status');
+    if (status) { status.textContent = 'נגמר הזמן - ממשיכות'; status.style.color = 'var(--text-muted)'; }
+  }
+
+  AM.trials.push({ trial: AM.trialNum, modDB: AM.modDB, target: AM.targetInterval, response: choice, correct: correct, didntHear: didntHear });
+
+  var step = AM.reversals.length >= 3 ? AM.stepFine : AM.stepCoarse;
+  if (correct) {
+    AM.consecutiveCorrect++;
+    if (AM.consecutiveCorrect >= 2) {
+      var nDir = 'down';
+      if (AM.lastDirection === 'up') AM.reversals.push(AM.modDB);
+      AM.lastDirection = nDir;
+      AM.modDB = Math.max(AM.modDB - step, -24);
+      AM.consecutiveCorrect = 0;
+    }
+  } else {
+    AM.consecutiveCorrect = 0;
+    var nDir2 = 'up';
+    if (AM.lastDirection === 'down') AM.reversals.push(AM.modDB);
+    AM.lastDirection = nDir2;
+    AM.modDB = Math.min(AM.modDB + step, 0);
+  }
+
+  AM.trialNum++;
+  setTimeout(runAMTrial, 2200);
+}
+
+function finishAMTest() {
+  var threshold;
+  if (AM.reversals.length >= 4) {
+    var last4 = AM.reversals.slice(-4);
+    threshold = last4.reduce(function(a, b) { return a + b; }, 0) / last4.length;
+  } else if (AM.reversals.length > 0) {
+    threshold = AM.reversals.reduce(function(a, b) { return a + b; }, 0) / AM.reversals.length;
+  } else {
+    threshold = AM.modDB;
+  }
+  state.amResult = { thresholdDB: Math.round(threshold * 10) / 10, trials: AM.trialNum, reversals: AM.reversals.length };
+  testActive = false;
+  showTransition('קצב נקלט!', 'סף: ' + state.amResult.thresholdDB + ' dB', checkDichotic);
+}
+
+// ============================
+// SCREEN 10: DICHOTIC BONUS (headphones only)
+// ============================
+function checkDichotic() {
+  if (state.useHeadphones) {
+    showDichoticIntro();
+  } else {
+    state.dichoticResult = { tested: false };
+    showResults();
+  }
+}
+
+function showDichoticIntro() {
+  render('dichoticIntro', '<div style="display:flex;flex-direction:column;flex:1">' +
+    '<div style="background:linear-gradient(135deg,#e8f5e9,#f3e8ff);border-radius:var(--radius);padding:20px;margin:8px 0 20px;text-align:center">' +
+      '<div style="display:inline-block;background:var(--cyan);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">בונוס</div>' +
+      '<h2 style="margin-bottom:8px">האזנה דיכוטית</h2>' +
+      '<p style="font-size:13px;color:var(--text-secondary)">בדיקה איך המוח שלך מפריד צלילים בין האוזניים</p>' +
+    '</div>' +
+    '<p class="subtitle">צליל יושמע באוזן השמאלית בלבד. אשרי באיזו אוזן שמעת.</p>' +
+    '<div style="flex:1"></div>' +
+    '<button class="btn btn-primary" onclick="runHeadphoneVerify()">השמיעי צליל אימות</button>' +
+    '<button class="btn btn-ghost" onclick="skipTest(\'dichotic\')" style="margin-top:8px">דלגי על בדיקת הבונוס</button>' +
+  '</div>');
+}
+
+function runHeadphoneVerify() {
+  var ctx = ensureAudioContext();
+  var osc = ctx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 1000;
+  var g = ctx.createGain();
+  g.gain.value = 0.2;
+  var merger = ctx.createChannelMerger(2);
+  osc.connect(g);
+  g.connect(merger, 0, 0);
+  var silentGain = ctx.createGain();
+  silentGain.gain.value = 0;
+  osc.connect(silentGain);
+  silentGain.connect(merger, 0, 1);
+  merger.connect(ctx.destination);
+
+  var now = ctx.currentTime;
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(0.2, now + 0.01);
+  g.gain.setValueAtTime(0.2, now + 0.3);
+  g.gain.linearRampToValueAtTime(0, now + 0.31);
+  osc.start(now);
+  osc.stop(now + 0.35);
+
+  setTimeout(function() {
+    render('dichoticIntro', '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+      '<h3>באיזו אוזן שמעת את הצליל?</h3>' +
+      '<div class="ear-btns">' +
+        '<button class="ear-btn" onclick="verifyEar(\'left\')">שמאל</button>' +
+        '<button class="ear-btn" onclick="verifyEar(\'right\')">ימין</button>' +
+      '</div>' +
+    '</div>');
+  }, 500);
+}
+
+function verifyEar(ear) {
+  if (ear === 'left') {
+    startDichoticTest();
+  } else {
+    state.dichoticResult = { tested: false, reason: 'headphone_verify_failed' };
+    showTransition('בדיקת אוזניות נכשלה', 'מדלגות על בדיקה דיכוטית', showResults);
+  }
+}
+
+function resetDICH() {
+  DICH.trials = [];
+  DICH.trialNum = 0;
+  DICH.responding = false;
+}
+
+function startDichoticTest() {
+  resetDICH();
+  testActive = true;
+  runDichoticTrial();
+}
+
+var DICH_FREQS = [500, 750, 1000, 1500, 2000];
+
+function getDichoticPair() {
+  var attempts = 0;
+  var fL, fR;
+  while (attempts < 50) {
+    var i1 = Math.floor(Math.random() * DICH_FREQS.length);
+    var i2 = Math.floor(Math.random() * DICH_FREQS.length);
+    if (i1 === i2) { attempts++; continue; }
+    fL = DICH_FREQS[i1];
+    fR = DICH_FREQS[i2];
+    if (Math.max(fL, fR) / Math.min(fL, fR) >= 2) break;
+    attempts++;
+  }
+  // Ensure half have high-left, half high-right
+  if (DICH.trialNum < 6) {
+    if (fL < fR) { var tmp = fL; fL = fR; fR = tmp; }
+  } else {
+    if (fR < fL) { var tmp2 = fL; fL = fR; fR = tmp2; }
+  }
+  return { left: fL, right: fR };
+}
+
+function runDichoticTrial() {
+  if (!testActive) return;
+  if (DICH.trialNum >= DICH.maxTrials) {
+    finishDichoticTest();
+    return;
+  }
+
+  DICH.responding = false;
+  var pair = getDichoticPair();
+  DICH._currentPair = pair;
+
+  render('dichotic', '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+    '<div class="trial-header" style="width:100%"><span class="trial-label">האזנה דיכוטית</span><span class="trial-count">ניסיון ' + (DICH.trialNum + 1) + ' מתוך ' + DICH.maxTrials + '</span></div>' +
+    '<div class="status-text" id="dich-status">הקשיבי...</div>' +
+    '<div class="ear-btns" id="dich-resp" style="visibility:hidden">' +
+      '<button class="ear-btn" onclick="answerDich(\'left\')">שמאל</button>' +
+      '<button class="ear-btn" onclick="answerDich(\'right\')">ימין</button>' +
+    '</div>' +
+    '<p style="font-size:12px;color:var(--text-muted);margin-top:16px">באיזו אוזן שמעת את הצליל הגבוה?</p>' +
+    (isDesktop() ? '<p style="text-align:center;font-size:11px;color:var(--accent);margin-top:8px">מקלדת: חץ שמאלה / חץ ימינה</p>' : '') +
+  '</div>' +
+  '<div style="margin-top:auto"><div class="progress-wrap"><div class="progress-fill" style="width:' + (DICH.trialNum / DICH.maxTrials * 100) + '%"></div></div>' +
+  '<div style="text-align:center;margin-top:10px"><button class="btn btn-ghost" onclick="skipTest(\'dichotic\')">דלגי</button></div></div>'
+  );
+
+  AFTER_RENDER['dichotic'] = function() {
+    var ctx = ensureAudioContext();
+    playDichotic(ctx, pair.left, pair.right, 0.2, DICH.toneGain);
+    setTimeout(function() {
+      var s = document.getElementById('dich-status');
+      if (s) s.textContent = 'באיזו אוזן שמעת את הצליל הגבוה?';
+      var r = document.getElementById('dich-resp');
+      if (r) r.style.visibility = 'visible';
+      DICH.responding = true;
+    }, 400);
+  };
+  AFTER_RENDER['dichotic']();
+}
+
+function playDichotic(ctx, freqL, freqR, duration, gain) {
+  var merger = ctx.createChannelMerger(2);
+  var ramp = 0.01;
+  var now = ctx.currentTime + 0.05;
+
+  var oscL = ctx.createOscillator();
+  oscL.type = 'sine';
+  oscL.frequency.value = freqL;
+  var gL = ctx.createGain();
+  gL.gain.setValueAtTime(0, now);
+  gL.gain.linearRampToValueAtTime(gain, now + ramp);
+  gL.gain.setValueAtTime(gain, now + duration - ramp);
+  gL.gain.linearRampToValueAtTime(0, now + duration);
+  oscL.connect(gL);
+  gL.connect(merger, 0, 0);
+
+  var oscR = ctx.createOscillator();
+  oscR.type = 'sine';
+  oscR.frequency.value = freqR;
+  var gR = ctx.createGain();
+  gR.gain.setValueAtTime(0, now);
+  gR.gain.linearRampToValueAtTime(gain, now + ramp);
+  gR.gain.setValueAtTime(gain, now + duration - ramp);
+  gR.gain.linearRampToValueAtTime(0, now + duration);
+  oscR.connect(gR);
+  gR.connect(merger, 0, 1);
+
+  merger.connect(ctx.destination);
+  oscL.start(now);
+  oscL.stop(now + duration + 0.01);
+  oscR.start(now);
+  oscR.stop(now + duration + 0.01);
+}
+
+function answerDich(ear) {
+  if (!DICH.responding) return;
+  DICH.responding = false;
+
+  var pair = DICH._currentPair;
+  var higherEar = pair.left > pair.right ? 'left' : 'right';
+  var correct = ear === higherEar;
+
+  DICH.trials.push({ trial: DICH.trialNum, freqL: pair.left, freqR: pair.right, higherEar: higherEar, response: ear, correct: correct });
+  DICH.trialNum++;
+  setTimeout(runDichoticTrial, 1000);
+}
+
+function finishDichoticTest() {
+  testActive = false;
+  var leftCorrect = 0, rightCorrect = 0, leftTotal = 0, rightTotal = 0;
+  for (var i = 0; i < DICH.trials.length; i++) {
+    var t = DICH.trials[i];
+    if (t.higherEar === 'left') {
+      leftTotal++;
+      if (t.correct) leftCorrect++;
+    } else {
+      rightTotal++;
+      if (t.correct) rightCorrect++;
+    }
+  }
+  var leftAcc = leftTotal > 0 ? Math.round(leftCorrect / leftTotal * 100) : 0;
+  var rightAcc = rightTotal > 0 ? Math.round(rightCorrect / rightTotal * 100) : 0;
+  var rea = Math.round((rightCorrect - leftCorrect) / DICH.trials.length * 100);
+
+  state.dichoticResult = { tested: true, rea: rea, leftAcc: leftAcc, rightAcc: rightAcc, trials: DICH.trials.length };
+  showTransition('האזנה דיכוטית נקלטה!', 'REA: ' + rea + '%', showResults);
+}
+
+// ============================
+// SCREEN 11: RESULTS REPORT
+// ============================
+function getCSScore() {
+  if (!state.csResult) return null;
+  var v = state.csResult.logCS;
+  if (v >= 1.65) return { pct: Math.min(100, 50 + (v - 1.65) / 0.45 * 50), label: 'תקין', color: 'var(--cyan)' };
+  if (v >= 1.35) return { pct: 35 + (v - 1.35) / 0.3 * 30, label: 'שינויים קלים', color: 'var(--amber)' };
+  return { pct: Math.max(5, v / 1.35 * 35), label: 'מתחת לצפוי', color: 'var(--coral)' };
+}
+
+function getColorScore() {
+  if (!state.colorResult) return null;
+  var v = state.colorResult.bdi;
+  if (v <= 1.2) return { pct: 90, label: 'תקין', color: 'var(--cyan)' };
+  if (v <= 1.5) return { pct: 55, label: 'השפעה קלה על S-cone', color: 'var(--amber)' };
+  return { pct: 25, label: 'השפעה ניכרת על S-cone', color: 'var(--coral)' };
+}
+
+function getFlickerScore() {
+  if (!state.flickerResult) return null;
+  var v = state.flickerResult.cff;
+  if (v >= 35) return { pct: 90, label: 'תקין', color: 'var(--cyan)' };
+  if (v >= 25) return { pct: 55, label: 'שינויים קלים', color: 'var(--amber)' };
+  return { pct: 25, label: 'מתחת לצפוי', color: 'var(--coral)' };
+}
+
+function getTINScore() {
+  if (!state.tinResult) return null;
+  var v = state.tinResult.snr;
+  if (v <= -12) return { pct: 95, label: 'מצוין', color: 'var(--cyan)' };
+  if (v <= -8) return { pct: 80, label: 'תקין', color: 'var(--cyan)' };
+  if (v <= -4) return { pct: 60, label: 'סביר', color: 'var(--amber)' };
+  if (v <= 0) return { pct: 40, label: 'קושי מסוים', color: 'var(--amber)' };
+  return { pct: 20, label: 'מדאיג', color: 'var(--coral)' };
+}
+
+function getGapScore() {
+  if (!state.gapResult) return null;
+  var v = state.gapResult.thresholdMs;
+  if (v <= 5) return { pct: 90, label: 'תקין', color: 'var(--cyan)' };
+  if (v <= 10) return { pct: 55, label: 'גבולי', color: 'var(--amber)' };
+  return { pct: 25, label: 'מדאיג', color: 'var(--coral)' };
+}
+
+function getAMScore() {
+  if (!state.amResult) return null;
+  var v = state.amResult.thresholdDB;
+  if (v <= -18) return { pct: 90, label: 'תקין', color: 'var(--cyan)' };
+  if (v <= -12) return { pct: 55, label: 'גבולי', color: 'var(--amber)' };
+  return { pct: 25, label: 'מדאיג', color: 'var(--coral)' };
+}
+
+function getComposite() {
+  var weights = { cs: 0.17, color: 0.17, tin: 0.22, gap: 0.22, am: 0.22 };
+  var total = 0, wSum = 0;
+  var csS = getCSScore();
+  var colorS = getColorScore();
+  var tinS = getTINScore();
+  var gapS = getGapScore();
+  var amS = getAMScore();
+
+  if (csS) { total += csS.pct * weights.cs; wSum += weights.cs; }
+  if (colorS) { total += colorS.pct * weights.color; wSum += weights.color; }
+  if (tinS) { total += tinS.pct * weights.tin; wSum += weights.tin; }
+  if (gapS) { total += gapS.pct * weights.gap; wSum += weights.gap; }
+  if (amS) { total += amS.pct * weights.am; wSum += weights.am; }
+
+  if (wSum === 0) return 0;
+  return Math.round(total / wSum);
+}
+
+function getCompositeLabel(score) {
+  if (score >= 85) return 'תקין';
+  if (score >= 65) return 'שינויים קלים';
+  if (score >= 40) return 'בינוני';
+  return 'משמעותי';
+}
+
+function getCompositeColor(score) {
+  if (score >= 85) return 'var(--cyan)';
+  if (score >= 65) return 'var(--amber)';
+  return 'var(--coral)';
+}
+
+function buildArcSVG(score, size) {
+  size = size || 160;
+  var cx = size / 2;
+  var radius = (size / 2) - 12;
+  var circumference = 2 * Math.PI * radius;
+  var pct = score / 100;
+  var arcFraction = 0.75;
+  var dashLen = circumference * pct * arcFraction;
+  var trackLen = circumference * arcFraction;
+  var color = getCompositeColor(score);
+  return '<svg viewBox="0 0 ' + size + ' ' + size + '" style="display:block">' +
+    '<circle cx="' + cx + '" cy="' + cx + '" r="' + radius + '" fill="none" stroke="#f0f0f0" stroke-width="14" stroke-dasharray="' + trackLen + ' ' + circumference + '" stroke-dashoffset="0" transform="rotate(135 ' + cx + ' ' + cx + ')"/>' +
+    '<circle cx="' + cx + '" cy="' + cx + '" r="' + radius + '" fill="none" stroke="' + color + '" stroke-width="14" stroke-linecap="round" stroke-dasharray="' + dashLen + ' ' + circumference + '" stroke-dashoffset="0" transform="rotate(135 ' + cx + ' ' + cx + ')">' +
+    '<animate attributeName="stroke-dasharray" from="0 ' + circumference + '" to="' + dashLen + ' ' + circumference + '" dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1"/>' +
+    '</circle>' +
+  '</svg>';
+}
+
+function buildResultCard(title, icon, value, unit, scoreObj, detail, resultObj) {
+  if (!scoreObj) return '';
+  // Check for insufficient data (reversals < 2)
+  var insufficientData = resultObj && typeof resultObj.reversals === 'number' && resultObj.reversals < 2;
+  if (insufficientData) {
+    return '<div class="card result-card">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center">' + icon + '</span><h3 style="margin:0">' + title + '</h3></div>' +
+      '<p class="result-interp" style="color:var(--amber)">נתונים לא מספיקים - הבדיקה לא מצאה את הסף שלך. נסי שוב בסביבה שקטה יותר.</p>' +
+      '<p class="result-detail">' + detail + '</p>' +
+    '</div>';
+  }
+  return '<div class="card result-card">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center">' + icon + '</span><h3 style="margin:0">' + title + '</h3></div>' +
+    '<div class="result-value">' + value + ' <span style="font-size:14px;font-weight:500;color:var(--text-muted)">' + unit + '</span></div>' +
+    '<div class="gauge"><div class="gauge-fill" style="width:' + scoreObj.pct + '%;background:' + scoreObj.color + '"></div></div>' +
+    '<div class="gauge-labels"><span>מדאיג</span><span>תקין</span></div>' +
+    '<p class="result-interp">' + scoreObj.label + '</p>' +
+    '<p class="result-detail">' + detail + '</p>' +
+  '</div>';
+}
+
+function showResults() {
+  testActive = false;
+  var composite = getComposite();
+  var compLabel = getCompositeLabel(composite);
+  saveResults(composite);
+
+  var badgeColor = getCompositeColor(composite);
+  var badgeBg = composite >= 85 ? '#e6f9f5' : composite >= 65 ? '#fdf3e2' : composite >= 40 ? '#fce8e6' : '#fce8e6';
+
+  var html = '<div style="display:flex;flex-direction:column;flex:1">';
+
+  // Summary label
+  html += '<div class="label" style="margin-bottom:10px">סיכום</div>';
+
+  // Title + badge
+  html += '<h2 style="font-size:17px;line-height:1.3;margin-bottom:8px">\u05E6\u05D9\u05D5\u05DF SENSE\u2122 \u05E9\u05DC\u05DA:<br>\u05D0\u05D9\u05D6\u05D5\u05DF \u05D7\u05D5\u05E9\u05D9</h2>';
+  html += '<div><span style="display:inline-block;background:' + badgeBg + ';color:' + badgeColor + ';font-size:11px;font-weight:700;padding:4px 14px;border-radius:14px;letter-spacing:.3px;border:1px solid ' + badgeColor + '">' + compLabel + '</span></div>';
+
+  // Gauge row: arc left, text right - matching Peritale exactly
+  html += '<div style="display:flex;align-items:center;gap:16px;margin:16px 0 12px">' +
+    '<div style="position:relative;width:110px;height:110px;flex-shrink:0">' +
+      buildArcSVG(composite, 110) +
+      '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center"><span style="font-size:32px;font-weight:800;color:var(--navy);line-height:1">' + composite + '</span></div>' +
+    '</div>' +
+    '<div style="flex:1">' +
+      '<p style="font-size:11.5px;color:var(--text-secondary);line-height:1.55;margin-bottom:8px">האותות החושיים שלך משקפים כיצד הראייה והשמיעה משתנות לאורך זמן בהתאם לדפוסים הקשורים לשינויים הורמונליים.</p>' +
+      '<div style="display:flex;gap:16px">' +
+        '<span style="font-size:11px;color:var(--text-muted)">הסבר מלא</span>' +
+        '<span style="font-size:11px;color:var(--accent);font-weight:600">קראי עוד</span>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  // Divider
+  html += '<div style="height:1px;background:var(--border-light);margin:4px 0 12px"></div>';
+
+  // Results grid - compact 2-column for vision, then hearing
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
+  html += '<div style="grid-column:1/-1"><div class="label" style="margin:0">ראייה</div></div>';
+  html += buildCompactResult('ניגודיות', state.csResult ? state.csResult.logCS : '--', 'logCS', getCSScore());
+  if (state.colorResult) {
+    html += buildCompactResult('צבע', state.colorResult.bdi, 'BDI', getColorScore());
+  }
+  html += '</div>';
+
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
+  html += '<div style="grid-column:1/-1"><div class="label" style="margin:0">שמיעה</div></div>';
+  html += buildCompactResult('שמיעה', state.tinResult ? state.tinResult.snr : '--', 'dB', getTINScore());
+  html += buildCompactResult('רווחים', state.gapResult ? state.gapResult.thresholdMs : '--', 'ms', getGapScore());
+  html += buildCompactResult('קצב', state.amResult ? state.amResult.thresholdDB : '--', 'dB', getAMScore());
+  html += '</div>';
+
+  // Spacer
+  html += '<div style="flex:1;min-height:8px"></div>';
+
+  // Action
+  html += '<button class="btn btn-primary" onclick="if(window.parent!==window)window.parent.postMessage(\'sense-done\',\'*\');">המשיכי לתוצאות</button>';
+  html += '<p style="font-size:9px;color:var(--text-muted);text-align:center;margin-top:8px;line-height:1.4">אות רווחה כללי בלבד. אינו מהווה ייעוץ רפואי. (c) 2026 MARKABLE</p>';
+
+  html += '</div>';
+  render('results', html);
+}
+
+function buildCompactResult(name, value, unit, score) {
+  var s = score || {pct:5,color:'var(--border)',label:''};
+  var pct = s.pct || 5;
+  var color = s.color || 'var(--border)';
+  return '<div style="background:var(--bg-off);border:1px solid var(--border-light);border-radius:10px;padding:10px 12px">' +
+    '<div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">' + name + '</div>' +
+    '<div style="font-size:18px;font-weight:800;color:var(--navy);line-height:1.2">' + value + ' <span style="font-size:10px;font-weight:500;color:var(--text-muted)">' + unit + '</span></div>' +
+    '<div style="height:3px;background:var(--border-light);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:2px"></div></div>' +
+  '</div>';
+}
+
+function getNextStepText(score) {
+  if (score >= 85) return 'האותות החושיים שלך בטווח התקין. שקלי לחזור על הבדיקה בעוד 4-6 שבועות כדי לבסס קו בסיס אישי ולעקוב אחר שינויים לאורך זמן.';
+  if (score >= 65) return 'זוהו שינויים קלים. אלו עשויים לנוד עם המחזור, איכות השינה או רמות המתח. חזרי על הבדיקה בעוד 2-4 שבועות כדי לראות אם מתגבשים דפוסים. שקלי לשוחח עם הרופא/ה שלך אם השינויים נמשכים.';
+  if (score >= 40) return 'נצפו שינויים בינוניים במספר תחומים. מומלץ לחזור על הבדיקה בעוד 1-2 שבועות ולשתף את התוצאות עם הרופא/ה שלך.';
+  return 'מספר אותות מחוץ לטווחים האופייניים. ממצא זה אינו מצביע על מצב ספציפי, אך מומלץ לשוחח עם הרופא/ה שלך על דפוסים אלו. גורמים סביבתיים (רעש, עייפות, איכות מסך) עשויים להשפיע על התוצאות.';
+}
+
+function buildTrend(diff) {
+  if (diff > 2) return '<span class="trend trend-up">' + ICONS.trendUp + ' +' + diff + '</span>';
+  if (diff < -2) return '<span class="trend trend-down">' + ICONS.trendDown + ' ' + diff + '</span>';
+  return '<span class="trend trend-same">--</span>';
+}
+
+// ============================
+// LOCAL STORAGE
+// ============================
+function saveResults(composite) {
+  var entry = {
+    date: new Date().toISOString(),
+    composite: composite,
+    contrast: state.csResult,
+    color: state.colorResult,
+    flicker: state.flickerResult,
+    toneNoise: state.tinResult,
+    gap: state.gapResult,
+    am: state.amResult,
+    dichotic: state.dichoticResult,
+    headphones: state.useHeadphones
+  };
+
+  try {
+    var history = JSON.parse(localStorage.getItem('sense_history') || '[]');
+    history.push(entry);
+    if (history.length > 50) history = history.slice(-50);
+    localStorage.setItem('sense_history', JSON.stringify(history));
+  } catch (e) {}
+}
+
+function getPreviousSession() {
+  try {
+    var history = JSON.parse(localStorage.getItem('sense_history') || '[]');
+    if (history.length >= 2) return history[history.length - 2];
+  } catch (e) {}
+  return null;
+}
+
+// ============================
+// RESET
+// ============================
+function resetAll() {
+  testActive = false;
+  if (FLICKER.animFrame) { cancelAnimationFrame(FLICKER.animFrame); FLICKER.animFrame = null; }
+  state.csResult = null;
+  state.colorResult = null;
+  state.flickerResult = null;
+  state.tinResult = null;
+  state.gapResult = null;
+  state.amResult = null;
+  state.dichoticResult = null;
+  state.currentTestIndex = 0;
+  showIntro();
+}
+
+// ============================
+// INIT
+// ============================
+showIntro();
+</script>
+</body>
+</html>

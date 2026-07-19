@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARKABLE - Maccabi Patient Journey Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pk:#D1409C;--navy:#1a1a2e;--green:#34C759;--blue:#007AFF;
+  --bg:#f2f2f7;--card:#fff;--red:#FF3B30;
+  --font:'Heebo','Inter',-apple-system,system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#1a1a2e;font-family:var(--font)}
+
+.phone-container{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e 0%,#2d1b3d 50%,#1a1a2e 100%)}
+.phone{width:390px;height:844px;max-height:calc(100vh - 20px);max-width:calc(100vw - 20px);background:#000;border-radius:50px;position:relative;box-shadow:0 0 0 3px #333,0 0 0 6px #1a1a1a,0 20px 80px rgba(0,0,0,.6);overflow:hidden;display:flex;flex-direction:column}
+.dynamic-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:126px;height:36px;background:#000;border-radius:20px;z-index:100}
+.phone-screen{flex:1;background:var(--bg);border-radius:46px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+
+.status-bar{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 32px 6px;font-size:12px;font-weight:600;color:#000;background:#fff;flex-shrink:0;z-index:50}
+.status-time{font-size:15px;font-weight:700}
+.status-icons{display:flex;gap:4px;align-items:center}
+
+/* Demo badge - outside phone */
+.demo-badge-outer{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:200;
+  background:#D1409C;color:#fff;font-size:9px;font-weight:700;
+  padding:3px 14px;border-radius:10px;letter-spacing:1px;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(209,64,156,.3);
+}
+
+/* Powered by footer inside phone */
+.powered-footer{
+  background:#f8f8f8;padding:4px 16px;text-align:center;
+  font-size:8px;color:#aaa;border-top:1px solid #eee;flex-shrink:0;
+  direction:ltr;
+}
+
+/* Progress bar */
+.progress-bar{background:#fff;padding:0 0 0;flex-shrink:0;z-index:40}
+.progress-bar.hide{display:none}
+.progress-track{width:100%;height:2px;background:#f0f0f0}
+.progress-fill{height:100%;background:var(--pk);border-radius:0 0 2px 2px;transition:width .4s ease}
+.progress-text{display:none}
+
+.phone-content{flex:1;overflow:hidden;position:relative}
+
+/* Screens */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s ease,transform .4s ease;transform:translateX(30px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scr.active{opacity:1;pointer-events:auto;transform:translateX(0)}
+.scr.exit{opacity:0;transform:translateX(-30px)}
+.scr iframe{width:100%;height:100%;border:none;flex:1}
+
+/* Page base */
+.page{background:#fff;padding:14px 16px;direction:rtl}
+
+/* Buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:14px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);transition:all .15s;width:100%}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:default;transform:none}
+.btn-pk{background:var(--pk);color:#fff;box-shadow:0 4px 16px rgba(209,64,156,.25)}
+.btn-outline{background:transparent;border:2px solid var(--pk);color:var(--pk)}
+
+/* Demo skip button - prominent red */
+.btn-skip{background:var(--red);color:#fff;border:none;padding:10px 20px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);width:100%;margin-top:6px;letter-spacing:.5px}
+.btn-skip:active{opacity:.8}
+
+/* Section intro card */
+.section-intro{background:linear-gradient(135deg,rgba(209,64,156,.04),rgba(209,64,156,.01));border:1px solid rgba(209,64,156,.1);border-radius:12px;padding:10px 14px;margin-bottom:10px;text-align:right}
+.section-intro .si-label{font-size:9px;font-weight:700;color:var(--pk);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
+.section-intro .si-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.section-intro .si-desc{font-size:11px;color:#666;line-height:1.5}
+.section-intro .si-why{font-size:10px;color:var(--pk);font-weight:600;margin-top:4px}
+
+/* Lock screen */
+.lock-screen{background:linear-gradient(180deg,#c9d6ff,#e2e2e2);padding:60px 24px 40px;text-align:center}
+.lock-time{font-size:64px;font-weight:200;color:#000;letter-spacing:-2px;font-family:'Inter',sans-serif}
+.lock-date{font-size:16px;color:#333;margin-bottom:40px}
+.sms-notif{background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-radius:20px;padding:14px 16px;text-align:right;margin:0 4px;box-shadow:0 4px 20px rgba(0,0,0,.1);cursor:pointer;transition:transform .15s}
+.sms-notif:active{transform:scale(.97)}
+.sms-header{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-direction:row-reverse}
+.sms-app-icon{width:28px;height:28px;border-radius:7px;background:#00A651;display:flex;align-items:center;justify-content:center}
+.sms-app-name{font-size:12px;font-weight:600;color:#666}
+.sms-time-badge{font-size:11px;color:#999;margin-right:auto}
+.sms-body{font-size:14px;color:#1a1a1a;line-height:1.6;direction:rtl}
+.sms-body strong{color:var(--pk)}
+.sms-hint{font-size:11px;color:#999;text-align:center;margin-top:24px}
+
+/* Scan screen */
+.scan-screen{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:#fff}
+.scan-frame{width:220px;height:280px;border-radius:50%;border:3px solid rgba(209,64,156,.5);position:relative;margin-bottom:20px;overflow:hidden;background:radial-gradient(ellipse,rgba(209,64,156,.08) 0%,transparent 70%)}
+.scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--pk),transparent);animation:scanMove 2.5s ease-in-out infinite}
+@keyframes scanMove{0%{top:10%}50%{top:85%}100%{top:10%}}
+.scan-corners{position:absolute;inset:10px}
+.scan-corners::before,.scan-corners::after{content:'';position:absolute;width:30px;height:30px;border:3px solid var(--pk)}
+.scan-corners::before{top:0;right:0;border-left:none;border-bottom:none;border-radius:0 12px 0 0}
+.scan-corners::after{bottom:0;left:0;border-right:none;border-top:none;border-radius:0 0 0 12px}
+.scan-face-oval{width:70px;height:88px;border-radius:50%;border:2px solid rgba(255,255,255,.3);position:relative;margin:0 auto 12px}
+.scan-face-eyes{position:absolute;top:32px;left:50%;transform:translateX(-50%);display:flex;gap:18px}
+.scan-face-eye{width:7px;height:5px;border-radius:50%;background:rgba(255,255,255,.5)}
+.scan-face-mouth{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);width:18px;height:3px;border-radius:2px;background:rgba(255,255,255,.3)}
+.scan-progress{width:180px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.scan-progress-fill{height:100%;background:var(--pk);border-radius:2px;width:0%;transition:width .1s linear}
+.scan-pct{font-size:12px;color:rgba(255,255,255,.5)}
+
+/* Consent */
+.consent-item{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;flex-direction:row-reverse}
+.consent-item:last-child{border-bottom:none}
+.cbox{width:18px;height:18px;border-radius:5px;border:2px solid #ddd;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px}
+.cbox.checked{background:var(--pk);border-color:var(--pk)}
+.cbox.checked::after{content:'';width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+.consent-text{font-size:12px;color:#444;line-height:1.5;text-align:right}
+.consent-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;display:inline-block;margin-right:4px}
+.badge-req{background:rgba(209,64,156,.1);color:var(--pk)}
+.badge-opt{background:#f0f0f0;color:#999}
+
+/* Questionnaire */
+.q-row{display:flex;gap:6px;margin-bottom:6px}
+.q-opt{flex:1;padding:8px;border-radius:10px;border:2px solid #eee;font-size:12px;font-weight:500;color:#333;cursor:pointer;transition:all .2s;text-align:center}
+.q-opt.sel{border-color:var(--pk);background:rgba(209,64,156,.04);color:var(--pk)}
+.q-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.q-chip{padding:5px 10px;border-radius:16px;border:2px solid #eee;font-size:10px;font-weight:500;cursor:pointer;transition:all .2s}
+.q-chip.sel{border-color:var(--pk);background:rgba(209,64,156,.06);color:var(--pk)}
+.follow-up{background:#fafafa;border-radius:10px;padding:8px 10px;margin:6px 0 8px;border:1px solid #eee}
+
+/* Carousel */
+.carousel-wrap{overflow:hidden;position:relative;flex:1}
+.carousel-track{display:flex;gap:10px;padding:0 20px;transition:transform .35s ease;flex-shrink:0}
+.metric-card{min-width:260px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);overflow:hidden;flex-shrink:0}
+.metric-img{height:140px;display:flex;align-items:center;justify-content:center}
+.metric-score-ring{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;position:relative}
+.metric-score-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:4px solid currentColor;opacity:.15}
+.metric-score-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:4px solid transparent;border-top-color:currentColor;border-right-color:currentColor}
+.metric-body{padding:12px 14px;text-align:right}
+.metric-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.metric-desc{font-size:10px;color:#888;line-height:1.4}
+.carousel-dots{display:flex;justify-content:center;gap:5px;padding:8px 0}
+.carousel-dots span{width:5px;height:5px;border-radius:50%;background:#ddd;transition:all .3s}
+.carousel-dots span.active{background:var(--pk);width:14px;border-radius:3px}
+
+/* Symptom tracker */
+.symptom-header{text-align:center;margin-bottom:12px}
+.symptom-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f3f3;flex-direction:row-reverse}
+.symptom-name{font-size:12px;color:#333;font-weight:500}
+.symptom-score{width:32px;height:32px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#ccc;cursor:pointer;transition:all .2s;flex-shrink:0}
+.symptom-score.rated-low{background:rgba(52,199,89,.08);color:var(--green)}
+.symptom-score.rated-mid{background:rgba(255,159,10,.08);color:#FF9F0A}
+.symptom-score.rated-high{background:rgba(255,59,48,.08);color:var(--red)}
+
+/* Score popup */
+.score-popup{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.score-popup.show{display:flex}
+.score-sheet{background:#fff;border-radius:20px 20px 0 0;padding:16px 20px;width:100%;max-width:390px}
+.score-sheet-title{font-size:14px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:8px}
+.score-options{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:8px}
+.score-opt{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;border:2px solid #eee;color:#666;background:#fff}
+.score-opt.sel{border-color:var(--pk);background:var(--pk);color:#fff}
+.score-label{font-size:9px;color:#999;text-align:center;margin-bottom:8px;min-height:24px;line-height:1.4}
+
+/* Summary card */
+.summary-card{background:var(--bg);border-radius:12px;padding:14px;text-align:center;margin:12px 0}
+.summary-stat{display:inline-block;margin:0 10px;text-align:center}
+.summary-num{font-size:22px;font-weight:800}
+.summary-label{font-size:9px;color:#888;font-weight:600}
+
+/* Provider report */
+.report-pills{display:flex;gap:4px;margin-bottom:12px}
+.report-pill{flex:1;height:4px;border-radius:2px;background:#eee}
+.report-pill.done{background:var(--pk)}
+.report-pill.current{background:var(--pk);opacity:.5}
+.med-card{background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse}
+.cycle-opt{padding:8px 12px;border-radius:8px;border:2px solid #eee;margin-bottom:5px;font-size:12px;color:#333;cursor:pointer;transition:all .2s;text-align:right}
+.cycle-opt.sel{border-color:var(--pk);background:rgba(209,64,156,.04);color:var(--pk)}
+
+/* Transition screen */
+.trans-screen{background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 20px;direction:rtl}
+.trans-icon{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.trans-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.trans-desc{font-size:13px;color:#666;line-height:1.6;margin-bottom:16px;max-width:280px}
+
+/* Auth buttons */
+.auth-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:1px solid #ddd;margin-bottom:8px;cursor:pointer;transition:all .15s;background:#fff;flex-direction:row-reverse;width:100%;font-family:var(--font);font-size:13px;font-weight:500;color:#333}
+
+/* Loading */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:var(--pk);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+
+/* Bottom bar */
+.bottom-nav{height:34px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;flex-shrink:0;background:#fff}
+.home-indicator{width:134px;height:5px;background:#000;border-radius:3px;opacity:.2}
+
+.demo-label{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.4);font-size:11px;font-weight:500;font-family:var(--font);letter-spacing:1px}
+
+/* Nav panel - left side of phone */
+.nav-panel{
+  position:fixed;left:calc(50% - 250px);top:50%;transform:translate(-100%,-50%);z-index:200;
+  direction:rtl;display:flex;flex-direction:column;gap:10px;margin-left:-20px;
+}
+.nav-panel-header{
+  font-size:11px;font-weight:700;color:#D1409C;text-align:center;
+  letter-spacing:.5px;
+}
+/* Prev/Next buttons - prominent */
+.nav-arrows{display:flex;flex-direction:column;gap:6px}
+.nav-arrow{
+  display:flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;
+  background:#fff;border:1.5px solid #e0e0e0;
+  cursor:pointer;transition:all .15s;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);font-family:var(--font);
+}
+.nav-arrow:hover{border-color:#D1409C;box-shadow:0 4px 12px rgba(209,64,156,.12)}
+.nav-arrow:active{transform:scale(.97)}
+.nav-arrow svg{width:18px;height:18px;flex-shrink:0}
+.nav-arrow-label{font-size:12px;font-weight:600;color:#555}
+
+/* Section shortcuts */
+.nav-sections{
+  background:#fff;border-radius:12px;padding:10px 8px;
+  border:1.5px solid #e0e0e0;box-shadow:0 2px 8px rgba(0,0,0,.06);
+  max-height:380px;overflow-y:auto;
+}
+.nav-section-btn{
+  font-size:11px;color:#666;padding:6px 10px;border-radius:8px;
+  cursor:pointer;transition:all .15s;font-family:var(--font);
+  font-weight:500;text-align:right;white-space:nowrap;
+}
+.nav-section-btn:hover{background:rgba(209,64,156,.06);color:#D1409C}
+.nav-section-btn.active{background:rgba(209,64,156,.1);color:#D1409C;font-weight:700}
+
+/* Back to cover link */
+.nav-cover{
+  font-size:10px;color:#999;text-align:center;cursor:pointer;
+  padding:6px;transition:color .15s;text-decoration:none;display:block;
+}
+.nav-cover:hover{color:#D1409C}
+
+@media(max-width:560px){
+  .nav-panel{display:none;position:fixed;left:8px;bottom:60px;top:auto;transform:none;margin:0;z-index:300}
+  .nav-panel.mobile-open{display:flex}
+}
+.mobile-nav-toggle{
+  display:none;position:fixed;bottom:12px;left:12px;z-index:301;
+  width:44px;height:44px;border-radius:50%;background:#D1409C;color:#fff;
+  border:none;cursor:pointer;box-shadow:0 3px 12px rgba(209,64,156,.3);
+  font-size:18px;
+}
+@media(max-width:560px){.mobile-nav-toggle{display:flex;align-items:center;justify-content:center}}
+
+@media(max-width:420px){.phone{width:100%;height:100%;max-height:100vh;max-width:100vw;border-radius:0;box-shadow:none}.phone-screen{border-radius:0}.dynamic-island{display:none}.status-bar{height:44px;padding:0 20px 4px}.demo-label{display:none}}
+@media(max-height:750px){.phone{height:100vh;max-height:100vh;border-radius:0;box-shadow:none}.phone-screen{border-radius:0}.dynamic-island{display:none}}
+</style>
+</head>
+<body>
+
+<div class="phone-container">
+<div class="phone">
+<div class="demo-badge-outer">DEMO</div>
+<div class="dynamic-island"></div>
+<div class="phone-screen">
+
+<div class="status-bar" id="statusBar">
+  <div class="status-time">9:41</div>
+  <div class="status-icons">
+    <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="1" fill="#000"/><rect x="4.5" y="4" width="3" height="8" rx="1" fill="#000"/><rect x="9" y="1.5" width="3" height="10.5" rx="1" fill="#000"/><rect x="13.5" y="0" width="2.5" height="12" rx=".5" fill="#000" opacity=".3"/></svg>
+    <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5.5C5 .5 2.8 1.5 1 3.2l1 1.2C3.5 2.7 5.4 2 7.5 2S11.5 2.7 13 4.4l1-1.2C12.2 1.5 10 .5 7.5.5z" fill="#000"/><path d="M7.5 3.5c-1.8 0-3.4.7-4.6 1.8l1 1.2c.9-.9 2.2-1.5 3.6-1.5s2.7.6 3.6 1.5l1-1.2c-1.2-1.1-2.8-1.8-4.6-1.8z" fill="#000"/><circle cx="7.5" cy="9" r="2" fill="#000"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2.5" stroke="#000" fill="none" stroke-width="1"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="#000"/><rect x="22" y="4" width="2" height="4" rx="1" fill="#000" opacity=".4"/></svg>
+  </div>
+</div>
+
+
+<div class="progress-bar hide" id="progressBar">
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="phone-content" id="phoneContent">
+
+<!-- ====== SCREEN 0: SMS ====== -->
+<div class="scr lock-screen active" id="scr-0" dir="rtl">
+  <div class="lock-time">9:41</div>
+  <div class="lock-date">יום שלישי, 3 ביוני</div>
+  <div class="sms-notif" onclick="nextScreen()">
+    <div class="sms-header">
+      <div class="sms-app-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+      <div class="sms-app-name">הודעות</div>
+      <div class="sms-time-badge">עכשיו</div>
+    </div>
+    <div class="sms-body">
+      <strong>מכבי TeleHealth</strong><br>
+      שלום מיכל, לקראת הפגישה עם ד"ר רונית כהן (8.6, 10:00) במסגרת שירות גיל המעבר, נבקש ממך לבצע מיפוי דיגיטלי קצר. המיפוי ייתן לרופאה רקע מקיף מראש, כך שתוכל להכיר אותך טוב יותר עוד לפני הפגישה.<br><br>
+      <span style="color:var(--blue);text-decoration:underline;font-weight:600">maccabi.markable.life/start &#8592; לחצי כאן כדי להתחיל</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;cursor:pointer;opacity:.6" onclick="nextScreen()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M7 17l9.2-5L7 7v10z"/></svg>
+    <span style="font-size:11px;color:#fff;font-weight:500">לחצי על ההודעה כדי להתחיל את הדמו</span>
+  </div>
+</div>
+
+<!-- ====== SCREEN 1: LANDING ====== -->
+<div class="scr page" id="scr-1" dir="rtl" style="background:linear-gradient(180deg,#fff 0%,#fdf5fa 100%)">
+  <div style="text-align:center;padding:2px 0 6px">
+    <img src="maccabi-logo.svg" style="height:28px;object-fit:contain" alt="מכבי שירותי בריאות">
+  </div>
+
+  <div style="font-size:16px;font-weight:800;color:var(--navy);line-height:1.3;margin-bottom:5px">
+    מיכל, כדי שהביקור שקבעת יהיה מדויק ויעיל ככל האפשר
+  </div>
+  <div style="font-size:11px;color:#555;line-height:1.5;margin-bottom:6px">
+    נבקש ממך להקדיש כ-7 דקות לתהליך מיפוי קצר. המיפוי ייתן לרופאה רקע מקיף ויבנה בסיס להשוואה בין ביקורים.
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:6px">
+    <div style="flex:1;background:rgba(209,64,156,.05);border:1px solid rgba(209,64,156,.12);border-radius:8px;padding:6px 8px">
+      <div style="font-size:9px;font-weight:700;color:var(--pk)">שלב 1 · עכשיו</div>
+      <div style="font-size:9px;color:#777;line-height:1.3">מיפוי קצר, כ-7 דקות</div>
+    </div>
+    <div style="flex:1;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:6px 8px">
+      <div style="font-size:9px;font-weight:700;color:#999">שלב 2 · בין הביקורים</div>
+      <div style="font-size:9px;color:#777;line-height:1.3">מעקב קל שממשיך לעדכן את הרופאה</div>
+    </div>
+  </div>
+  <div style="font-size:9px;color:#999;margin-bottom:5px">אפשר לעצור באמצע ולהמשיך מאותה נקודה. מומלץ במקום שקט ומואר.</div>
+
+  <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;text-align:right">מה כולל התהליך:</div>
+  <div style="background:#fff;border-radius:12px;padding:8px 12px;border:1px solid #eee;margin-bottom:8px">
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;flex-direction:row-reverse">
+      <div style="width:24px;height:24px;border-radius:7px;background:var(--pk);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:11px">1</div>
+      <div style="text-align:right;flex:1"><div style="font-size:11px;font-weight:600;color:var(--navy)">סריקת פנים</div><div style="font-size:9px;color:#888;line-height:1.3">סימני עור הנבחנים במחקרים כקשורים לשינויים הורמונליים</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;flex-direction:row-reverse">
+      <div style="width:24px;height:24px;border-radius:7px;background:var(--pk);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:11px">2</div>
+      <div style="text-align:right;flex:1"><div style="font-size:11px;font-weight:600;color:var(--navy)">מיפוי תסמינים</div><div style="font-size:9px;color:#888;line-height:1.3">כ-60 תסמינים שעשויים להיות קשורים לפרימנופאוזה ומנופאוזה</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;flex-direction:row-reverse">
+      <div style="width:24px;height:24px;border-radius:7px;background:var(--pk);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:11px">3</div>
+      <div style="text-align:right;flex:1"><div style="font-size:11px;font-weight:600;color:var(--navy)"><span dir="ltr">THINK&#8482;</span> + <span dir="ltr">SENSE&#8482;</span></div><div style="font-size:9px;color:#888;line-height:1.3">דגימה קצרה של זיכרון, קשב, ראייה, שמיעה ושיווי משקל</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:8px;flex-direction:row-reverse">
+      <div style="width:24px;height:24px;border-radius:7px;background:var(--pk);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:11px">4</div>
+      <div style="text-align:right;flex:1"><div style="font-size:11px;font-weight:600;color:var(--navy)">החותם ההורמונלי&trade;</div><div style="font-size:9px;color:#888;line-height:1.3">כל הנתונים מתחברים לחותם הורמונלי אישי אחד</div></div>
+    </div>
+  </div>
+
+  <button class="btn btn-pk" onclick="nextScreen()">התחילי את המיפוי &#8592;</button>
+  <div style="font-size:9px;color:#aaa;text-align:center;line-height:1.4;margin-top:4px">
+    פלטפורמת בריאות ואיכות חיים. אינה מהווה כלי אבחוני רפואי.
+  </div>
+</div>
+
+<!-- ====== SCREEN 2: CONSENT ====== -->
+<div class="scr page" id="scr-2" dir="rtl">
+  <div style="font-size:10px;color:var(--pk);font-weight:700;letter-spacing:1px;margin-bottom:4px">הסכמה מדעת</div>
+
+  <p style="font-size:11px;color:#444;line-height:1.5;margin-bottom:6px">
+    את עומדת להתחיל תהליך מיפוי קצר. המערכת אוספת מידע מתמונת הפנים שלך, דגימות קוגניטיביות וחושיות, ובונה פרופיל בריאות אישי שתוכלי לשתף עם הרופאה שלך. המידע מעובד על ידי MARKABLE, המספקת את הכלי למכבי, ונשמר רק למשך הזמן הדרוש לטיפול בך. זהו כלי למעקב אישי ותיעוד, לא אבחון רפואי. הנתונים שלך שייכים לך.
+  </p>
+
+  <div id="consentBox" style="background:#f8f8f8;border:1px solid #eee;border-radius:10px;padding:8px;margin-bottom:4px">
+    <div class="consent-item" onclick="toggleConsent(0)">
+      <div class="cbox" id="c0"></div>
+      <div class="consent-text" style="font-size:11px">אני מסכימה לעיבוד נתונים ביומטריים (תמונת פנים), דגימות קוגניטיביות ותפקודים חושיים, ולשיתופם עם הרופאה המטפלת שלי במכבי. תמונת הפנים מנותחת להפקת מדדי דפוסי עור ונמחקת לאחר העיבוד; רק המדדים נשמרים, למשך 30 חודשים. גילי 18+. <span class="consent-badge badge-req">חובה</span></div>
+    </div>
+    <div class="consent-item" onclick="toggleConsent(1)">
+      <div class="cbox" id="c1"></div>
+      <div class="consent-text" style="font-size:11px">אני מסכימה לשימוש בנתונים ללא פרטים מזהים למחקר. <span style="color:var(--pk);font-weight:500">כשאת בוחרת לאשר, את עוזרת לקדם את המחקר בבריאות נשים בגיל המעבר.</span> הנתונים ינותקו מכל פרט מזהה לפני השימוש. <span class="consent-badge badge-opt">אופציונלי</span></div>
+    </div>
+    <div class="consent-item" onclick="toggleConsent(2)">
+      <div class="cbox" id="c2"></div>
+      <div class="consent-text" style="font-size:11px">קראתי את <span style="color:var(--pk);text-decoration:underline">מדיניות הפרטיות</span> ואת <span style="color:var(--pk);text-decoration:underline">תנאי השימוש</span>. ידוע לי שאוכל לבקש מחיקת הנתונים שלי בכל עת. <span class="consent-badge badge-req">חובה</span></div>
+    </div>
+  </div>
+
+  <div style="flex:1"></div>
+  <button class="btn btn-pk" id="consentBtn" disabled onclick="nextScreen()" style="margin-top:4px">אני מאשרת ומתחילה &#8592;</button>
+</div>
+
+<!-- ====== SCREEN 3: PHOTO INSTRUCTIONS ====== -->
+<div class="scr" id="scr-3" dir="rtl" style="background:#fff">
+  <img src="instructions.png" style="width:100%;height:100%;object-fit:contain;object-position:top center" alt="הכנה לצילום">
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 20px;background:linear-gradient(transparent,#fff 30%);z-index:2">
+    <button class="btn btn-pk" onclick="startScanAndAdvance()">הבנתי, המשיכי &#8592;</button>
+  </div>
+</div>
+
+<!-- ====== SCREEN 4: FACE SCAN VIDEO ====== -->
+<div class="scr" id="scr-4" style="padding:0;background:#fff">
+  <video id="mainVid" muted playsinline preload="auto" poster="cover-face.png" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#fff">
+    <source src="facescanHE.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- ====== SCREEN 5: QUESTIONNAIRE ====== -->
+<div class="scr page" id="scr-5" dir="rtl">
+  <div class="section-intro" style="margin-bottom:6px">
+    <div class="si-label">שאלון מקדים</div>
+    <div class="si-title">בזמן שמעבדים את התמונה שלך...</div>
+    <div class="si-desc">כמה פרטים שיעזרו לנו ולרופאה להכיר אותך טוב יותר.</div>
+  </div>
+
+  <div style="margin-bottom:5px">
+    <div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px">מה הגיל שלך? *</div>
+    <input type="number" id="ageInput" placeholder="הזיני גיל" min="18" max="99" oninput="validateAge()" style="width:90px;padding:6px 10px;border-radius:8px;border:2px solid #eee;font-size:14px;font-weight:600;font-family:var(--font);text-align:center;direction:ltr">
+    <div id="ageNote" style="display:none;font-size:10px;margin-top:4px;padding:5px 8px;border-radius:6px;line-height:1.4"></div>
+  </div>
+
+  <div style="margin-bottom:5px">
+    <div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px">האם היה לך דימום וסתי ב-12 החודשים האחרונים? *</div>
+    <div class="q-row">
+      <div class="q-opt" onclick="selectBleeding(true,this)">כן</div>
+      <div class="q-opt" id="bleedingNo" onclick="selectBleeding(false,this)">לא</div>
+    </div>
+    <div class="follow-up" id="noBleedingFollowup" style="display:none">
+      <div style="font-size:10px;font-weight:600;color:var(--navy);margin-bottom:4px">מה הסיבה? (ניתן לבחור יותר מאחת)</div>
+      <div class="q-chips">
+        <div class="q-chip" onclick="this.classList.toggle('sel')">מנופאוזה טבעית</div>
+        <div class="q-chip" onclick="this.classList.toggle('sel')">אמצעי מניעה (התקן, גלולות ברצף)</div>
+        <div class="q-chip" onclick="this.classList.toggle('sel')">פעולה כירורגית</div>
+        <div class="q-chip" onclick="this.classList.toggle('sel')">מצב רפואי אחר</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:5px">
+    <div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:3px">סמני כל שינוי שחווית לאחרונה: *</div>
+    <div class="q-chips" id="symptomsChips">
+      <div class="q-chip" id="chipRedFlag" onclick="toggleSymptomChip(this)">דימום כבד או ממושך</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">הזעות לילה</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">מחזור קצר יותר (עד 25 יום)</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">רגישות, נפיחות או גושים בחזה</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">מיגרנות חדשות או מוגברות</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">עלייה במשקל ללא שינוי באכילה או פעילות</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">שינויי מצב רוח חדשים או מוגברים</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">יקיצות בלילה</div>
+      <div class="q-chip" onclick="toggleSymptomChip(this)">התכווצויות מוגברות</div>
+      <div class="q-chip" id="chipOther" onclick="toggleSymptomChip(this)">תסמינים אחרים</div>
+      <div class="q-chip" id="chipNone" onclick="toggleNoneChip(this)" style="border-style:dashed">אין לי אף אחד מהתסמינים הללו</div>
+    </div>
+    <div id="otherSymptomsInput" style="display:none;margin-top:4px">
+      <input type="text" placeholder="אילו תסמינים? (לא חובה)" style="width:100%;padding:6px 10px;border-radius:8px;border:2px solid #eee;font-size:12px;font-family:var(--font);direction:rtl">
+    </div>
+    <div id="redFlagNote" style="display:none;margin-top:6px;background:#fff4e0;border:1px solid #f1d3a1;border-radius:8px;padding:8px 10px;font-size:10px;color:#8a6100;line-height:1.4;text-align:right">
+      כדאי להזכיר את זה לרופאה בהקדם. המיפוי לא מחליף בדיקה רפואית.
+    </div>
+  </div>
+
+  <div id="qValidationMsg" style="display:none;font-size:10px;color:#dc2626;margin-bottom:4px;text-align:right">יש לענות על כל השאלות המסומנות בכוכבית</div>
+  <button class="btn btn-pk" onclick="validateAndNext()">המשיכי &#8592;</button>
+</div>
+
+<!-- ====== SCREEN 6: ANALYZING ====== -->
+<div class="scr" id="scr-6" style="background:#fff;cursor:pointer" onclick="nextScreen()">
+  <img src="screen-analyzing.png" style="width:100%;height:100%;object-fit:contain" alt="רגע, לומדים אותך">
+</div>
+
+<!-- ====== SCREEN 7: THANK YOU ====== -->
+<div class="scr" id="scr-7" style="background:#fff;cursor:pointer" onclick="nextScreen()">
+  <img src="screen-thankyou.png" style="width:100%;height:100%;object-fit:contain" alt="איזה כיף שאת כאן">
+</div>
+
+<!-- ====== SCREEN 8: FACESCAN IMPRINT VIDEO ====== -->
+<div class="scr" id="scr-8" style="padding:0;background:#fff">
+  <video id="imprintVideo" muted playsinline preload="auto" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0;background:#fff">
+    <source src="facescan-imprint.mp4" type="video/mp4">
+  </video>
+</div>
+
+<!-- ====== SCREEN 9: HORMONAL IMPRINT COMPLETE ====== -->
+<div class="scr" id="scr-9" dir="rtl" style="background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px">
+  <div style="width:64px;height:64px;border-radius:50%;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </div>
+  <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px">סריקת הפנים הושלמה</div>
+  <div style="font-size:14px;color:#555;line-height:1.7;max-width:300px;margin-bottom:8px">
+    זיהינו דפוסים בעור שעשויים להיות קשורים לשינויים הורמונליים. תמונת הפנים נמחקה, ורק מדדי הדפוסים נשמרים לדוח הרופאה.
+  </div>
+  <div style="background:rgba(209,64,156,.04);border-radius:12px;padding:12px 16px;max-width:300px;margin-bottom:20px;border:1px solid rgba(209,64,156,.1)">
+    <div style="font-size:13px;color:#D1409C;font-weight:600;margin-bottom:4px">החותם ההורמונלי שלך</div>
+    <div style="font-size:13px;color:#555;line-height:1.6">הפרופיל ההורמונלי ימשיך להתעדכן ככל שנאסוף עוד נתונים במהלך התהליך.</div>
+  </div>
+  <button class="btn btn-pk" onclick="nextScreen()" style="max-width:300px">המשיכי למיפוי תסמינים &#8592;</button>
+</div>
+
+<!-- ====== SCREEN 10: SYMPTOM TRACKER (iframe) ====== -->
+<div class="scr" id="scr-10" style="padding:0;background:#fff">
+  <iframe data-src="symptoms.html" style="width:100%;height:100%;border:none"></iframe>
+</div>
+
+<!-- ====== SCREEN 11: SYMPTOMS COMPLETE + THINK BUTTON ====== -->
+<div class="scr" id="scr-11" dir="rtl" style="background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px">
+  <div style="width:64px;height:64px;border-radius:50%;background:rgba(52,199,89,.08);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </div>
+  <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px">מיפוי התסמינים הושלם</div>
+  <div style="font-size:14px;color:#555;line-height:1.7;max-width:300px;margin-bottom:8px">
+    הרופאה תקבל תמונה מפורטת של התסמינים שדיווחת, כולל עוצמה ותדירות.
+  </div>
+  <div style="background:rgba(52,199,89,.04);border-radius:12px;padding:12px 16px;max-width:300px;margin-bottom:20px;border:1px solid rgba(52,199,89,.15)">
+    <div style="font-size:13px;color:#059669;font-weight:600;margin-bottom:4px">נשאר עוד קצת</div>
+    <div style="font-size:13px;color:#555;line-height:1.6">עכשיו נדגום זיכרון, קשב ומהירות עיבוד. זה לוקח כ-3 דקות ומרגיש כמו משחק.</div>
+  </div>
+  <button class="btn btn-pk" onclick="nextScreen()" style="max-width:300px">עכשיו נדגום קשב, זיכרון ומהירות &#8592;</button>
+</div>
+
+<!-- ====== SCREEN 12: THINK IFRAME (direct, no transition) ====== -->
+<div class="scr" id="scr-12">
+  <iframe data-src="think.html" title="THINK"></iframe>
+</div>
+
+<!-- ====== SCREEN 13: THINK COMPLETE + SENSE BUTTON ====== -->
+<div class="scr" id="scr-13" dir="rtl" style="background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px">
+  <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,122,255,.08);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </div>
+  <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px">דגימת THINK הושלמה</div>
+  <div style="font-size:14px;color:#555;line-height:1.7;max-width:300px;margin-bottom:8px">
+    קיבלנו דגימה של זיכרון, קשב ומהירות עיבוד. הנתונים יופיעו בדוח הרופאה.
+  </div>
+  <div style="background:rgba(0,122,255,.04);border-radius:12px;padding:12px 16px;max-width:300px;margin-bottom:20px;border:1px solid rgba(0,122,255,.12)">
+    <div style="font-size:13px;color:#007AFF;font-weight:600;margin-bottom:4px">עוד שלב אחד</div>
+    <div style="font-size:13px;color:#555;line-height:1.6">דגימת SENSE בודקת ראייה, שמיעה ושיווי משקל. זה לוקח כ-2 דקות.</div>
+  </div>
+  <button class="btn btn-pk" onclick="nextScreen()" style="max-width:300px">בואי נמשיך ל-SENSE &#8592;</button>
+</div>
+
+<!-- ====== SCREEN 14: SENSE IFRAME (direct, no transition) ====== -->
+<div class="scr" id="scr-14">
+  <iframe data-src="sense.html" title="SENSE"></iframe>
+</div>
+
+<!-- ====== SCREEN 15: SENSE COMPLETE + RESULTS BUTTON ====== -->
+<div class="scr" id="scr-15" dir="rtl" style="background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px">
+  <div style="width:64px;height:64px;border-radius:50%;background:rgba(133,96,192,.08);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8560C0" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </div>
+  <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px">דגימת SENSE הושלמה</div>
+  <div style="font-size:14px;color:#555;line-height:1.7;max-width:300px;margin-bottom:8px">
+    קיבלנו דגימה של ראייה, שמיעה ושיווי משקל. כל הנתונים יועברו לרופאה.
+  </div>
+  <div style="background:rgba(133,96,192,.04);border-radius:12px;padding:12px 16px;max-width:300px;margin-bottom:20px;border:1px solid rgba(133,96,192,.12)">
+    <div style="font-size:13px;color:#8560C0;font-weight:600;margin-bottom:4px">התהליך כמעט הסתיים</div>
+    <div style="font-size:13px;color:#555;line-height:1.6">עוד רגע תראי סיכום של כל מה שאספנו.</div>
+  </div>
+  <button class="btn btn-pk" onclick="nextScreen()" style="max-width:300px">בואי נראה את הסיכום &#8592;</button>
+</div>
+
+<!-- ====== SCREEN 18: ACCOUNT CREATION ====== -->
+<div class="scr page" id="scr-16" dir="rtl" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+  <div style="width:48px;height:48px;border-radius:14px;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="1.75"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </div>
+  <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">יצירת חשבון</div>
+  <div style="font-size:12px;color:#888;margin-bottom:20px">לשמירת התוצאות והמעקב האישי שלך</div>
+  <div style="width:100%;max-width:280px">
+    <button class="auth-btn" onclick="nextScreen()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg><span>המשיכי עם Google</span></button>
+    <button class="auth-btn" onclick="nextScreen()"><svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 5.99 4.388 10.954 10.125 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.668 4.533-4.668 1.312 0 2.686.234 2.686.234v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.469h-2.796v8.385C19.612 22.954 24 17.99 24 12z"/></svg><span>המשיכי עם Facebook</span></button>
+    <button class="auth-btn" onclick="nextScreen()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.75"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg><span>המשיכי עם אימייל</span></button>
+  </div>
+  <div style="font-size:9px;color:#bbb;margin-top:12px">Secured by Clerk</div>
+</div>
+
+<!-- ====== SCREEN 19: CLINICAL DOMAIN SUMMARY ====== -->
+<div class="scr page" id="scr-17" dir="rtl" style="background:#fff;overflow-y:auto;padding:16px 18px">
+  <div style="text-align:center;margin-bottom:14px">
+    <div style="font-size:11px;color:var(--pk);font-weight:700;letter-spacing:1px;margin-bottom:6px">סיכום המיפוי שלך</div>
+    <div style="font-size:20px;font-weight:800;color:var(--navy);line-height:1.3;margin-bottom:6px">הנה מה שמצאנו</div>
+    <div style="font-size:13px;color:#666;line-height:1.6">לחצי על כל כרטיס לפרטים נוספים. התוצאות יועברו לרופאה שלך.</div>
+  </div>
+  <div id="summaryCards"></div>
+  <div style="background:rgba(209,64,156,.04);border-radius:12px;padding:14px 16px;margin:10px 0;border:1px solid rgba(209,64,156,.1)">
+    <div style="font-size:14px;color:#444;line-height:1.7;text-align:right">
+      <strong style="color:var(--navy)">מה הלאה?</strong> הרופאה שלך תקבל דוח מפורט עם כל הנתונים, ותוכל לדון איתך בממצאים בפגישה.
+    </div>
+  </div>
+  <button class="btn btn-pk" onclick="nextScreen()" style="margin-top:8px;font-size:15px;padding:14px 20px">דוח לרופאה &#8592;</button>
+  <div style="font-size:9px;color:#bbb;text-align:center;margin-top:8px;line-height:1.4">תוצאות אלו משקפות מגמות אישיות ואינן מהוות אבחנה רפואית או תחליף לייעוץ מקצועי.</div>
+</div>
+
+<!-- ====== SCREEN 20: PROVIDER REPORT ====== -->
+<div class="scr" id="scr-18" dir="rtl" style="background:#fff;overflow-y:auto">
+  <div style="padding:4px 12px;display:flex;flex-direction:column;align-items:center">
+    <img src="Dr report -patient side HE.jpeg" style="width:100%;max-height:85vh;object-fit:contain;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.05)" alt="דוח לרופא">
+    <button class="btn btn-pk" onclick="nextScreen()" style="margin-top:6px;flex-shrink:0">סיום &#8592;</button>
+  </div>
+</div>
+
+<!-- ====== SCREEN 21: READY FOR YOUR VISIT ====== -->
+<div class="scr trans-screen" id="scr-19" dir="rtl" style="padding:28px 24px">
+  <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(52,199,89,.12),rgba(0,122,255,.12));display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </div>
+  <div style="font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:10px">מיכל, את מוכנה לביקור</div>
+  <div style="font-size:14px;color:#555;line-height:1.7;max-width:320px;margin-bottom:16px">
+    המיפוי הושלם. כל הנתונים יחכו לרופאה שלך כשתיכנסי לפגישה.
+  </div>
+  <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px">מה הרופאה תקבל:</div>
+  <div style="text-align:right;max-width:320px;width:100%;margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-direction:row-reverse">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--pk);flex-shrink:0"></div>
+      <div style="font-size:14px;color:#444">פרופיל סימני עור שעשויים להיות קשורים לשינויים הורמונליים</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-direction:row-reverse">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--pk);flex-shrink:0"></div>
+      <div style="font-size:14px;color:#444">מיפוי תסמינים מדורג</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-direction:row-reverse">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--pk);flex-shrink:0"></div>
+      <div style="font-size:14px;color:#444">דגימות קוגניטיביות וחושיות</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-direction:row-reverse">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--pk);flex-shrink:0"></div>
+      <div style="font-size:14px;color:#444">החותם ההורמונלי האישי שלך</div>
+    </div>
+  </div>
+  <div style="background:rgba(0,122,255,.06);border-radius:12px;padding:14px 16px;max-width:320px;margin-bottom:16px;border:1px solid rgba(0,122,255,.12)">
+    <div style="font-size:14px;color:#333;line-height:1.6;text-align:right">
+      <strong>הפגישה שלך:</strong> 8 ביוני, 10:00<br>ד"ר רונית כהן, שירות גיל המעבר
+    </div>
+  </div>
+  <button class="btn btn-pk" onclick="nextScreen()" style="margin-top:14px;max-width:300px;font-size:14px;padding:13px 20px">הכלים שלך בין הביקורים &#8592;</button>
+  <div style="font-size:9px;color:#bbb;text-align:center;margin-top:10px">פלטפורמת בריאות ואיכות חיים. אינה מהווה כלי אבחוני רפואי.</div>
+</div>
+
+<!-- ====== SCREEN 22: BETWEEN VISITS - CURATED TOOLS ====== -->
+<div class="scr" id="scr-20" dir="rtl" style="background:#fff;overflow-y:auto;padding:20px 16px">
+  <div style="text-align:center;margin-bottom:6px">
+    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(209,64,156,.08),rgba(209,64,156,.03));display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div style="font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:4px">בין הביקורים</div>
+    <div style="font-size:12px;color:#888;line-height:1.5;max-width:280px;margin:0 auto 14px">6 כלים מבוססי מחקר שמלווים אותך ומייצרים מידע לרופאה שלך</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+
+    <div style="background:#FAFAFA;border:1px solid #EEECEE;border-radius:14px;padding:14px 12px;text-align:right">
+      <div style="width:34px;height:34px;border-radius:10px;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px">יומן סימפטומים קולי</div>
+      <div style="font-size:11px;color:#888;line-height:1.45">תיעוד קולי יומי. הנתונים מגיעים לרופאה</div>
+      <div style="font-size:9px;color:#D1409C;font-weight:600;margin-top:6px;letter-spacing:0.02em">STRONG EVIDENCE</div>
+    </div>
+
+    <div style="background:#FAFAFA;border:1px solid #EEECEE;border-radius:14px;padding:14px 12px;text-align:right">
+      <div style="width:34px;height:34px;border-radius:10px;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px">מפת מחזור</div>
+      <div style="font-size:11px;color:#888;line-height:1.45">מעקב דפוס המחזור לסיווג שלב פרימנופאוזה</div>
+      <div style="font-size:9px;color:#D1409C;font-weight:600;margin-top:6px;letter-spacing:0.02em">STRAW+10 STAGING</div>
+    </div>
+
+    <div style="background:#FAFAFA;border:1px solid #EEECEE;border-radius:14px;padding:14px 12px;text-align:right">
+      <div style="width:34px;height:34px;border-radius:10px;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px">THINK Daily</div>
+      <div style="font-size:11px;color:#888;line-height:1.45">אימון קוגניטיבי קצר לחידוד הריכוז והזיכרון</div>
+      <div style="font-size:9px;color:#D1409C;font-weight:600;margin-top:6px;letter-spacing:0.02em">META-ANALYSIS g=0.48</div>
+    </div>
+
+    <div style="background:#FAFAFA;border:1px solid #EEECEE;border-radius:14px;padding:14px 12px;text-align:right">
+      <div style="width:34px;height:34px;border-radius:10px;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px">SENSE Balance</div>
+      <div style="font-size:11px;color:#888;line-height:1.45">תרגילי שיווי משקל למניעת נפילות</div>
+      <div style="font-size:9px;color:#D1409C;font-weight:600;margin-top:6px;letter-spacing:0.02em">COCHRANE, 43 RCTs</div>
+    </div>
+
+    <div style="background:#FAFAFA;border:1px solid #EEECEE;border-radius:14px;padding:14px 12px;text-align:right">
+      <div style="width:34px;height:34px;border-radius:10px;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px">PeriIQ</div>
+      <div style="font-size:11px;color:#888;line-height:1.45">תכנים מותאמים להבנת גיל המעבר</div>
+      <div style="font-size:9px;color:#D1409C;font-weight:600;margin-top:6px;letter-spacing:0.02em">39 STUDIES, 100% QoL</div>
+    </div>
+
+    <div style="background:#FAFAFA;border:1px solid #EEECEE;border-radius:14px;padding:14px 12px;text-align:right">
+      <div style="width:34px;height:34px;border-radius:10px;background:rgba(209,64,156,.08);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:3px">MindShift</div>
+      <div style="font-size:11px;color:#888;line-height:1.45">CBT מובנה לניהול מצב רוח ושינה</div>
+      <div style="font-size:9px;color:#D1409C;font-weight:600;margin-top:6px;letter-spacing:0.02em">NICE + NAMS LEVEL I</div>
+    </div>
+
+  </div>
+
+  <div style="background:rgba(209,64,156,.04);border:1px solid rgba(209,64,156,.1);border-radius:10px;padding:12px 14px;text-align:right;margin-bottom:10px">
+    <div style="font-size:12px;color:#555;line-height:1.6">כל כלי מייצר מידע שמגיע אוטומטית לדשבורד הרופאה שלך לפני הביקור הבא.</div>
+  </div>
+
+  <div style="font-size:9px;color:#bbb;text-align:center;line-height:1.5">פלטפורמת בריאות ואיכות חיים. אינה מהווה כלי אבחוני רפואי.</div>
+</div>
+
+</div><!-- /phone-content -->
+<div class="powered-footer">Powered by <img src="markable-logo.png" style="height:10px;vertical-align:middle;margin:0 2px" alt="MARKABLE"> &copy; All rights reserved</div>
+<div class="bottom-nav"><div class="home-indicator"></div></div>
+</div><!-- /phone-screen -->
+</div><!-- /phone -->
+</div><!-- /phone-container -->
+
+<!-- Navigation panel - right side -->
+<div class="nav-panel" id="navPanel">
+  <div class="nav-panel-header">ניווט בדמו</div>
+  <div class="nav-arrows">
+    <div class="nav-arrow" onclick="prevScreen()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="nav-arrow-label">מסך קודם</span>
+    </div>
+    <div class="nav-arrow" onclick="nextScreen()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#D1409C" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      <span class="nav-arrow-label">מסך הבא</span>
+    </div>
+  </div>
+  <div class="nav-sections" id="navSections">
+    <div class="nav-section-btn" onclick="goToScreen(0)">SMS</div>
+    <div class="nav-section-btn" onclick="goToScreen(1)">הרשמה</div>
+    <div class="nav-section-btn" onclick="goToScreen(3)">סריקת פנים</div>
+    <div class="nav-section-btn" onclick="goToScreen(5)">שאלון</div>
+    <div class="nav-section-btn" onclick="goToScreen(9)">ניתוח פנים</div>
+    <div class="nav-section-btn" onclick="goToScreen(10)">תסמינים</div>
+    <div class="nav-section-btn" onclick="goToScreen(12)">דגימת THINK</div>
+    <div class="nav-section-btn" onclick="goToScreen(14)">דגימת SENSE</div>
+    <div class="nav-section-btn" onclick="goToScreen(17)">סיכום</div>
+    <div class="nav-section-btn" onclick="goToScreen(18)">דוח לרופאה</div>
+    <div class="nav-section-btn" onclick="goToScreen(19)">סיום</div>
+    <div class="nav-section-btn" onclick="goToScreen(20)">בין הביקורים</div>
+  </div>
+  <div style="display:none" class="nav-section-btn" onclick="toggleMobileNav()" style="text-align:center;color:#D1409C;font-weight:700">&#10005; סגור</div>
+  <a href="index.html" class="nav-cover" style="margin-top:8px;padding:8px 12px;background:#fff;border-radius:8px;border:1.5px solid #ddd;font-size:11px;font-weight:600;color:#555;display:block;text-align:center;text-decoration:none">&#8592; חזרה לתפריט ראשי</a>
+</div>
+
+<!-- Mobile nav toggle -->
+<button class="mobile-nav-toggle" onclick="toggleMobileNav()">&#9776;</button>
+
+<!-- Score popup -->
+<div class="score-popup" id="scorePopup">
+  <div class="score-sheet" dir="rtl">
+    <div class="score-sheet-title" id="scoreSheetTitle"></div>
+    <div class="score-label" id="scoreSheetLabel">בחרי דירוג</div>
+    <div class="score-options" id="scoreOptions"></div>
+    <button class="btn btn-pk" onclick="confirmScore()" style="font-size:13px;padding:10px">אישור</button>
+  </div>
+</div>
+
+<script>
+var currentScreen = 0, totalScreens = 21;
+
+var PHASES = [
+  {name:'SMS', screens:[0]},
+  {name:'הרשמה', screens:[1,2]},
+  {name:'סריקת פנים', screens:[3,4]},
+  {name:'שאלון מקדים', screens:[5]},
+  {name:'ניתוח פנים', screens:[6,7,8,9]},
+  {name:'מיפוי תסמינים', screens:[10,11]},
+  {name:'THINK\u2122', screens:[12,13]},
+  {name:'SENSE\u2122', screens:[14,15]},
+  {name:'סיכום', screens:[16,17]},
+  {name:'דוח לרופאה', screens:[18]},
+  {name:'סיום', screens:[19]},
+  {name:'בין הביקורים', screens:[20]}
+];
+
+var HIDE_PROGRESS = [0, 1, 6, 7, 8, 12, 14, 17, 19, 20];
+
+function getPhaseForScreen(s) {
+  for (var i = 0; i < PHASES.length; i++) {
+    if (PHASES[i].screens.indexOf(s) >= 0) return i;
+  }
+  return 0;
+}
+
+function nextScreen() {
+  if (currentScreen >= totalScreens - 1) return;
+  goToScreen(currentScreen + 1);
+}
+
+function prevScreen() {
+  if (currentScreen <= 0) return;
+  // Skip back over iframe screens to their transition
+  var target = currentScreen - 1;
+  if ([12,14,17].indexOf(target) >= 0) target--;
+  if (target < 0) target = 0;
+  goToScreen(target);
+}
+
+function goToScreen(n) {
+  if (n === currentScreen || n < 0 || n >= totalScreens) return;
+  var prev = document.getElementById('scr-' + currentScreen);
+  var next = document.getElementById('scr-' + n);
+  if (!prev || !next) return;
+
+  prev.classList.remove('active');
+  prev.classList.add('exit');
+  setTimeout(function() { prev.classList.remove('exit'); }, 400);
+  next.classList.add('active');
+
+  var iframe = next.querySelector('iframe[data-src]');
+  if (iframe && iframe.getAttribute('data-src') && (!iframe.src || iframe.src === 'about:blank' || iframe.src === '')) {
+    iframe.src = iframe.getAttribute('data-src');
+  }
+
+  currentScreen = n;
+  updateProgress();
+  updateStatusBar();
+  updateNavHighlight();
+
+  try { if (n === 6) setTimeout(function() { if (currentScreen === 6) nextScreen(); }, 2000); } catch(e){}
+  try { if (n === 7) setTimeout(function() { if (currentScreen === 7) nextScreen(); }, 2000); } catch(e){}
+  try { if (n === 8) startImprintVideo(); } catch(e){}
+  // Screen 9: snap-hormonal - user clicks button to advance (no auto)
+  try { if (n === 5) setTimeout(resetQuestionnaire, 100); } catch(e){}
+  // Screen 10 (symptoms) - loaded via iframe, advances via postMessage
+  // No auto-advance on snap screens (user clicks button)
+  try { if (n === 17) initDomainSummary(); } catch(e){}
+}
+
+function updateProgress() {
+  var bar = document.getElementById('progressBar');
+  var fill = document.getElementById('progressFill');
+  var text = document.getElementById('progressText');
+
+  if (HIDE_PROGRESS.indexOf(currentScreen) >= 0) {
+    bar.classList.add('hide');
+  } else {
+    bar.classList.remove('hide');
+    var phase = getPhaseForScreen(currentScreen);
+    var pct = ((phase + 1) / PHASES.length * 100).toFixed(0);
+    fill.style.width = pct + '%';
+    text.textContent = (phase + 1) + '/' + PHASES.length + ' ' + PHASES[phase].name;
+  }
+}
+
+function updateStatusBar() {
+  var bar = document.getElementById('statusBar');
+  var isDark = false; // no dark screens anymore
+  bar.style.background = isDark ? '#000' : '#fff';
+  bar.style.color = isDark ? '#fff' : '#000';
+  bar.querySelector('.status-time').style.color = isDark ? '#fff' : '#000';
+}
+
+// Consent
+var consentState = [false, false, false];
+function toggleConsent(idx) {
+  consentState[idx] = !consentState[idx];
+  document.getElementById('c' + idx).className = consentState[idx] ? 'cbox checked' : 'cbox';
+  document.getElementById('consentBtn').disabled = !(consentState[0] && consentState[2]);
+}
+function checkAllConsent() {
+  var allChecked = consentState.every(Boolean);
+  for (var i = 0; i < 3; i++) {
+    consentState[i] = !allChecked;
+    document.getElementById('c' + i).className = !allChecked ? 'cbox checked' : 'cbox';
+  }
+  document.getElementById('cAll').className = !allChecked ? 'cbox checked' : 'cbox';
+  document.getElementById('consentBtn').disabled = !(consentState[0] && consentState[2]);
+}
+
+// Symptom chip logic
+function toggleSymptomChip(el) {
+  el.classList.toggle('sel');
+  // If any symptom is selected, deselect "none"
+  var none = document.getElementById('chipNone');
+  if (el !== none && el.classList.contains('sel')) {
+    none.classList.remove('sel');
+  }
+  // Show/hide other symptoms input
+  var other = document.getElementById('chipOther');
+  document.getElementById('otherSymptomsInput').style.display = other.classList.contains('sel') ? 'block' : 'none';
+  // Red-flag safety valve
+  updateRedFlagNote();
+}
+
+function updateRedFlagNote() {
+  var rf = document.getElementById('chipRedFlag');
+  var note = document.getElementById('redFlagNote');
+  if (rf && note) note.style.display = rf.classList.contains('sel') ? 'block' : 'none';
+}
+
+function toggleNoneChip(el) {
+  el.classList.toggle('sel');
+  if (el.classList.contains('sel')) {
+    // Deselect all other chips
+    document.querySelectorAll('#symptomsChips .q-chip').forEach(function(c) {
+      if (c !== el) c.classList.remove('sel');
+    });
+    document.getElementById('otherSymptomsInput').style.display = 'none';
+  }
+  updateRedFlagNote();
+}
+
+// Questionnaire validation
+function validateAndNext() {
+  var age = document.getElementById('ageInput').value;
+  var bleedingSelected = document.querySelector('#scr-5 .q-row .q-opt.sel');
+  var anySymptom = document.querySelector('#symptomsChips .q-chip.sel');
+  var msg = document.getElementById('qValidationMsg');
+
+  if (!age || !bleedingSelected || !anySymptom) {
+    msg.style.display = 'block';
+    // Allow continuing after 2 seconds anyway (demo mode)
+    setTimeout(function() { msg.textContent = 'ממשיכה בכל זאת (דמו)...'; nextScreen(); }, 2000);
+    return;
+  }
+  msg.style.display = 'none';
+  nextScreen();
+}
+
+// Age validation
+function validateAge() {
+  var input = document.getElementById('ageInput');
+  var note = document.getElementById('ageNote');
+  var age = parseInt(input.value);
+  if (!input.value || isNaN(age)) {
+    note.style.display = 'none';
+    input.style.borderColor = '#eee';
+    return;
+  }
+  if (age < 30 || age > 60) {
+    note.style.display = 'block';
+    note.style.background = '#fef3cd';
+    note.style.color = '#856404';
+    note.innerHTML = 'ההערכה שלנו מותאמת לנשים בגילאי 30\u201360. את מוזמנת להמשיך, אך התוצאות עשויות להיות פחות רלוונטיות.';
+    input.style.borderColor = '#ffc107';
+  } else {
+    note.style.display = 'none';
+    input.style.borderColor = '#D1409C';
+  }
+}
+
+// Bleeding follow-up
+function resetQuestionnaire() {
+  // Clear age
+  var age = document.querySelector('#scr-5 input[type="number"]');
+  if (age) age.value = '';
+  // Clear bleeding selection
+  document.querySelectorAll('#scr-5 .q-opt').forEach(function(o) { o.classList.remove('sel'); });
+  // Hide follow-up
+  var fu = document.getElementById('noBleedingFollowup');
+  if (fu) fu.style.display = 'none';
+  // Clear all chips
+  document.querySelectorAll('#scr-5 .q-chip').forEach(function(c) { c.classList.remove('sel'); });
+}
+
+function selectBleeding(yes, el) {
+  document.querySelectorAll('#scr-5 .q-row:first-of-type .q-opt').forEach(function(o) { o.classList.remove('sel'); });
+  el.classList.add('sel');
+  var fu = document.getElementById('noBleedingFollowup');
+  if (yes) {
+    // Hide follow-up AND clear all follow-up selections
+    fu.style.display = 'none';
+    fu.querySelectorAll('.q-chip').forEach(function(c) { c.classList.remove('sel'); });
+  } else {
+    fu.style.display = 'block';
+  }
+}
+
+// Face scan
+var scanTimer;
+// Facescan imprint video (screen 8) - play and auto-advance
+function startImprintVideo() {
+  try {
+    var v = document.getElementById('imprintVideo');
+    if (v) {
+      v.muted = true;
+      v.currentTime = 0;
+      var p = v.play();
+      if (p && p.catch) p.catch(function(){});
+      v.onended = function() { if (currentScreen === 8) nextScreen(); };
+    }
+  } catch(e) {}
+  setTimeout(function() { if (currentScreen === 8) nextScreen(); }, 12000);
+}
+
+// Auto scroll snap screen then advance
+function autoScrollAndAdvance(scrNum) {
+  var scr = document.getElementById('scr-' + scrNum);
+  if (scr) {
+    setTimeout(function() { try { scr.scrollTo({top: scr.scrollHeight, behavior: 'smooth'}); } catch(e){} }, 500);
+    setTimeout(function() { if (currentScreen === scrNum) nextScreen(); }, 3500);
+  } else {
+    setTimeout(function() { if (currentScreen === scrNum) nextScreen(); }, 2000);
+  }
+}
+
+// Start video AND advance screen - called from user click on screen 3
+function startScanAndAdvance() {
+  // Start video BEFORE screen transition (inside click handler = user gesture)
+  var v = document.getElementById('mainVid');
+  if (v) {
+    v.muted = true;
+    v.currentTime = 0;
+    v.play(); // Works because we're inside onclick handler
+    v.onended = function() { if (currentScreen === 4) nextScreen(); };
+  }
+  nextScreen(); // Go to screen 4
+  // Fallback auto-advance
+  setTimeout(function() { if (currentScreen === 4) nextScreen(); }, 8000);
+}
+
+// Clinical domains (replacing 14 individual metrics)
+var DOMAINS = [
+  {name:'מרקם ומוצקות', level:'mild', label:'שינוי קל', color:'#FF9F0A', bg:'#FFF3E0'},
+  {name:'לחות ומאזן עור', level:'normal', label:'ללא שינוי בולט', color:'#34C759', bg:'#E8F8ED'},
+  {name:'גוון ובהירות', level:'moderate', label:'שינוי בינוני', color:'#FF6B35', bg:'#FFF0EB'},
+  {name:'אזור העיניים', level:'mild', label:'שינוי קל', color:'#FF9F0A', bg:'#FFF3E0'}
+];
+
+function buildSummaryCard(id, title, tagLabel, tagColor, tagBg, summary, detailHtml) {
+  var h = '';
+  h += '<div class="s-card" onclick="toggleSummaryCard(\''+id+'\')" style="background:'+tagBg+';border-radius:14px;padding:14px 16px;margin-bottom:10px;border:1px solid rgba(0,0,0,.06);cursor:pointer">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse">';
+  h += '<div style="display:flex;align-items:center;gap:8px;flex-direction:row-reverse">';
+  h += '<div style="font-size:15px;font-weight:700;color:#1a1a2e">'+title+'</div>';
+  h += '<svg id="chev-'+id+'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" style="transition:transform .2s;flex-shrink:0"><path d="M6 9l6 6 6-6"/></svg>';
+  h += '</div>';
+  h += '<div style="font-size:11px;font-weight:700;color:'+tagColor+';background:#fff;padding:3px 10px;border-radius:16px;border:1.5px solid '+tagColor+';white-space:nowrap">'+tagLabel+'</div>';
+  h += '</div>';
+  h += '<div style="font-size:12px;color:#666;line-height:1.5;text-align:right;margin-top:6px">'+summary+'</div>';
+  h += '<div id="detail-'+id+'" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.06)">'+detailHtml+'</div>';
+  h += '</div>';
+  return h;
+}
+
+function toggleSummaryCard(id) {
+  var d = document.getElementById('detail-' + id);
+  var c = document.getElementById('chev-' + id);
+  if (d.style.display === 'none') {
+    d.style.display = 'block';
+    c.style.transform = 'rotate(180deg)';
+  } else {
+    d.style.display = 'none';
+    c.style.transform = '';
+  }
+}
+
+function domainDetailRow(name, label, color) {
+  return '<div style="display:flex;align-items:center;justify-content:space-between;flex-direction:row-reverse;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
+    + '<div style="font-size:12px;font-weight:600;color:#333">'+name+'</div>'
+    + '<div style="font-size:10px;font-weight:700;color:'+color+'">'+label+'</div>'
+    + '</div>';
+}
+
+// Symptom Tracker
+var SYMPTOM_PAGES = [
+  {title:'גלי חום ושינה',en:'Hot Flashes & Sleep',num:'1/6',items:['גלי חום','הזעות לילה','אי-סבילות לחום','צמרמורות','נדודי שינה - הירדמות','נדודי שינה - יקיצות']},
+  {title:'מצב רוח וריכוז',en:'Mood & Focus',num:'2/6',items:['מצב רוח ירוד','חרדה','עצבנות','שינויי מצב רוח','רגישות ללחץ','ירידה במוטיבציה','ערפל מוחי','זיכרון איטי','שכחנות','קושי בריכוז']},
+  {title:'אינטימיות ושתן',en:'Intimate & Urinary',num:'3/6',items:['אי נוחות וגינלית','כאב ביחסי מין','ירידה בחשק','דחיפות במתן שתן','תדירות גבוהה','דליפת שתן','דלקות חוזרות','כובד אגני','גירוד/גירוי']},
+  {title:'כאב וגוף',en:'Pain & Body',num:'4/6',items:['כאבי גב','מתח צוואר/כתפיים','אי נוחות בידיים','אי נוחות ברגליים','התכווצויות','נימול/עקצוצים','תחושות חשמליות']},
+  {title:'עור, שיער, עיניים',en:'Skin, Hair, Eyes',num:'5/6',items:['עור יבש','עור רגיש/מגרד','אקנה בוגר','דילול שיער','ציפורניים שבירות','עיניים יבשות','שינויי ראייה']},
+  {title:'אנרגיה ולב',en:'Energy & Cardiovascular',num:'6/6',items:['שלשול/גזים','צרבת/רפלוקס','חשק לסוכר','ירידות אנרגיה','דפיקות לב','סחרחורת','רגישות לקור']}
+];
+var SCALE_LABELS = ['ללא תסמין','קלה מאוד, בקושי מורגש','קלה מאוד, לא משפיע','קל, מופיע לפעמים','קל עד בינוני','בינוני, לפעמים מסיח','בינוני עד חזק','חזק, מפריע לשגרה','חזק מאוד','חמור, שולט בתשומת הלב','הגרוע ביותר'];
+var symptomPageIdx = 0, symptomScores = {}, currentSymptomEl = null, selectedScore = -1, symptomInited = false;
+
+function initSymptomTracker() {
+  if (!symptomInited) {
+    symptomScores = {'גלי חום':6,'הזעות לילה':7,'נדודי שינה - יקיצות':5,'שינויי מצב רוח':4,'ערפל מוחי':5,'שכחנות':3};
+    symptomInited = true;
+  }
+  symptomPageIdx = 0;
+  renderSymptomPage();
+}
+
+function renderSymptomPage() {
+  var c = document.getElementById('symptomContainer');
+  // Show intro on first page
+  if (symptomPageIdx === 0) {
+    var intro = '<div class="section-intro" style="margin-bottom:10px"><div class="si-label">מיפוי תסמינים</div><div class="si-title">דרגי כל תסמין שחווית</div><div class="si-desc">לחצי על כל תסמין שאת חווה ודרגי אותו בסולם 0-10. חשוב לדרג גם תסמינים קלים. ככל שהמיפוי מלא יותר, כך הרופאה מקבלת תמונה מדויקת יותר.</div><div class="si-why">כ-60 תסמינים ב-6 קטגוריות. תסמינים אלה עשויים להיות קשורים לשינויים הורמונליים בגיל המעבר.</div></div>';
+  } else {
+    var intro = '';
+  }
+
+  var pg = SYMPTOM_PAGES[symptomPageIdx];
+  var h = intro;
+  h += '<div class="symptom-header"><div style="font-size:10px;color:#999;font-weight:600">'+pg.num+'</div>';
+  h += '<div style="font-size:15px;font-weight:700;color:var(--navy)">'+pg.title+'</div>';
+  h += '<div style="font-size:11px;color:#aaa">'+pg.en+'</div></div>';
+
+  pg.items.forEach(function(item) {
+    var sc = symptomScores[item];
+    var cls = 'symptom-score', val = '-';
+    if (sc !== undefined) { val = sc; cls += sc <= 3 ? ' rated-low' : sc <= 6 ? ' rated-mid' : ' rated-high'; }
+    h += '<div class="symptom-row"><div class="symptom-name">'+item+'</div><div class="'+cls+'" onclick="openScorePopup(this,\''+item.replace(/'/g,"\\'")+'\')">'+val+'</div></div>';
+  });
+
+  h += '<div style="display:flex;gap:6px;margin-top:12px">';
+  if (symptomPageIdx > 0) h += '<button class="btn btn-outline" style="flex:1;font-size:13px;padding:10px" onclick="prevSymptomPage()">הקודם</button>';
+  if (symptomPageIdx < SYMPTOM_PAGES.length - 1) {
+    h += '<button class="btn btn-pk" style="flex:1;font-size:13px;padding:10px" onclick="nextSymptomPage()">הבא &#8592;</button>';
+  } else {
+    h += '<button class="btn btn-pk" style="flex:1;font-size:13px;padding:10px" onclick="showSymptomSummary()">סיכום &#8592;</button>';
+  }
+  h += '</div>';
+
+  c.innerHTML = h;
+  var st = document.getElementById('scr-10'); if(st) st.scrollTop = 0;
+}
+
+function showSymptomSummary() {
+  var total = 0, rated = 0, severe = 0, moderate = 0, mild = 0;
+  SYMPTOM_PAGES.forEach(function(pg) { pg.items.forEach(function(item) { total++; var s = symptomScores[item]; if (s !== undefined) { rated++; if (s >= 7) severe++; else if (s >= 4) moderate++; else if (s >= 1) mild++; }}); });
+  var c = document.getElementById('symptomContainer');
+  var h = '<div class="section-intro" style="text-align:center"><div class="si-label">סיכום מיפוי תסמינים</div><div class="si-title">המיפוי הושלם</div></div>';
+  var burden = severe >= 3 ? 'עומס גבוה' : (severe >= 1 || moderate >= 3) ? 'עומס בינוני' : rated > 0 ? 'עומס קל' : 'לא דווחו תסמינים';
+  var burdenColor = severe >= 3 ? '#FF3B30' : (severe >= 1 || moderate >= 3) ? '#FF9F0A' : '#34C759';
+  h += '<div style="text-align:center;padding:20px;background:#fafafa;border-radius:14px;margin:10px 0">';
+  h += '<div style="font-size:13px;color:#888;margin-bottom:8px">רמת עומס תסמינים כללית</div>';
+  h += '<div style="font-size:22px;font-weight:800;color:'+burdenColor+'">'+burden+'</div>';
+  h += '</div>';
+  h += '<div style="font-size:14px;color:#555;text-align:center;line-height:1.7;margin:12px 0">כל הפרטים יועברו לרופאה שלך בדוח מפורט.</div>';
+  h += '<button class="btn btn-pk" onclick="nextScreen()" style="margin-top:12px">המשיכי ל-THINK\u2122 &#8592;</button>';
+  c.innerHTML = h;
+}
+
+function nextSymptomPage() { if (symptomPageIdx < SYMPTOM_PAGES.length-1) { symptomPageIdx++; renderSymptomPage(); }}
+function prevSymptomPage() { if (symptomPageIdx > 0) { symptomPageIdx--; renderSymptomPage(); }}
+
+function openScorePopup(el, name) {
+  currentSymptomEl = el; selectedScore = -1;
+  document.getElementById('scoreSheetTitle').textContent = name;
+  document.getElementById('scoreSheetLabel').textContent = 'בחרי דירוג';
+  var h = '';
+  for (var i = 0; i <= 10; i++) h += '<div class="score-opt" onclick="selectScore(this,'+i+')" data-val="'+i+'">'+i+'</div>';
+  document.getElementById('scoreOptions').innerHTML = h;
+  document.getElementById('scorePopup').classList.add('show');
+}
+function selectScore(el, val) {
+  selectedScore = val;
+  document.querySelectorAll('#scoreOptions .score-opt').forEach(function(o){o.classList.remove('sel')});
+  el.classList.add('sel');
+  document.getElementById('scoreSheetLabel').textContent = val + ' - ' + SCALE_LABELS[val];
+}
+function confirmScore() {
+  if (selectedScore < 0) return;
+  symptomScores[document.getElementById('scoreSheetTitle').textContent] = selectedScore;
+  document.getElementById('scorePopup').classList.remove('show');
+  renderSymptomPage();
+}
+document.addEventListener('click', function(e) { if (e.target === document.getElementById('scorePopup')) e.target.classList.remove('show'); });
+
+// Provider Report
+var reportStep = 0, reportInited = false;
+function initProviderReport() {
+  reportStep = 0; reportInited = true; renderReportStep();
+}
+function renderReportStep() {
+  var c = document.getElementById('reportContainer');
+  var pills = '<div class="report-pills">';
+  for (var i = 0; i < 3; i++) pills += '<div class="report-pill'+(i<reportStep?' done':i===reportStep?' current':'')+'"></div>';
+  pills += '</div>';
+  var h = pills;
+
+  if (reportStep === 0) {
+    h += '<div class="section-intro"><div class="si-label">שלב 1 מתוך 3</div><div class="si-title">הקשר קליני</div><div class="si-desc">תרופות ותוספים שאת נוטלת כרגע. מידע זה חשוב לרופאה להבנת תמונת המצב.</div></div>';
+    h += '<div class="med-card"><div><div style="font-size:12px;font-weight:600;color:var(--navy)">Evorel 50</div><div style="font-size:10px;color:#888">פעמיים בשבוע | עקבית מאוד</div></div><div style="color:var(--red);font-size:10px;cursor:pointer;font-weight:600">הסרה</div></div>';
+    h += '<div class="med-card"><div><div style="font-size:12px;font-weight:600;color:var(--navy)">Euthyrox 100</div><div style="font-size:10px;color:#888">יומי | עקבית מאוד</div></div><div style="color:var(--red);font-size:10px;cursor:pointer;font-weight:600">הסרה</div></div>';
+    h += '<div class="med-card"><div><div style="font-size:12px;font-weight:600;color:var(--navy)">Magnesium</div><div style="font-size:10px;color:#888">יומי | לרוב עקבית</div></div><div style="color:var(--red);font-size:10px;cursor:pointer;font-weight:600">הסרה</div></div>';
+    h += '<button class="btn btn-outline" style="margin-top:6px;font-size:12px;padding:8px">+ הוספת תרופה או תוסף</button>';
+    h += '<button class="btn btn-pk" style="margin-top:10px" onclick="nextReportStep()">המשיכי &#8592;</button>';
+  } else if (reportStep === 1) {
+    h += '<div class="section-intro"><div class="si-label">שלב 2 מתוך 3</div><div class="si-title">שינויים בדפוס הדימום</div><div class="si-desc">בחרי את כל מה שרלוונטי.</div></div>';
+    ['ללא שינוי','דימום כבד יותר','דימום קל יותר','מחזורים קרובים יותר','מחזורים רחוקים יותר','לא סדיר יותר','המחזור הפסיק','אחר'].forEach(function(o,i){
+      h += '<div class="cycle-opt'+(i===5||i===6?' sel':'')+'" onclick="this.classList.toggle(\'sel\')">'+o+'</div>';
+    });
+    h += '<textarea placeholder="הערות נוספות..." style="width:100%;border:2px solid #eee;border-radius:8px;padding:8px;font-size:12px;font-family:var(--font);resize:none;height:50px;direction:rtl;margin-top:6px">אין מחזור בגלל התקן מירנה.</textarea>';
+    h += '<button class="btn btn-pk" style="margin-top:8px" onclick="nextReportStep()">המשיכי &#8592;</button>';
+  } else {
+    h += '<div class="section-intro"><div class="si-label">שלב 3 מתוך 3</div><div class="si-title">מטרת הביקור</div><div class="si-desc">מה הכי חשוב לך בפגישה הזו?</div></div>';
+    h += '<textarea style="width:100%;border:2px solid #eee;border-radius:8px;padding:10px;font-size:13px;font-family:var(--font);resize:none;height:80px;direction:rtl" placeholder="לדוגמה: ניהול גלי חום, שיפור שינה...">ניהול גלי חום, שיפור שינה, הבנת המשמעות של התוצאות</textarea>';
+    h += '<div style="background:rgba(209,64,156,.04);border-radius:8px;padding:10px;margin-top:10px;border:1px solid rgba(209,64,156,.1)"><div style="font-size:10px;color:#888;font-weight:600;margin-bottom:2px">טיפ</div><div style="font-size:11px;color:#555;line-height:1.5;text-align:right">כתבי כל שאלה שתרצי לדון בה עם הרופאה שלך.</div></div>';
+    h += '<button class="btn btn-pk" style="margin-top:10px" onclick="nextScreen()">צרי דוח לרופאה &#8592;</button>';
+  }
+  c.innerHTML = h;
+  var rs = document.getElementById('scr-18'); if(rs) rs.scrollTop = 0;
+}
+function nextReportStep() { reportStep++; renderReportStep(); }
+
+function toggleMobileNav() {
+  var p = document.getElementById('navPanel');
+  p.classList.toggle('mobile-open');
+}
+
+// Domain summary init
+function initDomainSummary() {
+  var c = document.getElementById('summaryCards');
+  if (!c) return;
+  var h = '';
+
+  // 1. HORMONAL PROFILE (merged face scan + hormonal imprint)
+  var overallLevel = 'normal', overallLabel = 'ללא שינוי בולט', overallColor = '#34C759';
+  var levels = {normal:0, mild:1, moderate:2, notable:3};
+  var maxLevel = 0;
+  DOMAINS.forEach(function(d) { var lv = levels[d.level] || 0; if (lv > maxLevel) maxLevel = lv; });
+  if (maxLevel === 1) { overallLabel = 'שינוי קל'; overallColor = '#FF9F0A'; }
+  else if (maxLevel === 2) { overallLabel = 'שינוי בינוני'; overallColor = '#FF6B35'; }
+  else if (maxLevel >= 3) { overallLabel = 'שינוי ניכר'; overallColor = '#E53E3E'; }
+
+  var domainDetail = '';
+  DOMAINS.forEach(function(d) {
+    domainDetail += domainDetailRow(d.name, d.label, d.color);
+  });
+
+  h += buildSummaryCard('hormonal', 'החותם ההורמונלי', overallLabel, overallColor,
+    maxLevel >= 2 ? '#FFF0EB' : maxLevel === 1 ? '#FFF3E0' : '#E8F8ED',
+    'נצפו דפוסים בפרופיל העור שעשויים להיות קשורים לשינויים הורמונליים.',
+    domainDetail);
+
+  // 2. SYMPTOMS
+  var rated = 0, severe = 0, moderate = 0;
+  SYMPTOM_PAGES.forEach(function(pg) { pg.items.forEach(function(item) {
+    var s = symptomScores[item]; if (s !== undefined) { rated++; if (s >= 7) severe++; else if (s >= 4) moderate++; }
+  }); });
+
+  var sTag = rated === 0 ? 'לא דווחו' : rated + ' תסמינים דווחו';
+  var sColor = severe >= 3 ? '#FF3B30' : (severe >= 1 || moderate >= 3) ? '#FF9F0A' : '#34C759';
+  var sBg = severe >= 3 ? '#FFF0F0' : (severe >= 1 || moderate >= 3) ? '#FFF3E0' : '#E8F8ED';
+  var sDesc = rated > 0 ? 'מתוכם ' + severe + ' בעוצמה גבוהה ו-' + moderate + ' בעוצמה בינונית. הפירוט יועבר לרופאה.' : 'לא דווחו תסמינים.';
+
+  var topSymptoms = [];
+  SYMPTOM_PAGES.forEach(function(pg) { pg.items.forEach(function(item) {
+    var s = symptomScores[item]; if (s !== undefined && s >= 4) topSymptoms.push({name:item, score:s});
+  }); });
+  topSymptoms.sort(function(a,b) { return b.score - a.score; });
+  var symptomDetail = '';
+  topSymptoms.slice(0, 6).forEach(function(t) {
+    var sc = t.score >= 7 ? '#FF3B30' : '#FF9F0A';
+    var sl = t.score >= 7 ? 'עוצמה גבוהה' : 'עוצמה בינונית';
+    symptomDetail += domainDetailRow(t.name, sl, sc);
+  });
+  if (topSymptoms.length > 6) symptomDetail += '<div style="font-size:11px;color:#999;text-align:center;padding-top:4px">ועוד ' + (topSymptoms.length - 6) + ' תסמינים נוספים</div>';
+  if (!symptomDetail) symptomDetail = '<div style="font-size:11px;color:#999;text-align:center;padding:4px 0">לא דווחו תסמינים בעוצמה בינונית או גבוהה</div>';
+
+  h += buildSummaryCard('symptoms', 'מיפוי תסמינים', sTag, sColor, sBg, sDesc, symptomDetail);
+
+  // 3. THINK Check
+  var thinkDetail = '';
+  thinkDetail += domainDetailRow('זיכרון עבודה', 'שינוי קל', '#FF9F0A');
+  thinkDetail += domainDetailRow('קשב ומיקוד', 'ללא שינוי בולט', '#34C759');
+  thinkDetail += domainDetailRow('מהירות עיבוד', 'שינוי קל', '#FF9F0A');
+
+  h += buildSummaryCard('think', 'THINK Check™', 'שינוי קל', '#FF9F0A', '#FFF3E0',
+    'דגימה ראשונית של זיכרון, קשב ומהירות עיבוד. דגימות חוזרות יאפשרו מעקב.',
+    thinkDetail);
+
+  // 4. SENSE Check
+  var senseDetail = '';
+  senseDetail += domainDetailRow('ראייה', 'שינוי קל', '#FF9F0A');
+  senseDetail += domainDetailRow('שמיעה', 'ללא שינוי בולט', '#34C759');
+  senseDetail += domainDetailRow('שיווי משקל', 'ללא שינוי בולט', '#34C759');
+
+  h += buildSummaryCard('sense', 'SENSE Check™', 'ללא שינוי בולט', '#34C759', '#E8F8ED',
+    'דגימה ראשונית של ראייה, שמיעה ושיווי משקל.',
+    senseDetail);
+
+  c.innerHTML = h;
+}
+
+// Keyboard nav
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextScreen(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); if (currentScreen > 0) goToScreen(currentScreen - 1); }
+});
+
+// Screen 13: facescan -> hormonal imprint -> next
+
+
+// Listen for messages from iframes
+window.addEventListener('message', function(e) {
+  if (e.data === 'symptoms-done' && currentScreen === 10) nextScreen();
+  if (e.data === 'think-done' && currentScreen === 12) nextScreen();
+  if (e.data === 'sense-done' && currentScreen === 14) nextScreen();
+});
+
+function updateNavHighlight() {
+  var btns = document.querySelectorAll('.nav-section-btn');
+  var phase = getPhaseForScreen(currentScreen);
+  btns.forEach(function(b, i) { b.className = 'nav-section-btn' + (i === phase ? ' active' : ''); });
+}
+
+updateProgress();
+updateNavHighlight();
+</script>
+</body>
+</html>
